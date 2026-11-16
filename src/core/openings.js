@@ -295,12 +295,15 @@ export function validateOpening(set, ids, def, meta) {
  * prefs: {mode: 'off'|'random'|'always', variant: 'any'|<id>}
  * Returns { cells: Uint8Array, tray, variant, special, reason, stats }.
  */
-export function planOpening(prefs, rng, recent = []) {
+export function planOpening(prefs, rng, recent = [], emptyBoardTray = null) {
   const mode = OPENING_MODES.includes(prefs && prefs.mode) ? prefs.mode : DEFAULT_OPENING_PREFS.mode;
   const stats = { accepted: 0, rejected: 0, trayDraws: 0 };
   const empty = () => new Uint8Array(CELLS);
   const plain = (reason, variant = null) => {
-    const tray = generateTray(0, 0, recent, rng); stats.trayDraws++;
+    // Ordinary empty starts may use the active generator; special layouts and
+    // their validation fallback always use the classic draw below.
+    const tray = emptyBoardTray ? emptyBoardTray(0, 0, recent, rng, { trayIndex: 0 }) : generateTray(0, 0, recent, rng);
+    stats.trayDraws++;
     return { cells: empty(), tray, variant, special: false, reason, stats };
   };
   if (mode === 'off') return plain('off');

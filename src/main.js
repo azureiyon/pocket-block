@@ -3,7 +3,9 @@ import { App } from './ui/app.js';
 import { createWorkerGen } from './gen/service.js';
 
 const gen = createWorkerGen(new URL('./gen/worker.js', import.meta.url));
-const app = new App({ gen });
+// ?gen=classic plays with the original tray generator (comparison/rollback).
+const generator = new URLSearchParams(location.search).get('gen') || undefined;
+const app = new App({ gen, generator });
 app.start();
 
 // Small debugging/testing hook (seeded games: ?seed=123).

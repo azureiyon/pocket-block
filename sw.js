@@ -1,7 +1,7 @@
 // Offline support: precache every local asset on install, serve
 // network-first (refreshing the cache) and fall back to the cache offline.
 // Bump VERSION when the asset list changes.
-const VERSION = 'pocket-blocks-v1';
+const VERSION = 'pocket-blocks-v2';
 const ASSETS = [
   './',
   'index.html',
@@ -15,6 +15,9 @@ const ASSETS = [
   'src/core/rng.js',
   'src/core/rules.js',
   'src/core/generator.js',
+  'src/core/generator-rhythm.js',
+  'src/core/generators.js',
+  'src/core/boardeval.js',
   'src/core/openings.js',
   'src/core/game.js',
   'src/core/settings.js',

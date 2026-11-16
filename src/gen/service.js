@@ -2,21 +2,21 @@
 // Worker when possible, with a synchronous fallback. Each request carries a
 // sub-seed so worker and fallback produce identical results.
 
-import { generateTray } from '../core/generator.js';
+import { getGenerator } from '../core/generators.js';
 import { planOpening } from '../core/openings.js';
 import { createRng } from '../core/rng.js';
 
 export function runJob(job) {
-  if (job.kind === 'tray') return generateTray(job.lo, job.hi, job.recent, createRng(job.seed));
-  if (job.kind === 'opening') return planOpening(job.prefs, createRng(job.seed), job.recent);
+  if (job.kind === 'tray') return getGenerator(job.generator)(job.lo, job.hi, job.recent, createRng(job.seed), job.ctx || {});
+  if (job.kind === 'opening') return planOpening(job.prefs, createRng(job.seed), job.recent, job.generator ? getGenerator(job.generator) : null);
   throw new Error('Unknown job ' + job.kind);
 }
 
 export function createSyncGen() {
   return {
     mode: 'sync',
-    tray: (lo, hi, recent, seed) => Promise.resolve(runJob({ kind: 'tray', lo, hi, recent, seed })),
-    opening: (prefs, seed, recent) => Promise.resolve(runJob({ kind: 'opening', prefs, seed, recent })),
+    tray: (lo, hi, recent, seed, ctx, generator) => Promise.resolve(runJob({ kind: 'tray', lo, hi, recent, seed, ctx, generator })),
+    opening: (prefs, seed, recent, generator) => Promise.resolve(runJob({ kind: 'opening', prefs, seed, recent, generator })),
     dispose() {},
   };
 }
@@ -63,8 +63,8 @@ export function createWorkerGen(workerUrl, { timeoutMs = 2500 } = {}) {
     });
   }
 
-  svc.tray = (lo, hi, recent, seed) => request({ kind: 'tray', lo, hi, recent, seed });
-  svc.opening = (prefs, seed, recent) => request({ kind: 'opening', prefs, seed, recent });
+  svc.tray = (lo, hi, recent, seed, ctx, generator) => request({ kind: 'tray', lo, hi, recent, seed, ctx, generator });
+  svc.opening = (prefs, seed, recent, generator) => request({ kind: 'opening', prefs, seed, recent, generator });
   svc.dispose = () => { if (worker) worker.terminate(); worker = null; };
   return svc;
 }

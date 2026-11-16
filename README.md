@@ -44,6 +44,16 @@ What the suites cover:
 | Settings persistence and unavailable storage, audio unlock/drop-when-suspended/voice limits/buffer cache/cleanup (fake Web Audio) | `tests/settings-audio.test.js` |
 | DOM, layout at 320×568 to 430×932 plus landscape, 14 themes × 3 variants | `tests/dom.test.js` (browser only) |
 
+## Gameplay simulation
+
+`tools/sim/` plays thousands of games headlessly with four player strategies (random, greedy, space-preserving and lookahead) and compares tray generators on identical seeds. It reports game length, clear cadence, multi-line clears, occupancy and recovery, narrow trays, game-over causes, and shape and combination variety.
+
+```bash
+node tools/sim/simulate.js --games 750 --gens classic,rhythm --label final
+```
+
+Results are written to `tools/sim/results/`. See [tools/sim/REPORT.md](tools/sim/REPORT.md) for the generator analysis.
+
 ## Testing on an iPhone
 
 1. Connect the computer and the iPhone to the same Wi-Fi network.
@@ -71,7 +81,10 @@ styles/effects.css       Previews, placement and clear animations, labels, parti
 styles/environments.css  Animated theme backgrounds
 src/core/shapes.js       The 27 fixed orientations
 src/core/rules.js        Bitboard rules shared by real moves, the generator search and tests
-src/core/generator.js    Fair tray generation (recency ordering, 12 + 16 proposals, constructive fallback)
+src/core/generator.js    Classic fair tray generation (recency ordering, 12 + 16 proposals, constructive fallback)
+src/core/generator-rhythm.js  Board-aware default generator (moods, candidate drafts, beam-search evaluation)
+src/core/generators.js   Generator registry; DEFAULT_GENERATOR and ?gen=classic rollback
+src/core/boardeval.js    Bitboard board features (fragmentation, room for big pieces, near-complete lines)
 src/core/openings.js     Starting-board registry, geometry checks, opening validation
 src/core/game.js         Game state controller (DOM-free, event based)
 src/core/settings.js     localStorage preferences with an in-memory fallback
@@ -139,7 +152,8 @@ The variant shows up in Settings → Game automatically. Add it to the per-varia
 
 ## Design notes
 
-- **Fair generation.**
+- **Tray generation (default: rhythm).** Each tray, a small director picks a mood (build, tension, reward or recovery) from board pressure and recent clears, never the score. It then drafts about 12 candidate trays from the shape pool, discards any that cannot all be placed, simulates the rest with a beam search over orders and placements (including clears), and picks one by softmax with some pure randomness. It avoids razor-thin trays but does not guarantee clears or survival. The classic generator below is kept for comparison: open the game with `?gen=classic`, or set `DEFAULT_GENERATOR` in `src/core/generators.js`.
+- **Classic fair generation.**
   - Recently offered shapes (the last nine) are shuffled toward the end of the collection.
   - Attempts 1–12 draw three distinct shapes from the fresh prefix `max(10, 27 − recent)`.
   - Attempts 13–28 draw uniformly with replacement.

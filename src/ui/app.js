@@ -15,9 +15,9 @@ import { bindInput } from './input.js';
 const $ = (id) => document.getElementById(id);
 
 export class App {
-  constructor({ gen, storage } = {}) {
+  constructor({ gen, storage, generator } = {}) {
     this.settings = new Settings(storage);
-    this.game = new Game({ gen, settings: this.settings });
+    this.game = new Game({ gen, settings: this.settings, generator });
     this.reduceMQ = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
     this.reducedMotion = () => !!this.reduceMQ.matches;
 

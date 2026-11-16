@@ -3,12 +3,15 @@
 
 import { CELLS, occFromCells, placeOnCells, canPlaceOnCells, anyFits } from './rules.js';
 import { createRng, randomSeed } from './rng.js';
+import { DEFAULT_GENERATOR } from './generators.js';
 
 export class Game {
-  constructor({ gen, settings } = {}) {
+  constructor({ gen, settings, generator } = {}) {
     if (!gen) throw new Error('Game needs a generation service');
     this.gen = gen;
     this.settings = settings || null;
+    // Tray generator id for refills ('rhythm' board-aware, 'classic' original).
+    this.generator = generator || DEFAULT_GENERATOR;
     this.listeners = {};
     this.gameId = 0;
     this.best = settings ? settings.get('best') : 0;
@@ -31,6 +34,10 @@ export class Game {
     this.busy = true;
     this.opening = null;
     this.lastSequence = null;
+    // Clear history for the generator's director (board/clear based, never score).
+    this.trayLines = 0;
+    this.traysSinceClear = 0;
+    this.lastTrayLines = 0;
   }
 
   get remaining() { return this.tray.filter((p) => !p.placed); }
@@ -45,7 +52,7 @@ export class Game {
     this.bestAtStart = this.best;
     this.emit('reset', { seed: this.seed });
     const prefs = opening || (this.settings ? this.settings.get('opening') : { mode: 'off', variant: 'any' });
-    const plan = await this.gen.opening(prefs, this.rng.u32(), []);
+    const plan = await this.gen.opening(prefs, this.rng.u32(), [], this.generator);
     if (id !== this.gameId) return false; // a newer restart superseded this one
     this.cells = Uint8Array.from(plan.cells);
     this.opening = { variant: plan.variant, special: plan.special, reason: plan.reason, stats: plan.stats, meta: plan.meta || null, clearSequence: plan.clearSequence || null };
@@ -91,6 +98,7 @@ export class Game {
     this.score += res.points;
     const prevCombo = this.combo;
     this.combo = res.lines > 0 ? this.combo + 1 : 0;
+    this.trayLines += res.lines;
     let newBest = false;
     if (this.score > this.best) {
       this.best = this.score; newBest = true;
@@ -114,7 +122,11 @@ export class Game {
     const id = this.gameId; const batch = this.batch;
     const { lo, hi } = occFromCells(this.cells);
     this.emit('busy', true);
-    const tray = await this.gen.tray(lo, hi, this.recent, this.rng.u32());
+    this.traysSinceClear = this.trayLines ? 0 : this.traysSinceClear + 1;
+    this.lastTrayLines = this.trayLines;
+    this.trayLines = 0;
+    const ctx = { traysSinceClear: this.traysSinceClear, lastTrayLines: this.lastTrayLines, combo: this.combo, trayIndex: this.batch };
+    const tray = await this.gen.tray(lo, hi, this.recent, this.rng.u32(), ctx, this.generator);
     if (id !== this.gameId || batch !== this.batch) return; // stale result after restart
     this.setTray(tray);
     this.busy = false;
