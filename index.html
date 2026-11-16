@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en" data-theme="pastel">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#fbf3e4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pocket Blocks">
+  <meta name="description" content="Pocket Blocks: a block puzzle on an 8 by 8 board. Place pieces and clear rows and columns.">
+  <title>Pocket Blocks</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/materials.css">
+  <link rel="stylesheet" href="styles/effects.css">
+  <link rel="stylesheet" href="styles/environments.css">
+</head>
+<body>
+  <div id="env" class="env" aria-hidden="true"></div>
+
+  <div id="app" class="app">
+    <header class="hud">
+      <button id="btn-settings" class="icon-btn" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.1 5.1-1.7-.3a6.8 6.8 0 0 1-.6 1.5l1 1.4a.9.9 0 0 1-.1 1.2l-1.1 1.1a.9.9 0 0 1-1.2.1l-1.4-1a6.8 6.8 0 0 1-1.5.6l-.3 1.7a.9.9 0 0 1-.9.8h-1.6a.9.9 0 0 1-.9-.8l-.3-1.7a6.8 6.8 0 0 1-1.5-.6l-1.4 1a.9.9 0 0 1-1.2-.1l-1.1-1.1a.9.9 0 0 1-.1-1.2l1-1.4a6.8 6.8 0 0 1-.6-1.5l-1.7-.3a.9.9 0 0 1-.8-.9v-1.6c0-.4.3-.8.8-.9l1.7-.3c.1-.5.3-1 .6-1.5l-1-1.4a.9.9 0 0 1 .1-1.2l1.1-1.1a.9.9 0 0 1 1.2-.1l1.4 1c.5-.3 1-.5 1.5-.6l.3-1.7c.1-.5.5-.8.9-.8h1.6c.4 0 .8.3.9.8l.3 1.7c.5.1 1 .3 1.5.6l1.4-1a.9.9 0 0 1 1.2.1l1.1 1.1c.3.3.4.8.1 1.2l-1 1.4c.3.5.5 1 .6 1.5l1.7.3c.5.1.8.5.8.9v1.6c0 .4-.3.8-.8.9Z"/></svg>
+      </button>
+      <div class="scores" aria-live="polite">
+        <div class="score"><span class="lbl">Score</span><span id="score" class="num">0</span></div>
+        <div class="best"><span class="lbl">Best</span><span id="best" class="num">0</span></div>
+      </div>
+      <button id="btn-help" class="icon-btn" type="button" aria-label="How to play">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 15.6a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.4-5.3c-.6.4-.7.6-.7 1.1v.3h-2v-.4c0-1.2.4-1.8 1.4-2.5.8-.5 1.1-.9 1.1-1.5 0-.7-.5-1.2-1.3-1.2-.8 0-1.4.5-1.5 1.4H8.3c.1-2 1.6-3.3 3.8-3.3 2.1 0 3.5 1.2 3.5 2.9 0 1.2-.6 2-1.6 2.7l-.6.5Z"/></svg>
+      </button>
+      <button id="btn-restart" class="icon-btn" type="button" aria-label="Restart">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4a8 8 0 0 0-7.7 5.9.9.9 0 1 0 1.7.5A6.2 6.2 0 1 1 7.6 16.6l1.6-.1a.9.9 0 0 0 0-1.8l-4 .2a.9.9 0 0 0-.9.9l.2 4a.9.9 0 0 0 1.8-.1l-.1-1.7A8 8 0 1 0 12 4Z"/></svg>
+      </button>
+    </header>
+
+    <main id="play" class="play">
+      <div id="board-area" class="board-area">
+        <div id="board-wrap" class="board-wrap">
+          <div id="board" class="board" role="grid" aria-label="Game board"></div>
+          <div id="fx" class="fx" aria-hidden="true"></div>
+        </div>
+      </div>
+      <div class="tray-head">
+        <span id="tray-title">Next Pieces</span>
+        <span id="tray-left">3 pieces left</span>
+      </div>
+      <div id="tray" class="tray"></div>
+      <div id="over-bar" class="over-bar" hidden>
+        <span>Game Over</span>
+        <button id="btn-again-bar" class="btn primary" type="button">Play Again</button>
+      </div>
+    </main>
+  </div>
+
+  <div id="ghost" class="ghost" aria-hidden="true"></div>
+
+  <!-- Game over -->
+  <div id="m-over" class="modal-back" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="over-title">
+      <h2 id="over-title">Game Over</h2>
+      <p class="sub">No more moves!</p>
+      <div class="final">
+        <div><span class="lbl">Score</span><span id="over-score" class="num big">0</span></div>
+        <div><span class="lbl">Best</span><span id="over-best" class="num">0</span></div>
+      </div>
+      <p id="over-newbest" class="newbest" hidden>New best score!</p>
+      <div class="row">
+        <button id="btn-view" class="btn" type="button">View Board</button>
+        <button id="btn-again" class="btn primary" type="button">Play Again</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Restart confirmation -->
+  <div id="m-confirm" class="modal-back" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Restart game?</h2>
+      <p class="sub">Your current score will be lost.</p>
+      <div class="row">
+        <button id="btn-keep" class="btn" type="button">Keep Playing</button>
+        <button id="btn-confirm-restart" class="btn primary" type="button">Restart</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help -->
+  <div id="m-help" class="modal-back" hidden>
+    <div class="modal scrollable" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <h2 id="help-title">How to Play</h2>
+      <ul class="help">
+        <li>Drag a piece from the tray onto the board. You can also tap a piece, then tap the board cell where its top-left block should go.</li>
+        <li>Pieces cannot be rotated.</li>
+        <li>Fill a whole row or column to clear it. Rows and columns clear at the same time.</li>
+        <li>You get three new pieces after all three are placed.</li>
+        <li>The game ends when none of the remaining pieces fit.</li>
+      </ul>
+      <h3>Scoring</h3>
+      <p class="sub">5 points per block placed, plus 80 &times; lines&sup2; for clears (1 line = 80, 2 lines = 320, 3 lines = 720).</p>
+      <h3>Keyboard</h3>
+      <p class="sub"><kbd>1</kbd>&ndash;<kbd>3</kbd> select a piece &middot; arrows aim &middot; <kbd>Enter</kbd>/<kbd>Space</kbd> place &middot; <kbd>Esc</kbd> cancel</p>
+      <div class="row"><button class="btn primary" data-close type="button">Got it</button></div>
+    </div>
+  </div>
+
+  <!-- Settings sheet -->
+  <div id="m-settings" class="modal-back sheet-back" hidden>
+    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+      <div class="sheet-head">
+        <h2 id="settings-title">Settings</h2>
+        <button id="btn-settings-done" class="btn small" type="button">Done</button>
+      </div>
+      <div class="tabs" role="tablist">
+        <button class="tab on" role="tab" data-tab="themes" aria-selected="true" type="button">Themes</button>
+        <button class="tab" role="tab" data-tab="sound" aria-selected="false" type="button">Sound</button>
+        <button class="tab" role="tab" data-tab="game" aria-selected="false" type="button">Game</button>
+      </div>
+      <div class="sheet-body scrollable">
+        <div class="pane" data-pane="themes">
+          <div id="theme-list" class="theme-list" role="listbox" aria-label="Themes"></div>
+          <div class="preview-bar">
+            <span id="theme-status" class="status">Classic Pastel is in use</span>
+            <div class="row tight">
+              <button id="btn-theme-cancel" class="btn small" type="button" hidden>Cancel</button>
+              <button id="btn-theme-use" class="btn small primary" type="button" disabled>Use Theme</button>
+            </div>
+          </div>
+          <div class="demo-box">
+            <div class="demo-board-wrap"><div id="demo-board" class="board demo"></div><div id="demo-fx" class="fx"></div></div>
+            <div class="demo-side">
+              <button id="btn-demo" class="btn small" type="button">Preview Effects</button>
+              <p class="note">Plays placement, clears, a combo, a board clear and game over on this small board only.</p>
+            </div>
+          </div>
+          <label class="toggle"><span>Auto-switch themes<small>Moves to the next theme after a full board clear</small></span><input id="opt-auto" type="checkbox"></label>
+          <label class="toggle"><span>Animated backgrounds<small>Gentle theme scenery behind the board</small></span><input id="opt-bg" type="checkbox"></label>
+        </div>
+        <div class="pane" data-pane="sound" hidden>
+          <label class="toggle"><span>Sound</span><input id="opt-sound" type="checkbox"></label>
+          <label class="slider"><span>Volume <output id="vol-out">70%</output></span><input id="opt-volume" type="range" min="0" max="100" step="1"></label>
+          <button id="btn-test-sound" class="btn" type="button">Test Sound</button>
+          <p class="note">Each theme has its own sounds. Sounds are generated in the browser; no audio files are downloaded.</p>
+        </div>
+        <div class="pane" data-pane="game" hidden>
+          <h3>Starting board</h3>
+          <div id="opt-mode" class="seg" role="radiogroup" aria-label="Starting board">
+            <button type="button" role="radio" data-mode="off">Off</button>
+            <button type="button" role="radio" data-mode="random">Random</button>
+            <button type="button" role="radio" data-mode="always">Always</button>
+          </div>
+          <p class="note" id="mode-note">Random: about one game in four starts with some blocks already on the board.</p>
+          <label class="select"><span>Variant</span><select id="opt-variant"></select></label>
+          <p class="note">Changes apply to the next game. Starting blocks score nothing until cleared.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>

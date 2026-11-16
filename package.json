@@ -1,0 +1,1 @@
+{"name":"pocket-blocks","private":true,"type":"module","scripts":{"test":"node tests/run.js","serve":"node tools/serve.js"}}

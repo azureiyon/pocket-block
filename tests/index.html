@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pocket Blocks Tests</title>
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/materials.css">
+  <link rel="stylesheet" href="../styles/effects.css">
+  <link rel="stylesheet" href="../styles/environments.css">
+  <style>
+    body { overflow: auto; font: 14px/1.4 ui-monospace, Menlo, Consolas, monospace; padding: 16px; background: #fff; color: #222; }
+    #out { white-space: pre-wrap; }
+    .fail { color: #b00; }
+    h1 { font: 700 20px system-ui; }
+  </style>
+</head>
+<body>
+  <h1>Pocket Blocks — browser tests</h1>
+  <p>Runs the shared logic suites plus DOM, layout and theme/variant checks. <span id="summary">Running…</span></p>
+  <div id="out"></div>
+  <script type="module">
+    import { runAll } from './harness.js';
+    import './rules.test.js';
+    import './generator.test.js';
+    import './openings.test.js';
+    import './game.test.js';
+    import './themes.test.js';
+    import './settings-audio.test.js';
+    import './dom.test.js';
+    const out = document.getElementById('out');
+    const log = (line) => { const d = document.createElement('div'); d.textContent = line; if (line.includes('FAIL')) d.className = 'fail'; out.appendChild(d); };
+    const filter = new URLSearchParams(location.search).get('filter');
+    const res = await runAll({ filter, log });
+    document.getElementById('summary').textContent = `${res.pass} passed, ${res.fail} failed`;
+    window.testResult = res;
+  </script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+/* Effects: previews, placement, clears, combos, celebrations, game over.
+   Every animation here is triggered by a real game event in effects.js. */
+
+/* ---------- placement preview ---------- */
+.cell.pv-ok::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  background: var(--pc); opacity: .5;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.7), 0 0 0 2px var(--ok);
+  animation: pv-breathe 1s ease-in-out infinite alternate;
+  z-index: 2;
+}
+.cell.pv-bad::after {
+  content: ""; position: absolute; inset: 0; border-radius: var(--radius);
+  background: repeating-linear-gradient(45deg, rgba(0,0,0,0) 0 4px, var(--bad) 4px 6px);
+  box-shadow: inset 0 0 0 2px var(--bad);
+  opacity: .75; z-index: 2;
+}
+.cell.pv-line > .blk { filter: brightness(1.18) saturate(1.1); box-shadow: 0 0 0 2px var(--glow); }
+.cell.pv-line:not(.pv) { box-shadow: inset 0 0 0 2px var(--glow); }
+@keyframes pv-breathe { from { opacity: .38; } to { opacity: .62; } }
+
+/* ---------- placement (per material) ---------- */
+.blk.fx-place { animation: place-pop .32s cubic-bezier(.3,1.6,.5,1) var(--d, 0ms) both; }
+@keyframes place-pop { 0% { transform: scale(.6); } 100% { transform: scale(1); } }
+.m-circuit.fx-place { animation: place-zap .34s ease-out var(--d, 0ms) both; }
+@keyframes place-zap { 0% { filter: brightness(3); transform: scale(.85); } 60% { filter: brightness(1.4); } 100% { filter: none; transform: none; } }
+.m-gel.fx-place { animation: place-squish .45s cubic-bezier(.3,1.5,.4,1) var(--d, 0ms) both; }
+@keyframes place-squish { 0% { transform: scale(1.25, .7); } 40% { transform: scale(.88, 1.14); } 70% { transform: scale(1.05, .96); } 100% { transform: none; } }
+.m-pearl.fx-place { animation: place-float .5s ease-out var(--d, 0ms) both; }
+@keyframes place-float { 0% { transform: translateY(-14%) scale(.9); opacity: .4; filter: blur(1px) brightness(1.2); } 100% { transform: none; opacity: 1; filter: none; } }
+.m-soda.fx-place { animation: place-fill .38s ease-out var(--d, 0ms) both; }
+@keyframes place-fill { 0% { clip-path: inset(100% 0 0 0); } 100% { clip-path: inset(0 0 0 0); } }
+.m-brass.fx-place { animation: place-stamp .26s cubic-bezier(.5,0,.6,1.4) var(--d, 0ms) both; }
+@keyframes place-stamp { 0% { transform: scale(1.18); filter: brightness(1.3); } 100% { transform: none; filter: none; } }
+.m-stone.fx-place { animation: place-sink .45s ease-out var(--d, 0ms) both; }
+@keyframes place-sink { 0% { transform: scale(1.12); opacity: .5; } 60% { transform: scale(.97); } 100% { transform: none; opacity: 1; } }
+.m-elixir.fx-place { animation: place-glow .5s ease-out var(--d, 0ms) both; }
+@keyframes place-glow { 0% { filter: brightness(1.8) saturate(1.4); transform: translateY(-8%); } 100% { filter: none; transform: none; } }
+.m-cake.fx-place { animation: place-plop .4s cubic-bezier(.3,1.4,.5,1) var(--d, 0ms) both; }
+@keyframes place-plop { 0% { transform: translateY(-20%) scaleY(1.1); } 60% { transform: scaleY(.9) scaleX(1.06); } 100% { transform: none; } }
+.m-abyss.fx-place { animation: place-bloom .6s ease-out var(--d, 0ms) both; }
+@keyframes place-bloom { 0% { filter: brightness(2.2); box-shadow: 0 0 20px var(--c); } 100% { filter: none; } }
+.m-wood.fx-place { animation: place-knock .3s cubic-bezier(.4,1.8,.5,1) var(--d, 0ms) both; }
+@keyframes place-knock { 0% { transform: translateY(-16%) rotate(-4deg); } 100% { transform: none; } }
+.m-glass.fx-place { animation: place-shine .45s ease-out var(--d, 0ms) both; }
+@keyframes place-shine { 0% { filter: brightness(1.9) saturate(.6); } 100% { filter: none; } }
+.m-aero.fx-place { animation: place-bubble .42s cubic-bezier(.3,1.6,.5,1) var(--d, 0ms) both; }
+@keyframes place-bubble { 0% { transform: scale(.5); opacity: .3; } 100% { transform: none; opacity: 1; } }
+.m-mahjong.fx-place { animation: place-clack .22s cubic-bezier(.6,0,.7,1.3) var(--d, 0ms) both; }
+@keyframes place-clack { 0% { transform: translateY(-18%) scale(1.06); } 85% { transform: translateY(2%); } 100% { transform: none; } }
+
+/* Board-level feedback */
+.board.squish { animation: board-nudge .28s ease-out; }
+@keyframes board-nudge { 40% { transform: scale(.992); } }
+[data-mat="gel"] .board.squish { animation: board-jelly .4s ease-out; }
+@keyframes board-jelly { 30% { transform: scale(1.012, .985); } 60% { transform: scale(.994, 1.008); } }
+.board.shake { animation: shake .32s ease; }
+@keyframes shake { 20% { transform: translateX(-5px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
+.board.pulse { animation: pulse .45s ease-out; }
+@keyframes pulse { 30% { transform: scale(1.018); filter: brightness(1.08); } }
+.board.celebrate { animation: celebrate 1.2s ease-out; }
+@keyframes celebrate { 15% { transform: scale(1.03); filter: brightness(1.2); } 40% { transform: scale(.99); } 100% { transform: none; filter: none; } }
+
+/* ---------- line clears: ghosts over the live board ---------- */
+.clear-ghost { position: absolute; z-index: 3; animation: clr-pop .5s ease-in var(--delay, 0ms) both; }
+.clear-ghost.multi { animation-duration: .62s; }
+@keyframes clr-pop { 0% { transform: scale(1); } 30% { transform: scale(1.18); filter: brightness(1.3); } 100% { transform: scale(0); opacity: 0; } }
+.clear-ghost.m-circuit { animation-name: clr-zap; }
+@keyframes clr-zap { 0% { filter: brightness(1); } 20% { filter: brightness(3); opacity: 1; } 35% { opacity: .3; } 50% { opacity: 1; } 100% { opacity: 0; transform: scale(.4); filter: brightness(4); } }
+.clear-ghost.m-gel { animation-name: clr-burst; }
+@keyframes clr-burst { 0% { transform: none; } 35% { transform: scale(1.25, .8); } 60% { transform: scale(.9, 1.2); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+.clear-ghost.m-pearl { animation-name: clr-mist; animation-duration: .8s; }
+@keyframes clr-mist { 0% { filter: none; } 40% { filter: blur(0) brightness(1.3); } 100% { transform: translateY(-40%) scale(1.3); opacity: 0; filter: blur(6px) brightness(1.5); } }
+.clear-ghost.m-soda { animation-name: clr-fizz; }
+@keyframes clr-fizz { 0% { transform: none; } 30% { transform: scale(1.08); } 100% { transform: translateY(-50%) scale(.3); opacity: 0; } }
+.clear-ghost.m-brass { animation-name: clr-drop; animation-timing-function: cubic-bezier(.5,0,1,.6); }
+@keyframes clr-drop { 0% { transform: none; } 25% { transform: translateY(-8%) rotate(-6deg); } 100% { transform: translateY(80%) rotate(25deg); opacity: 0; } }
+.clear-ghost.m-stone { animation-name: clr-sink; animation-duration: .7s; }
+@keyframes clr-sink { 0% { transform: none; } 100% { transform: scale(.55) translateY(20%); opacity: 0; filter: blur(3px) brightness(.6); } }
+.clear-ghost.m-elixir { animation-name: clr-vapor; animation-duration: .75s; }
+@keyframes clr-vapor { 0% { filter: none; } 30% { filter: brightness(2) saturate(1.4); } 100% { transform: translateY(-60%) scaleX(.6); opacity: 0; filter: blur(5px) brightness(2); } }
+.clear-ghost.m-cake { animation-name: clr-crumble; }
+@keyframes clr-crumble { 0% { transform: none; } 30% { transform: scaleY(.85) scaleX(1.08); } 100% { transform: translateY(60%) scale(.5) rotate(12deg); opacity: 0; } }
+.clear-ghost.m-abyss { animation-name: clr-glow; animation-duration: .8s; }
+@keyframes clr-glow { 0% { filter: none; } 30% { filter: brightness(2.5); box-shadow: 0 0 22px var(--c); } 100% { transform: translateY(-25%) scale(.7); opacity: 0; filter: blur(4px); } }
+.clear-ghost.m-wood { animation-name: clr-flip; }
+@keyframes clr-flip { 0% { transform: none; } 45% { transform: perspective(200px) rotateY(90deg) translateY(-10%); } 100% { transform: perspective(200px) rotateY(180deg) translateY(70%); opacity: 0; } }
+.clear-ghost.m-glass { animation-name: clr-shatter; }
+@keyframes clr-shatter { 0% { filter: none; } 25% { filter: brightness(2.2) saturate(1.3); } 100% { transform: scale(.7) rotate(14deg); opacity: 0; filter: brightness(2.5); clip-path: polygon(10% 0, 100% 20%, 80% 100%, 0 70%); } }
+.clear-ghost.m-aero { animation-name: clr-bubble; }
+@keyframes clr-bubble { 0% { transform: none; } 40% { transform: scale(1.22); filter: brightness(1.25); } 100% { transform: scale(1.5); opacity: 0; filter: blur(3px); } }
+.clear-ghost.m-mahjong { animation-name: clr-tile; animation-duration: .6s; }
+@keyframes clr-tile { 0% { transform: none; } 40% { transform: perspective(200px) rotateX(80deg); filter: hue-rotate(100deg) saturate(2) brightness(.7); } 100% { transform: perspective(200px) rotateX(160deg) translateY(-40%); opacity: 0; } }
+
+/* Line sweeps */
+.sweep { position: absolute; z-index: 4; border-radius: 8px; overflow: hidden; pointer-events: none; }
+.sweep::before { content: ""; position: absolute; inset: 0; }
+.sweep.h::before { background: linear-gradient(90deg, transparent, var(--sweep), transparent); animation: sweep-h .5s ease-out both; }
+.sweep.v::before { background: linear-gradient(180deg, transparent, var(--sweep), transparent); animation: sweep-v .5s ease-out both; }
+@keyframes sweep-h { from { transform: translateX(-100%); } to { transform: translateX(100%); opacity: .2; } }
+@keyframes sweep-v { from { transform: translateY(-100%); } to { transform: translateY(100%); opacity: .2; } }
+[data-mat="glass"] .sweep::before, [data-mat="pearl"] .sweep::before { filter: blur(3px); }
+[data-mat="glass"] .sweep.h::before { background: linear-gradient(90deg, transparent, rgba(255,80,80,.6), rgba(255,220,80,.7), rgba(80,255,140,.6), rgba(80,160,255,.6), transparent); }
+[data-mat="circuit"] .sweep { box-shadow: 0 0 12px var(--sweep); }
+
+/* ---------- labels ---------- */
+.fx-label {
+  position: absolute; left: 50%; top: 42%; z-index: 8;
+  transform: translate(-50%, -50%); white-space: nowrap;
+  font-weight: 900; font-size: calc(var(--bsize) * 0.085); color: #fff;
+  text-shadow: 0 2px 0 rgba(0,0,0,.25), 0 0 14px var(--accent), 0 0 2px var(--accent);
+  animation: label-rise 1.1s ease-out both; pointer-events: none;
+}
+.fx-label.pts { font-size: calc(var(--bsize) * 0.05); color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.7); animation: pts-rise .8s ease-out both; }
+:root.dark .fx-label.pts { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+.fx-label.combo { font-size: calc(var(--bsize) * 0.06); color: var(--accent-ink); background: var(--accent); padding: 4px 12px; border-radius: 999px; text-shadow: none; box-shadow: 0 4px 12px rgba(0,0,0,.2); animation: combo-pop 1.2s cubic-bezier(.3,1.6,.5,1) both; }
+.fx-label.combo.lvl3 { transform-origin: center; animation-duration: 1.3s; }
+.fx-label.combo.lvl4, .fx-label.combo.lvl5 { box-shadow: 0 0 0 3px #fff, 0 0 18px var(--glow); }
+.fx-label.allclear { font-size: calc(var(--bsize) * 0.1); top: 50%; animation: allclear 1.7s cubic-bezier(.3,1.5,.5,1) both; }
+@keyframes label-rise { 0% { opacity: 0; transform: translate(-50%, -30%) scale(.7); } 20% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); } 75% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -90%) scale(1); } }
+@keyframes pts-rise { 0% { opacity: 0; transform: translate(-50%, -20%); } 25% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -140%); } }
+@keyframes combo-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.3); } 25% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); } 80% { opacity: 1; transform: translate(-50%, -70%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -100%); } }
+@keyframes allclear { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.2) rotate(-8deg); } 30% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(2deg); } 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -60%) scale(1.05); } }
+
+.celebrate-ring { position: absolute; left: 50%; top: 50%; width: 30%; height: 30%; border-radius: 50%; border: 6px solid var(--glow); transform: translate(-50%, -50%); animation: ring 1.2s ease-out both; z-index: 6; }
+@keyframes ring { 0% { opacity: 1; transform: translate(-50%, -50%) scale(.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(4); border-width: 1px; } }
+[data-mat="glass"] .celebrate-ring { border-color: transparent; background: conic-gradient(from 0deg, rgba(255,80,80,.0), rgba(255,220,120,.5), rgba(120,200,255,.0), rgba(180,120,255,.5), rgba(255,80,80,0)); }
+[data-mat="mahjong"] .celebrate-ring { border-color: #e8c46a; border-style: double; border-width: 8px; }
+
+/* ---------- game over ---------- */
+.board.is-over .blk { animation: settle .6s ease-out calc(var(--i, 0) * 8ms) both; }
+.board.is-over .cell { transition: filter .6s; }
+@keyframes settle { to { filter: grayscale(.75) brightness(.82); transform: scale(.94); } }
+[data-mat="circuit"] .board.is-over .blk { animation-name: settle-neon; }
+@keyframes settle-neon { 30% { opacity: .3; } 50% { opacity: .9; } to { filter: grayscale(.9) brightness(.55); box-shadow: none; } }
+[data-mat="stone"] .board.is-over .blk, [data-mat="abyss"] .board.is-over .blk { animation-name: settle-water; }
+@keyframes settle-water { to { filter: grayscale(.6) brightness(.55) blur(.6px); transform: scale(.92); } }
+[data-mat="mahjong"] .board.is-over .blk { animation-name: settle-tile; }
+@keyframes settle-tile { to { filter: sepia(.4) brightness(.75); transform: perspective(200px) rotateX(18deg) scale(.95); } }
+.cell .blk { --i: inherit; }
+
+/* ---------- particles ---------- */
+.pt { position: absolute; left: 0; top: 0; z-index: 7; pointer-events: none; will-change: transform, opacity; transform: translate(-50%, -50%); }
+.pt-confetti { border-radius: 2px; }
+.pt-spark { width: 2px; height: 14px; border-radius: 2px; }
+.pt-bubble { border-radius: 50%; border: 2px solid; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9) 0 18%, rgba(255,255,255,.15) 30%, transparent 70%); }
+.pt-mist { border-radius: 50%; filter: blur(4px); }
+.pt-fizz { border-radius: 50%; background: rgba(255,255,255,.95); box-shadow: 0 0 0 1px rgba(200,120,90,.35); }
+.pt-cog { border-radius: 50%; background: radial-gradient(circle, transparent 0 22%, var(--pc) 24% 58%, transparent 60%), conic-gradient(var(--pc) 0 10%, transparent 10% 20%, var(--pc) 20% 30%, transparent 30% 40%, var(--pc) 40% 50%, transparent 50% 60%, var(--pc) 60% 70%, transparent 70% 80%, var(--pc) 80% 90%, transparent 90%); filter: drop-shadow(0 1px 0 rgba(0,0,0,.4)); }
+.pt-droplet { width: 5px; height: 7px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+.pt-vapor { border-radius: 50%; filter: blur(5px); }
+.pt-crumb { }
+.pt-glow { border-radius: 50%; }
+.pt-chip { border-radius: 1px; }
+.pt-shard { clip-path: polygon(50% 0, 100% 100%, 0 80%); }
+.pt-orb { border-radius: 50%; background: radial-gradient(circle at 32% 28%, #fff 0 16%, var(--pc) 45%, rgba(0,60,120,.35) 100%); box-shadow: 0 0 0 1px rgba(255,255,255,.7); }
+.pt-tile { border-radius: 2px; background: linear-gradient(180deg, #fffbf1 0 70%, #2f9466 72%); box-shadow: 0 1px 2px rgba(0,0,0,.4); }
+
+@media (prefers-reduced-motion: reduce) {
+  .blk.fx-place, .clear-ghost, .board.squish, .board.shake, .board.pulse, .board.celebrate { animation-duration: .01ms !important; }
+  .clear-ghost { animation: clr-fade .25s linear both !important; }
+  .fx-label { animation: clr-fade-in 1.1s linear both !important; }
+  .cell.pv-ok::after { animation: none; }
+  .celebrate-ring, .sweep { display: none; }
+  @keyframes clr-fade { to { opacity: 0; } }
+  @keyframes clr-fade-in { 0%, 100% { opacity: 0; } 15%, 80% { opacity: 1; } }
+}
