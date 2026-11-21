@@ -1,12 +1,22 @@
 // Procedural audio engine (Web Audio). No samples are bundled: every sound
 // is synthesised from short cached noise buffers, oscillators and modal
 // resonator partials. Sounds are only ever scheduled "now" on a running
-// context, so nothing stale is queued while the context is suspended.
+// context. The one exception: while a gesture is waking the context up
+// (resume() is asynchronous in Safari), that gesture's sounds are held for a
+// moment and played as soon as it runs. Anything older is dropped.
+//
+// Safari/iOS recovery: after the page was hidden (lock screen, app switch)
+// or the context was interrupted (Siri, a call), the next gesture builds a
+// fresh context instead of resuming the old one, and a context whose clock
+// has stopped while it claims to be running is replaced as well.
 
 import { KITS } from './kits.js';
 
 export const MAX_VOICES = 36;
 export const MAX_CACHED_BUFFERS = 12;
+export const RESUME_HOLD_MS = 350; // how long sounds wait for an in-flight resume
+const MAX_HELD = 6;
+const now = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
 
 export class AudioEngine {
   constructor({ settings, AudioContextClass, doc } = {}) {
@@ -24,6 +34,10 @@ export class AudioEngine {
     this.played = 0;
     this.dropped = 0;
     this.cleanup = [];
+    this.held = [];       // sounds waiting for an in-flight resume
+    this.resumeAt = 0;    // when the current resume was requested (0 = none)
+    this.needsFresh = false;
+    this.probe = null;    // { wall, t } last clock check, to spot a stuck context
   }
 
   /** Attach unlock/recovery listeners. Returns a disposer. */
@@ -60,6 +74,14 @@ export class AudioEngine {
       master.gain.value = this.effectiveGain();
       master.connect(comp); comp.connect(ctx.destination);
       this.ctx = ctx; this.master = master; this.buffers.clear(); this.voices = [];
+      this.unlockedOnce = false; this.probe = null;
+      ctx.onstatechange = () => {
+        if (this.ctx !== ctx) return;
+        if (ctx.state === 'running') this.flushHeld();
+        // iOS: Siri, calls and other apps leave the context "interrupted";
+        // a fresh one on the next gesture is more reliable than resuming it.
+        else if (ctx.state === 'interrupted') this.needsFresh = true;
+      };
       return ctx;
     } catch (e) { this.ctx = null; return null; }
   }
@@ -68,10 +90,14 @@ export class AudioEngine {
 
   /** Must run inside a user gesture on iOS Safari. */
   unlock() {
+    const t = now();
+    if (this.ctx && this.ctx.state !== 'closed' && (this.needsFresh || this.isStuck(t))) this.discardContext();
+    this.needsFresh = false;
     if (!this.ctx || this.ctx.state === 'closed') this.createContext();
     const ctx = this.ctx;
     if (!ctx) return;
-    if (ctx.state !== 'running') { try { const p = ctx.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) { /* ignore */ } }
+    if (ctx.state !== 'running') this.startResume(t);
+    this.probe = { wall: t, t: ctx.currentTime };
     if (!this.unlockedOnce) {
       try {
         const b = ctx.createBuffer(1, 1, 22050);
@@ -81,7 +107,41 @@ export class AudioEngine {
     }
   }
 
+  /** A context that says "running" but whose clock has not moved is stuck (an iOS bug). */
+  isStuck(t) {
+    const ctx = this.ctx; const p = this.probe;
+    return !!(ctx && p && ctx.state === 'running' && t - p.wall > 600 && ctx.currentTime === p.t);
+  }
+
+  discardContext() {
+    this.stopAll();
+    this.held = []; this.resumeAt = 0;
+    const old = this.ctx; this.ctx = null; this.master = null;
+    if (old) { old.onstatechange = null; try { const p = old.close(); if (p && p.catch) p.catch(() => {}); } catch (e) { /* ignore */ } }
+  }
+
+  startResume(t) {
+    const ctx = this.ctx;
+    this.resumeAt = t;
+    try {
+      const p = ctx.resume();
+      if (p && p.then) p.then(() => { if (this.ctx === ctx) this.flushHeld(); }, () => { if (this.ctx === ctx) { this.resumeAt = 0; this.held = []; } });
+    } catch (e) { this.resumeAt = 0; }
+  }
+
+  /** Play sounds held during a resume, if they are still fresh. */
+  flushHeld() {
+    const held = this.held; this.held = []; this.resumeAt = 0;
+    if (!this.ctx || this.ctx.state !== 'running') return;
+    const t = now();
+    for (const h of held) if (t - h.at <= RESUME_HOLD_MS) this.play(h.event, h.params, h.kit);
+  }
+
   suspend() {
+    // Coming back from the background, build a fresh context on the next
+    // gesture: iOS often leaves the old one silent even when it "resumes".
+    this.needsFresh = true;
+    this.held = []; this.resumeAt = 0;
     this.stopAll();
     if (this.ctx && this.ctx.state === 'running') { try { this.ctx.suspend(); } catch (e) { /* ignore */ } }
   }
@@ -106,7 +166,14 @@ export class AudioEngine {
   play(event, params = {}, kitOverride) {
     if (!this.enabled || this.volume <= 0) return false;
     const ctx = this.ctx;
-    if (!ctx || ctx.state !== 'running') { this.dropped++; this.recover(); return false; }
+    if (!ctx || ctx.state !== 'running') {
+      const t = now();
+      if (ctx && this.resumeAt && t - this.resumeAt <= RESUME_HOLD_MS && this.held.length < MAX_HELD) {
+        this.held.push({ event, params, kit: kitOverride, at: t });
+        return false;
+      }
+      this.dropped++; this.recover(); return false;
+    }
     const kit = KITS[kitOverride || this.kitId] || KITS.pastel;
     const fn = kit[event] || KITS.pastel[event];
     if (!fn) return false;

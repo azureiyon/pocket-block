@@ -97,6 +97,65 @@ test('audio: unlock on gesture, sounds dropped (not queued) while suspended', ()
   a.unlock(); assert(a.ctx && a.ctx !== ctx && a.ctx.state === 'running', 'new context created on next gesture');
 });
 
+// Safari-like context: resume() settles later, and state changes fire onstatechange.
+class SlowAudioContext extends FakeAudioContext {
+  resume() { return new Promise((r) => setTimeout(() => { this.state = 'running'; if (this.onstatechange) this.onstatechange(); r(); }, 20)); }
+}
+
+test('audio (Safari): the gesture that wakes the context still makes its sound', async () => {
+  const a = new AudioEngine({ settings: new Settings(memoryStorage()), AudioContextClass: SlowAudioContext, doc: { hidden: false, ...fakeTarget() } });
+  a.unlock(); // pointerdown: resume requested, not running yet
+  const ctx = a.ctx;
+  eq(ctx.state, 'suspended');
+  a.play('place'); // the drop happens in the same gesture
+  eq(ctx.sources.filter((x) => x.started).length, 1, 'only the silent unlock buffer so far');
+  await new Promise((r) => setTimeout(r, 40));
+  assert(ctx.sources.filter((x) => x.started).length > 1, 'held sound played once running');
+  eq(a.held.length, 0);
+});
+
+test('audio (Safari): sounds are not held without a fresh resume, and stale ones are dropped', async () => {
+  const a = new AudioEngine({ settings: new Settings(memoryStorage()), AudioContextClass: SlowAudioContext, doc: { hidden: false, ...fakeTarget() } });
+  a.unlock();
+  await new Promise((r) => setTimeout(r, 40));
+  const ctx = a.ctx; const started = ctx.started;
+  ctx.state = 'suspended'; // suspended with no gesture in flight
+  a.play('clear', { lines: 2 });
+  eq(a.held.length, 0, 'nothing queued without an in-flight resume');
+  ctx.state = 'running'; ctx.onstatechange();
+  eq(ctx.started, started, 'nothing stale replayed');
+});
+
+test('audio (Safari): after the page was hidden or interrupted, the next gesture builds a fresh context', async () => {
+  const doc = { hidden: false, ...fakeTarget() };
+  const a = new AudioEngine({ settings: new Settings(memoryStorage()), AudioContextClass: FakeAudioContext, doc });
+  a.unlock();
+  const first = a.ctx;
+  doc.hidden = true; a.suspend(); doc.hidden = false; a.recover();
+  a.unlock();
+  assert(a.ctx !== first && first.state === 'closed', 'hidden -> fresh context');
+  assert(a.ctx.state === 'running' && a.play('place'), 'fresh context plays');
+  const second = a.ctx;
+  second.state = 'interrupted'; second.onstatechange();
+  a.unlock();
+  assert(a.ctx !== second && a.ctx.state === 'running', 'interrupted -> fresh context');
+  a.unlock(); const third = a.ctx; a.unlock();
+  assert(a.ctx === third, 'repeated gesture events keep a healthy context');
+});
+
+test('audio (Safari): a running context whose clock has stopped is replaced', () => {
+  const a = new AudioEngine({ settings: new Settings(memoryStorage()), AudioContextClass: FakeAudioContext, doc: { hidden: false, ...fakeTarget() } });
+  a.unlock();
+  const ctx = a.ctx;
+  a.probe = { wall: a.probe.wall - 1000, t: ctx.currentTime }; // a second ago, clock unchanged
+  a.unlock();
+  assert(a.ctx !== ctx, 'stuck context replaced');
+  const fresh = a.ctx;
+  fresh.currentTime = 5; a.probe = { wall: a.probe.wall - 1000, t: 1 };
+  a.unlock();
+  assert(a.ctx === fresh, 'a moving clock is healthy');
+});
+
 test('audio: every kit plays every event within voice limits', () => {
   const a = new AudioEngine({ settings: new Settings(memoryStorage()), AudioContextClass: FakeAudioContext, doc: { hidden: false, ...fakeTarget() } });
   a.unlock();
