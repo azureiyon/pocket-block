@@ -257,3 +257,19 @@ kbd { font: inherit; font-size: 13px; padding: 1px 6px; border-radius: 6px; bord
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; }
 }
+
+/* ---------- Blast mode: streak meter ---------- */
+.seg.two { grid-template-columns: repeat(2, 1fr); }
+.streak { display: flex; flex-direction: column; align-items: center; min-width: 54px; }
+.streak[hidden] { display: none; }
+.streak-row { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.streak .num { font-size: 18px; color: var(--accent); line-height: 1.1; }
+.streak.hot .num { animation: bump .45s ease; }
+.pips { display: flex; gap: 4px; }
+.pips i { width: 7px; height: 7px; border-radius: 50%; background: var(--panel-edge); transition: background .2s, transform .2s; }
+.pips i.on { background: var(--accent); }
+.streak.last .pips i.on { animation: pip-warn .7s ease-in-out infinite alternate; }
+@keyframes pip-warn { to { transform: scale(1.45); filter: brightness(1.25); } }
+@media (prefers-reduced-motion: reduce) { .streak.last .pips i.on, .streak.hot .num { animation: none; } }
+.seg button:disabled { opacity: .4; cursor: default; }
+:root[data-mode="blast"] #tray-title { color: var(--accent); }

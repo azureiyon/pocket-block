@@ -3,6 +3,7 @@ import { runAll } from './harness.js';
 import './rules.test.js';
 import './generator.test.js';
 import './generator-rhythm.test.js';
+import './generator-blast.test.js';
 import './openings.test.js';
 import './game.test.js';
 import './themes.test.js';

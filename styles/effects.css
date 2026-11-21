@@ -165,3 +165,25 @@
   @keyframes clr-fade { to { opacity: 0; } }
   @keyframes clr-fade-in { 0%, 100% { opacity: 0; } 15%, 80% { opacity: 1; } }
 }
+
+/* ---------- Blast mode labels ---------- */
+.fx-label.blast-pts { font-size: calc(var(--bsize) * 0.075); color: #fff; z-index: 9;
+  text-shadow: 0 2px 0 rgba(0,0,0,.3), 0 0 10px var(--accent), 0 0 22px var(--glow);
+  animation: blast-pop 1s cubic-bezier(.25,1.7,.5,1) both; }
+.fx-label.blast-pts small { font-size: .5em; margin-left: .25em; opacity: .9; vertical-align: .35em; }
+.fx-label.blast-pts.big { font-size: calc(var(--bsize) * 0.1); }
+.fx-label.praise { top: 30%; font-size: calc(var(--bsize) * 0.09); animation: allclear 1.3s cubic-bezier(.3,1.5,.5,1) both; }
+.fx-label.praise.lvl3 { font-size: calc(var(--bsize) * 0.105); }
+.fx-label.praise.lvl4 { font-size: calc(var(--bsize) * 0.12); text-shadow: 0 3px 0 rgba(0,0,0,.3), 0 0 18px var(--glow), 0 0 4px #fff; }
+.fx-label.wipe { top: 58%; font-size: calc(var(--bsize) * 0.07); color: var(--accent-ink); background: var(--accent); padding: 4px 14px; border-radius: 999px;
+  text-shadow: none; box-shadow: 0 0 0 3px #fff, 0 6px 18px rgba(0,0,0,.25); animation: combo-pop 1.4s cubic-bezier(.3,1.6,.5,1) both; }
+.fx-label.combo.lvl6, .fx-label.combo.lvl7, .fx-label.combo.lvl8 { font-size: calc(var(--bsize) * 0.075); box-shadow: 0 0 0 3px #fff, 0 0 26px var(--glow); }
+.fx-label.streak-end { top: 50%; font-size: calc(var(--bsize) * 0.05); color: var(--ink); text-shadow: 0 1px 0 rgba(255,255,255,.6); animation: pts-rise 1.2s ease-out both; }
+:root.dark .fx-label.streak-end { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+@keyframes blast-pop { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.3); } 22% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); } 40% { transform: translate(-50%, -55%) scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -120%) scale(.95); } }
+.board.wipe { animation: wipe-flash .6s ease-out; }
+@keyframes wipe-flash { 25% { filter: brightness(1.25) saturate(1.2); transform: scale(1.02); } }
+/* Blast feels snappier: quicker clear ghosts. */
+:root[data-mode="blast"] .clear-ghost { animation-duration: .38s; }
+:root[data-mode="blast"] .clear-ghost.multi { animation-duration: .46s; }
+@media (prefers-reduced-motion: reduce) { .board.wipe { animation: none; } }

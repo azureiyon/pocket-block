@@ -9,6 +9,10 @@ export const MAX_PARTICLES = 90;
 
 const R = (a, b) => a + Math.random() * (b - a);
 
+// Blast mode praise by lines in one move, and for long streaks.
+const PRAISE = [null, null, 'Great!', 'Amazing!', 'Unreal!', 'Legendary!'];
+const STREAK_PRAISE = ['On Fire!', 'Unstoppable!', 'Godlike!'];
+
 // Particle kinds: element styling + trajectory. Each theme names one kind.
 const KINDS = {
   confetti: { dur: [700, 1000], make: (el, col) => { el.style.background = col; el.style.width = R(5, 9) + 'px'; el.style.height = R(4, 6) + 'px'; }, motion: () => ({ dx: R(-70, 70), dy: R(-70, -20), g: 120, rot: R(-540, 540), s0: 1, s1: 0.8 }) },
@@ -131,7 +135,8 @@ export class Effects {
     void this.board.el.offsetWidth;
     this.board.el.classList.add('squish');
     this.later(() => this.board.el.classList.remove('squish'), 320);
-    this.label('+' + move.points, 'pts', { x: c.x, y: c.y - 10 }, 800);
+    // Blast clears get their own big score pop (see blast()).
+    if (!(move.mode === 'blast' && move.lines)) this.label('+' + move.points, 'pts', { x: c.x, y: c.y - 10 }, 800);
   }
 
   clear(move) {
@@ -166,7 +171,7 @@ export class Effects {
     const pts = [...move.rows.map((r) => r * 8 + 3), ...move.cols.map((c) => 24 + c)];
     for (const i of pts) { const b = this.board.cellBox(i, this.layer); this.later(() => this.spawn(b.x + b.w, b.y + b.h / 2, perLine, colors), 60); }
     if (multi) {
-      this.label(move.lines + ' Lines!', 'multi');
+      if (move.mode !== 'blast') this.label(move.lines + ' Lines!', 'multi');
       this.board.el.classList.remove('shake'); void this.board.el.offsetWidth;
       this.board.el.classList.add('pulse');
       this.later(() => this.board.el.classList.remove('pulse'), 500);
@@ -175,7 +180,37 @@ export class Effects {
 
   combo(move) {
     const c = this.centerOf(move.placed);
-    this.label('Combo ×' + move.combo, 'combo lvl' + Math.min(move.combo, 5), { x: c.x, y: c.y - 44 }, 1200);
+    const cap = move.mode === 'blast' ? 8 : 5;
+    this.label('Combo ×' + move.combo, 'combo lvl' + Math.min(move.combo, cap), { x: c.x, y: c.y - 44 }, 1200);
+  }
+
+  /** Blast mode: big multiplied score pop, praise, colour wipes. */
+  blast(move) {
+    if (!move.lines || !move.parts) return;
+    const theme = this.getTheme();
+    const c = this.centerOf(move.placed);
+    const p = move.parts;
+    const gained = p.clear + p.wipe + p.board;
+    const el = this.label('+' + gained, 'blast-pts' + (gained >= 500 ? ' big' : ''), { x: c.x, y: c.y + 22 }, 1000);
+    if (p.mult > 1) { const m = document.createElement('small'); m.textContent = '×' + p.mult; el.appendChild(m); }
+    const praise = move.allClear ? null : PRAISE[Math.min(move.lines, PRAISE.length - 1)] || (move.combo >= 5 ? STREAK_PRAISE[Math.min(Math.floor(move.combo / 5) - 1, STREAK_PRAISE.length - 1)] : null);
+    if (praise && (move.lines >= 2 || move.combo % 5 === 0)) this.label(praise, 'praise lvl' + Math.min(move.lines + 1, 4), null, 1300);
+    if (move.wiped && move.wiped.length) {
+      const n = move.wiped.length;
+      this.later(() => {
+        this.label(n > 1 ? n + ' Colours Wiped!' : 'Colour Wipe!', 'wipe', null, 1400);
+        this.board.el.classList.remove('wipe'); void this.board.el.offsetWidth;
+        this.board.el.classList.add('wipe');
+        this.later(() => this.board.el.classList.remove('wipe'), 650);
+        const box = this.layer.getBoundingClientRect();
+        this.spawn(box.width / 2, box.height * 0.58, 10 + 6 * n, move.wiped.map((col) => theme.palette[(col - 1) % 7]));
+      }, 220);
+    }
+  }
+
+  streakEnd(n) {
+    if (n < 3) return;
+    this.label('Streak ×' + n + ' ended', 'streak-end', null, 1200);
   }
 
   allClear() {

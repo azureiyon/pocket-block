@@ -5,6 +5,7 @@ import { placementsOf, fits, applyPlacement, anyFits, findSequence, popcount } f
 import { getShape } from '../../src/core/shapes.js';
 import { features } from '../../src/core/boardeval.js';
 import { STRATEGIES, regions } from './bots.js';
+import { MODES, BLAST_STREAK_WINDOW } from '../../src/core/modes.js';
 
 const ALL_LINES = Array.from({ length: 16 }, (_, k) => k);
 const VIABLE_CAP = 30;
@@ -31,11 +32,14 @@ export function playGame({ gen, strategy, seed, cap = 600 }) {
   const genRng = createRng((Math.imul(seed, 2654435761) ^ 0x51ed27) >>> 0);
   const botRng = createRng((Math.imul(seed, 40503) ^ 0xbeef) >>> 0);
   let lo = 0; let hi = 0; let recent = [];
-  const ctx = { traysSinceClear: 0, lastTrayLines: 0, movesSinceClear: 0 };
+  const ctx = { traysSinceClear: 0, lastTrayLines: 0, movesSinceClear: 0, combo: 0 };
+  // Streaks are measured under Blast rules for every generator, so the
+  // numbers compare like with like. Colours are not simulated (no wipes).
+  let streak = 0; let streakGap = 0;
   const m = {
     gen, strategy, seed, moves: 0, trays: 0, score: 0, clearMoves: 0, lines: 0, multiMoves: 0, allClears: 0,
     gaps: [], occ: [], shapes: {}, triples: {}, dupTrays: 0, limitedTrays: 0, clearAvailTrays: 0,
-    viable: [], moods: {}, highEpisodes: 0, recovered: 0, capped: false, death: null, trayLinesHist: [0, 0, 0, 0],
+    viable: [], moods: {}, blastScore: 0, maxStreak: 0, streakClears: 0, streaks: [], firstClearMove: null, highEpisodes: 0, recovered: 0, capped: false, death: null, trayLinesHist: [0, 0, 0, 0],
   };
   let sinceClear = 0; let inHigh = false;
   while (true) {
@@ -76,6 +80,11 @@ export function playGame({ gen, strategy, seed, cap = 600 }) {
       const lines = r.lines.length;
       m.score += 5 * blocks + 80 * lines * lines;
       sinceClear++;
+      if (lines) { streak++; streakGap = 0; if (m.firstClearMove === null) m.firstClearMove = m.moves; } else if (++streakGap >= BLAST_STREAK_WINDOW && streak) { m.streaks.push(streak); streak = 0; }
+      if (lines && streak >= 3) m.streakClears++;
+      m.maxStreak = Math.max(m.maxStreak, streak);
+      m.blastScore += MODES.blast.score({ blocks, lines, combo: streak, wiped: 0, allClear: lines > 0 && lo === 0 && hi === 0 }).points;
+      ctx.combo = streak; ctx.movesSinceClear = streakGap;
       if (lines) {
         m.clearMoves++; m.lines += lines; trayLines += lines;
         if (lines >= 2) m.multiMoves++;
@@ -96,6 +105,8 @@ export function playGame({ gen, strategy, seed, cap = 600 }) {
 }
 
 function finish(m) {
+  if (m.streaks) m.streakMean = m.streaks.length ? m.streaks.reduce((a, b) => a + b, 0) / m.streaks.length : 0;
+  delete m.streaks;
   // Keep payloads small: summarise occupancy.
   const occ = m.occ;
   m.occMean = occ.length ? occ.reduce((a, b) => a + b, 0) / occ.length : 0;

@@ -9,6 +9,37 @@ A mobile-first block puzzle on an 8×8 board, written in vanilla HTML, CSS and J
 - Keyboard: `1`–`3` select a piece, arrow keys aim, `Enter`/`Space` place, `Esc` cancels.
 - 14 themes, each with its own block material, environment, particles, motion and synthesized sound kit.
 - Optional starting boards (Settings → Game): Off, Random (the default, a 25% chance) or Always. You can also pick a variant: Scattered Start, Almost There or Corner Trouble.
+- **Blast mode** (Settings → Game → Game mode, or open the game with `?mode=blast`): a faster, more generous version built around quick clears and long combo streaks. See [Blast mode](#blast-mode) below.
+
+## Blast mode
+
+Classic is a slow, methodical puzzle. Blast is built for a steady stream of clears and big numbers. Its design is based on observations from reference gameplay footage of a commercial block puzzle: combo counts that carry through misses, clear values that scale with the combo, trays that slot straight into gaps, and a bonus for clearing out a colour.
+
+| | Classic | Blast |
+|---|---|---|
+| Trays | `rhythm` generator (paced build-up and tension) | `blast` generator (clear-hungry, see below) |
+| Combo streak | Ends on any move that clears nothing | Survives up to **3** moves without a clear |
+| Line clear | 80 × lines² | 20 / 60 / 120 / 200 / 300 for 1–5 lines, **× streak** |
+| Blocks placed | 5 each | 1 each |
+| Colour Wipe | – | Clearing the last blocks of a colour already on the board: 50 × streak per colour |
+| Board Clear | Celebration only | 300 × streak |
+| Colours | 7 | 5, so wipes actually happen |
+| Starting boards | Off / Random / Always | Always empty |
+| Best score | `best` | Kept separately (`bestBlast`) |
+
+The HUD shows the streak multiplier and a three-dot meter of moves left before it breaks. The last dot pulses as a warning. Clears get a big multiplied score pop, praise for multi-line clears and every fifth streak level, and a Colour Wipe banner. Clear animations are a little quicker.
+
+**The `blast` generator** (`src/core/generator-blast.js`):
+
+1. Shape weights favour pieces that finish lines (4- and 5-long bars, 2×2, 2×3, 3×3) over awkward ones (zigzags, T's). As the board gets crowded or fragmented, they shift towards smaller pieces.
+2. It drafts about 16 candidates: weighted random trays, twins, "tiling" trays whose spans add up to 8, and, when lines are nearly full, trays built around pieces that complete them.
+3. Every candidate must pass the shared whole-tray `findSequence` check. A beam search then measures the best plan's total lines, how many separate moves clear (what keeps a streak alive), whether the first piece clears immediately, and how open the board is afterwards.
+4. Scoring rewards clear cadence, instant clears and openness. It penalises razor-thin trays (≤ 4 viable first moves) and big pieces with almost nowhere to go. When a streak is about to break, trays that can clear on the first move are strongly preferred.
+5. It picks by softmax, with a small share of random picks. Generosity eases off slowly over about 70 trays (by tray count, never score), so strong runs still end. Nothing guarantees a clear.
+
+Simulation, 300 seeds per strategy, Blast rules scoring applied to both (`tools/sim/results/blast-vs-rhythm.md`):
+
+See the results file for the full comparison.
 
 ## Running locally
 
@@ -39,6 +70,7 @@ What the suites cover:
 | Collision, bounds, simultaneous row/column clears, scoring | `tests/rules.test.js` |
 | Whole-tray solvability (pieces that fit alone but not together), clears between simulated moves, recency ordering, uniform orientation weighting, constructive fallback | `tests/rules.test.js`, `tests/generator.test.js` |
 | 100 accepted seeded boards per variant with accepted/rejected counts, layout constraints, opening-batch sequence, Almost There early clear, bounded fallback that keeps the same tray, Off mode matching normal generation, reproducibility, fresh layouts | `tests/openings.test.js` |
+| Blast generator (solvability, clear bias vs rhythm, streak rescue, pressure weights), Blast scoring, streak window, colour wipes, separate best score, classic unchanged | `tests/generator-blast.test.js` |
 | Game over, refill timing, many successive batches, duplicate input, stale worker results after restart, scoring of pre-placed blocks, touch/mouse drag and cancellation | `tests/game.test.js` |
 | Theme registry completeness, preview/cancel/commit, theme switching without gameplay changes, auto-switch only on an all-clear | `tests/themes.test.js` |
 | Settings persistence and unavailable storage, audio unlock/drop-when-suspended/voice limits/buffer cache/cleanup (fake Web Audio) | `tests/settings-audio.test.js` |
@@ -83,6 +115,8 @@ src/core/shapes.js       The 27 fixed orientations
 src/core/rules.js        Bitboard rules shared by real moves, the generator search and tests
 src/core/generator.js    Classic fair tray generation (recency ordering, 12 + 16 proposals, constructive fallback)
 src/core/generator-rhythm.js  Board-aware default generator (moods, candidate drafts, beam-search evaluation)
+src/core/generator-blast.js   Blast mode generator (clear-hungry drafts, streak-aware scoring)
+src/core/modes.js        Game modes: scoring, combo streak window, generator, palette, best-score key
 src/core/generators.js   Generator registry; DEFAULT_GENERATOR and ?gen=classic rollback
 src/core/boardeval.js    Bitboard board features (fragmentation, room for big pieces, near-complete lines)
 src/core/openings.js     Starting-board registry, geometry checks, opening validation
