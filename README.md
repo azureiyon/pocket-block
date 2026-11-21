@@ -39,7 +39,17 @@ The HUD shows the streak multiplier and a three-dot meter of moves left before i
 
 Simulation, 300 seeds per strategy, Blast rules scoring applied to both (`tools/sim/results/blast-vs-rhythm.md`):
 
-See the results file for the full comparison.
+| rhythm → blast | random | greedy | space (1-ply) | lookahead |
+|---|---|---|---|---|
+| Moves per game, median | 17 → 20 | 26 → 71 | 53 → 194 | 600 → 600 (cap) |
+| Moves that clear | 16.0% → 20.7% | 31.6% → 38.2% | 37.6% → 41.8% | 43.7% → 45.5% |
+| Longest streak per game (mean) | 1.8 → 2.5 | 5.2 → 10.5 | 8.2 → 16.5 | 22.9 → 33.4 |
+| Move of the first clear (median) | 11 → 9 | 6 → 4 | 7 → 4 | 4 → 3 |
+| Board clears per game | 0 → 0 | 0.01 → 0.10 | 0.01 → 0.10 | 0.06 → 0.33 |
+| Trays with ≤4 viable first moves | 4.1% → 3.3% | 5.5% → 1.8% | 4.7% → 0.6% | 3.1% → 0.1% |
+| Score per game, median (Blast rules) | 126 → 253 | 514 → 2649 | 1854 → 10468 | 35920 → 53626 |
+
+The full comparison is in the results file. The planning bot hits the 600-move cap with both generators, so its game length says little.
 
 ## Running locally
 
