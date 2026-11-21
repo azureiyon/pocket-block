@@ -208,7 +208,8 @@ The variant shows up in Settings → Game automatically. Add it to the per-varia
 - **Rendering** keeps cell elements persistent, so placement animations aren't cut off by redraws. Cleared cells are copied into an overlay that animates while the real board updates immediately, so placement geometry stays exact.
 - **Audio** is fully procedural, so no recordings are bundled and no credits are needed. Each kit is built from material models: modal partials for ceramic, glass, wood and metal, filtered-noise friction, droplets and envelopes. On top of that, each kit has its own event rhythms.
   - Every voice goes through a master gain and a gentle compressor, with a 36-voice limit and a capped combo intensity.
-  - Sounds are never queued while the context is suspended.
+  - Sounds are never queued while the context is suspended, except that a gesture's own sounds wait up to 350 ms while that gesture wakes the context (Safari's `resume()` is asynchronous).
+  - Safari/iOS recovery: after the page was hidden or the context was interrupted (Siri, a call), the next tap builds a fresh context instead of resuming the old one. A context that reports "running" while its clock has stopped is also replaced.
   - Mahjong is built from layered ceramic clacks, a table thump and shuffle friction, not musical tones.
 - **Motion.** `prefers-reduced-motion` turns off particles, sweeps, board shakes and background motion, leaving short fades. Backgrounds pause while the page is hidden and are rebuilt without motion nodes when Animated Backgrounds is off.
 

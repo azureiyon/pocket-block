@@ -1,7 +1,7 @@
 // Offline support: precache every local asset on install, serve
 // network-first (refreshing the cache) and fall back to the cache offline.
 // Bump VERSION when the asset list changes.
-const VERSION = 'pocket-blocks-v3';
+const VERSION = 'pocket-blocks-v4';
 const ASSETS = [
   './',
   'index.html',
@@ -41,7 +41,11 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(VERSION).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  // cache: 'reload' skips the browser's HTTP cache (GitHub Pages allows 10
+  // minutes), so a new version never precaches stale copies of old files.
+  event.waitUntil(caches.open(VERSION)
+    .then((c) => c.addAll(ASSETS.map((url) => new Request(url, { cache: 'reload' }))))
+    .then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (event) => {
@@ -59,7 +63,9 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.open(VERSION).then(async (cache) => {
       try {
-        const res = await fetch(req);
+        // Revalidate with the server instead of trusting the HTTP cache, so
+        // the page, scripts and styles always come from the same deployment.
+        const res = await fetch(req, { cache: 'no-cache' });
         if (res && res.ok) cache.put(req, res.clone());
         return res;
       } catch (e) {
