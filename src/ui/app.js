@@ -4,6 +4,7 @@
 import { Game } from '../core/game.js';
 import { Settings } from '../core/settings.js';
 import { OPENING_VARIANTS } from '../core/openings.js';
+import { MODES, getMode, BLAST_STREAK_WINDOW } from '../core/modes.js';
 import { placeOnCells, CELLS } from '../core/rules.js';
 import { THEMES, getTheme, ThemeController } from '../themes/themes.js';
 import { AudioEngine } from '../audio/engine.js';
@@ -15,8 +16,10 @@ import { bindInput } from './input.js';
 const $ = (id) => document.getElementById(id);
 
 export class App {
-  constructor({ gen, storage, generator } = {}) {
+  constructor({ gen, storage, generator, mode } = {}) {
     this.settings = new Settings(storage);
+    // ?mode=blast (or classic) switches and remembers the mode.
+    if (mode && MODES[mode]) this.settings.set('mode', mode);
     this.game = new Game({ gen, settings: this.settings, generator });
     this.reduceMQ = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
     this.reducedMotion = () => !!this.reduceMQ.matches;
@@ -96,12 +99,14 @@ export class App {
     this.closeModal('m-over');
     $('over-bar').hidden = true;
     this.trayEl.hidden = false;
-    await this.game.newGame({ seed });
+    const mode = this.settings.get('mode');
+    document.documentElement.dataset.mode = mode;
+    await this.game.newGame({ seed, mode });
   }
 
   bindGame() {
     const g = this.game;
-    g.on('reset', () => { this.boardView.render(g.cells); this.renderTray(); this.renderScore(); });
+    g.on('reset', () => { this.boardView.render(g.cells); this.renderTray(); this.renderScore(); this.renderStreak(); });
     g.on('start', () => {
       this.boardView.render(g.cells);
       this.renderTray(); this.renderScore();
@@ -139,7 +144,14 @@ export class App {
         this.effects.combo(move);
         this.later(() => this.audio.play('combo', { n: move.combo }), 140);
       }
+      if (move.mode === 'blast') {
+        this.effects.blast(move);
+        if (move.wiped.length) this.later(() => this.audio.play('combo', { n: move.combo + 2 }), 300);
+      }
+    } else if (move.mode === 'blast' && move.prevCombo > 0 && move.combo === 0) {
+      this.effects.streakEnd(move.prevCombo);
     }
+    this.renderStreak(move);
     if (this.themes.handleMove(move)) {
       this.later(() => this.toast('Theme: ' + this.theme.name), 600);
       this.refreshThemeList();
@@ -151,9 +163,24 @@ export class App {
     this.audio.play('invalid');
   }
 
+  renderStreak(move) {
+    const g = this.game; const el = $('streak');
+    const on = g.modeId === 'blast' && g.combo > 0;
+    el.hidden = !on;
+    if (!on) return;
+    $('streak-n').textContent = '×' + g.combo;
+    const pips = $('streak-pips');
+    const win = g.mode.streakWindow || BLAST_STREAK_WINDOW;
+    if (pips.children.length !== win) pips.innerHTML = '<i></i>'.repeat(win);
+    [...pips.children].forEach((p, k) => p.classList.toggle('on', k < g.streakLeft));
+    el.classList.toggle('last', g.streakLeft === 1);
+    if (move && move.lines) { el.classList.remove('hot'); void el.offsetWidth; el.classList.add('hot'); }
+  }
+
   renderScore(pulse) {
     $('score').textContent = String(this.game.score);
     $('best').textContent = String(this.game.best);
+    $('tray-title').textContent = this.game.modeId === 'blast' ? 'Blast Mode' : 'Next Pieces';
     if (pulse) { const b = $('best'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
   }
 
@@ -294,6 +321,15 @@ export class App {
       const b = e.target.closest('[data-mode]'); if (!b) return;
       this.settings.update('opening', { mode: b.dataset.mode }); this.audio.play('ui'); this.syncSettingsUi();
     });
+    $('opt-game-mode').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-gmode]'); if (!b) return;
+      const id = b.dataset.gmode;
+      if (id === this.settings.get('mode')) return;
+      this.settings.set('mode', id); this.audio.play('ui'); this.syncSettingsUi();
+      // Nothing to lose yet: switch right away. Otherwise it applies next game.
+      if (!this.game.isActive) this.newGame();
+      else this.toast(getMode(id).name + ' starts next game');
+    });
     sel.addEventListener('change', () => {
       const patch = { variant: sel.value };
       if (sel.value !== 'any') patch.mode = 'always'; // convenient shortcut
@@ -308,10 +344,16 @@ export class App {
     $('opt-sound').checked = s.enabled;
     $('opt-volume').value = String(Math.round(s.volume * 100));
     $('vol-out').textContent = Math.round(s.volume * 100) + '%';
+    const gm = this.settings.get('mode');
+    document.querySelectorAll('#opt-game-mode [data-gmode]').forEach((b) => { const on = b.dataset.gmode === gm; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
+    $('game-mode-note').textContent = gm === 'blast'
+      ? 'Blast: pieces built for fast clears, streaks that survive 3 moves without a clear, multiplied scores and colour wipes. Always starts on an empty board.'
+      : 'Classic: the original rules and pacing.';
+    document.querySelectorAll('#opt-mode button').forEach((b) => { b.disabled = gm === 'blast'; });
     const o = this.settings.get('opening');
     document.querySelectorAll('#opt-mode [data-mode]').forEach((b) => { const on = b.dataset.mode === o.mode; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     $('opt-variant').value = o.variant;
-    $('opt-variant').disabled = o.mode === 'off';
+    $('opt-variant').disabled = o.mode === 'off' || gm === 'blast';
     $('mode-note').textContent = { off: 'Off: every game starts with an empty board.', random: 'Random: about one game in four starts with some blocks already on the board.', always: 'Always: every game starts with some blocks on the board.' }[o.mode];
   }
 

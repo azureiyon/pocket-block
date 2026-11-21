@@ -29,6 +29,10 @@
       <div class="scores" aria-live="polite">
         <div class="score"><span class="lbl">Score</span><span id="score" class="num">0</span></div>
         <div class="best"><span class="lbl">Best</span><span id="best" class="num">0</span></div>
+        <div id="streak" class="streak" hidden aria-label="Combo streak">
+          <span class="lbl">Streak</span>
+          <span class="streak-row"><b id="streak-n" class="num">×0</b><span id="streak-pips" class="pips" aria-hidden="true"></span></span>
+        </div>
       </div>
       <button id="btn-help" class="icon-btn" type="button" aria-label="How to play">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm0 15.6a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Zm1.4-5.3c-.6.4-.7.6-.7 1.1v.3h-2v-.4c0-1.2.4-1.8 1.4-2.5.8-.5 1.1-.9 1.1-1.5 0-.7-.5-1.2-1.3-1.2-.8 0-1.4.5-1.5 1.4H8.3c.1-2 1.6-3.3 3.8-3.3 2.1 0 3.5 1.2 3.5 2.9 0 1.2-.6 2-1.6 2.7l-.6.5Z"/></svg>
@@ -99,8 +103,16 @@
         <li>You get three new pieces after all three are placed.</li>
         <li>The game ends when none of the remaining pieces fit.</li>
       </ul>
-      <h3>Scoring</h3>
+      <h3>Scoring (Classic)</h3>
       <p class="sub">5 points per block placed, plus 80 &times; lines&sup2; for clears (1 line = 80, 2 lines = 320, 3 lines = 720).</p>
+      <h3>Blast mode</h3>
+      <ul class="help">
+        <li>Pieces are picked to clear lines often. Every game starts on an empty board.</li>
+        <li>Each clear adds to your streak. The streak survives up to 3 moves without a clear; the dots under it show how many moves you have left.</li>
+        <li>Clears are multiplied by your streak: 1 line = 20, 2 = 60, 3 = 120, 4 = 200, then &times; streak. Blocks placed are worth 1 each.</li>
+        <li>Colour Wipe: clear the last blocks of a colour for 50 &times; streak per colour. Board Clear pays 300 &times; streak.</li>
+        <li>Blast keeps its own best score. Switch modes in Settings &rarr; Game.</li>
+      </ul>
       <h3>Keyboard</h3>
       <p class="sub"><kbd>1</kbd>&ndash;<kbd>3</kbd> select a piece &middot; arrows aim &middot; <kbd>Enter</kbd>/<kbd>Space</kbd> place &middot; <kbd>Esc</kbd> cancel</p>
       <div class="row"><button class="btn primary" data-close type="button">Got it</button></div>
@@ -146,6 +158,12 @@
           <p class="note">Each theme has its own sounds. Sounds are generated in the browser; no audio files are downloaded.</p>
         </div>
         <div class="pane" data-pane="game" hidden>
+          <h3>Game mode</h3>
+          <div id="opt-game-mode" class="seg two" role="radiogroup" aria-label="Game mode">
+            <button type="button" role="radio" data-gmode="classic">Classic</button>
+            <button type="button" role="radio" data-gmode="blast">Blast</button>
+          </div>
+          <p class="note" id="game-mode-note">Classic: the original rules.</p>
           <h3>Starting board</h3>
           <div id="opt-mode" class="seg" role="radiogroup" aria-label="Starting board">
             <button type="button" role="radio" data-mode="off">Off</button>

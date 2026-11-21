@@ -5,10 +5,13 @@
 
 import { generateTray } from './generator.js';
 import { generateRhythmTray } from './generator-rhythm.js';
+import { generateBlastTray } from './generator-blast.js';
 
 export const GENERATORS = {
   classic: (lo, hi, recent, rng) => generateTray(lo, hi, recent, rng),
   rhythm: (lo, hi, recent, rng, ctx) => generateRhythmTray(lo, hi, recent, rng, ctx),
+  // Blast mode: clear-hungry trays for quick streaks (see generator-blast.js).
+  blast: (lo, hi, recent, rng, ctx) => generateBlastTray(lo, hi, recent, rng, ctx),
 };
 
 // Rollback: set this to 'classic' (or open the game with ?gen=classic).

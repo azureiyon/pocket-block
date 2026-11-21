@@ -4,19 +4,33 @@
 import { CELLS, occFromCells, placeOnCells, canPlaceOnCells, anyFits } from './rules.js';
 import { createRng, randomSeed } from './rng.js';
 import { DEFAULT_GENERATOR } from './generators.js';
+import { getMode, bestKey, wipedColors, DEFAULT_MODE } from './modes.js';
 
 export class Game {
-  constructor({ gen, settings, generator } = {}) {
+  constructor({ gen, settings, generator, mode } = {}) {
     if (!gen) throw new Error('Game needs a generation service');
     this.gen = gen;
     this.settings = settings || null;
-    // Tray generator id for refills ('rhythm' board-aware, 'classic' original).
-    this.generator = generator || DEFAULT_GENERATOR;
+    // An explicit generator id (?gen=...) overrides the mode's own generator.
+    this.forcedGenerator = generator || null;
     this.listeners = {};
     this.gameId = 0;
-    this.best = settings ? settings.get('best') : 0;
+    this.bests = {}; // per-mode high scores when there is no settings store
+    this.setMode(mode || (settings ? settings.get('mode') : DEFAULT_MODE));
     this.resetState();
   }
+
+  /** Switch rules for the next game (scoring, streaks, generator, best score). */
+  setMode(id) {
+    this.mode = getMode(id);
+    this.modeId = this.mode.id;
+    // Tray generator id for refills ('rhythm' board-aware, 'classic' original, 'blast').
+    this.generator = this.forcedGenerator || this.mode.generator || DEFAULT_GENERATOR;
+    this.best = this.settings ? this.settings.get(bestKey(this.modeId)) : (this.bests[this.modeId] || 0);
+  }
+
+  /** Moves left before the current combo streak breaks (0 when no streak). */
+  get streakLeft() { return this.combo > 0 ? Math.max(0, this.mode.streakWindow - this.movesSinceClear) : 0; }
 
   on(type, fn) { (this.listeners[type] ||= []).push(fn); return () => this.off(type, fn); }
   off(type, fn) { this.listeners[type] = (this.listeners[type] || []).filter((f) => f !== fn); }
@@ -27,6 +41,7 @@ export class Game {
     this.tray = [];
     this.score = 0;
     this.combo = 0;
+    this.movesSinceClear = 0;
     this.moves = 0;
     this.batch = 0;
     this.recent = [];
@@ -44,14 +59,16 @@ export class Game {
   get isEmpty() { return this.cells.every((v) => v === 0); }
 
   /** Start a new game. Resolves to true when it became the current game. */
-  async newGame({ seed, opening } = {}) {
+  async newGame({ seed, opening, mode } = {}) {
     const id = ++this.gameId;
+    if (mode) this.setMode(mode);
     this.seed = (seed === undefined || seed === null) ? randomSeed() : seed >>> 0;
     this.rng = createRng(this.seed);
     this.resetState();
     this.bestAtStart = this.best;
     this.emit('reset', { seed: this.seed });
-    const prefs = opening || (this.settings ? this.settings.get('opening') : { mode: 'off', variant: 'any' });
+    let prefs = opening || (this.settings ? this.settings.get('opening') : { mode: 'off', variant: 'any' });
+    if (!this.mode.openings) prefs = { mode: 'off', variant: 'any' };
     const plan = await this.gen.opening(prefs, this.rng.u32(), [], this.generator);
     if (id !== this.gameId) return false; // a newer restart superseded this one
     this.cells = Uint8Array.from(plan.cells);
@@ -93,22 +110,33 @@ export class Game {
     const res = placeOnCells(this.cells, piece.shapeId, r, c, piece.color);
     if (!res) { this.emit('invalid', { slot, r, c }); return null; }
     piece.placed = true;
+    const before = this.cells;
     this.cells = res.cells;
     this.moves++;
-    this.score += res.points;
     const prevCombo = this.combo;
-    this.combo = res.lines > 0 ? this.combo + 1 : 0;
+    // A streak survives up to streakWindow moves without a clear (classic: 1,
+    // so any move that clears nothing ends it).
+    if (res.lines > 0) { this.combo++; this.movesSinceClear = 0; } else {
+      this.movesSinceClear++;
+      if (this.movesSinceClear >= this.mode.streakWindow) this.combo = 0;
+    }
+    const allClear = res.lines > 0 && res.empty;
+    const wiped = res.lines > 0 ? wipedColors(before, res.cells, res.clearedCells) : [];
+    const scored = this.mode.score({ blocks: res.placed.length, lines: res.lines, combo: this.combo, wiped: wiped.length, allClear });
+    this.score += scored.points;
     this.trayLines += res.lines;
     let newBest = false;
     if (this.score > this.best) {
       this.best = this.score; newBest = true;
-      if (this.settings) this.settings.set('best', this.best);
+      this.bests[this.modeId] = this.best;
+      if (this.settings) this.settings.set(bestKey(this.modeId), this.best);
     }
     const move = {
       slot, r, c, shapeId: piece.shapeId, color: piece.color,
       placed: res.placed, rows: res.rows, cols: res.cols, lines: res.lines,
-      clearedCells: res.clearedCells, points: res.points, combo: this.combo, prevCombo,
-      allClear: res.lines > 0 && res.empty, score: this.score, best: this.best, newBest,
+      clearedCells: res.clearedCells, points: scored.points, parts: scored.parts, combo: this.combo, prevCombo,
+      streakLeft: this.streakLeft, wiped, mode: this.modeId,
+      allClear, score: this.score, best: this.best, newBest,
       batch: this.batch, gameId: this.gameId,
     };
     this.emit('place', move);
@@ -125,7 +153,7 @@ export class Game {
     this.traysSinceClear = this.trayLines ? 0 : this.traysSinceClear + 1;
     this.lastTrayLines = this.trayLines;
     this.trayLines = 0;
-    const ctx = { traysSinceClear: this.traysSinceClear, lastTrayLines: this.lastTrayLines, combo: this.combo, trayIndex: this.batch };
+    const ctx = { traysSinceClear: this.traysSinceClear, lastTrayLines: this.lastTrayLines, combo: this.combo, movesSinceClear: this.movesSinceClear, trayIndex: this.batch, mode: this.modeId };
     const tray = await this.gen.tray(lo, hi, this.recent, this.rng.u32(), ctx, this.generator);
     if (id !== this.gameId || batch !== this.batch) return; // stale result after restart
     this.setTray(tray);

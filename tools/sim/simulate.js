@@ -121,6 +121,10 @@ function aggregate(results, gens, strategies) {
         deathViableLow: rs.filter((r) => r.death && r.death.viableAtOffer <= 4).length,
         stuckBig: rs.filter((r) => r.death && r.death.stuck.some((id) => getShape(id).size >= 5)).length,
         moods,
+        blastScoreMedian: pct(rs.map((r) => r.blastScore), 0.5),
+        maxStreakMean: mean(rs.map((r) => r.maxStreak)),
+        streakClearShare: rs.reduce((a, r) => a + r.streakClears, 0) / Math.max(1, clearMoves),
+        firstClearMedian: pct(rs.map((r) => (r.firstClearMove === null ? 999 : r.firstClearMove)), 0.5),
       };
     }
   }
@@ -159,6 +163,10 @@ function toMarkdown(rep, gens, strategies) {
     ['Deaths after placing 0 / 1 / 2 pieces of the last tray', (s) => s.deathPlaced.join(' / ')],
     ['Final tray: viable first moves at offer (mean) / deaths from trays with <=4', (s) => f1(s.deathViable) + ' / ' + s.deathViableLow],
     ['Deaths where a 5+ cell piece was stuck', (s) => String(s.stuckBig)],
+    ['Blast-rules score per game (median)', (s) => String(s.blastScoreMedian)],
+    ['Longest combo streak per game (mean, Blast rules)', (s) => f1(s.maxStreakMean)],
+    ['Clears made at streak 3+', (s) => pc(s.streakClearShare)],
+    ['Move of the first clear (median)', (s) => String(s.firstClearMedian)],
     ['Tray moods', (s) => Object.entries(s.moods).map(([k, v]) => `${k} ${v}`).join(', ') || '–'],
   ];
   let md = `# Simulation: ${gens.join(' vs ')}\n\n${rep.meta.totalGames} games, ${rep.meta.games} seeds per generator × strategy, move cap ${rep.meta.cap}, ${rep.meta.seconds.toFixed(0)}s.\n`;
