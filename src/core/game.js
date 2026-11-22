@@ -24,7 +24,7 @@ export class Game {
   setMode(id) {
     this.mode = getMode(id);
     this.modeId = this.mode.id;
-    // Tray generator id for refills ('rhythm' board-aware, 'classic' original, 'blast').
+    // Tray generator id for refills ('rhythm' board-aware, 'classic' original, 'blast', 'flow').
     this.generator = this.forcedGenerator || this.mode.generator || DEFAULT_GENERATOR;
     this.best = this.settings ? this.settings.get(bestKey(this.modeId)) : (this.bests[this.modeId] || 0);
   }
@@ -135,7 +135,7 @@ export class Game {
       slot, r, c, shapeId: piece.shapeId, color: piece.color,
       placed: res.placed, rows: res.rows, cols: res.cols, lines: res.lines,
       clearedCells: res.clearedCells, points: scored.points, parts: scored.parts, combo: this.combo, prevCombo,
-      streakLeft: this.streakLeft, wiped, mode: this.modeId,
+      streakLeft: this.streakLeft, wiped, mode: this.modeId, arcade: !!this.mode.arcade,
       allClear, score: this.score, best: this.best, newBest,
       batch: this.batch, gameId: this.gameId,
     };
@@ -154,6 +154,8 @@ export class Game {
     this.lastTrayLines = this.trayLines;
     this.trayLines = 0;
     const ctx = { traysSinceClear: this.traysSinceClear, lastTrayLines: this.lastTrayLines, combo: this.combo, movesSinceClear: this.movesSinceClear, trayIndex: this.batch, mode: this.modeId };
+    // Only score-aware modes (Flow's difficulty ramp) get to see the score.
+    if (this.mode.scoreAware) ctx.score = this.score;
     const tray = await this.gen.tray(lo, hi, this.recent, this.rng.u32(), ctx, this.generator);
     if (id !== this.gameId || batch !== this.batch) return; // stale result after restart
     this.setTray(tray);

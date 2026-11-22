@@ -39,11 +39,12 @@ export function playGame({ gen, strategy, seed, cap = 600 }) {
   const m = {
     gen, strategy, seed, moves: 0, trays: 0, score: 0, clearMoves: 0, lines: 0, multiMoves: 0, allClears: 0,
     gaps: [], occ: [], shapes: {}, triples: {}, dupTrays: 0, limitedTrays: 0, clearAvailTrays: 0,
-    viable: [], moods: {}, blastScore: 0, maxStreak: 0, streakClears: 0, streaks: [], firstClearMove: null, highEpisodes: 0, recovered: 0, capped: false, death: null, trayLinesHist: [0, 0, 0, 0],
+    viable: [], moods: {}, kinds: {}, blastScore: 0, maxStreak: 0, streakClears: 0, streaks: [], firstClearMove: null, highEpisodes: 0, recovered: 0, capped: false, death: null, trayLinesHist: [0, 0, 0, 0],
   };
   let sinceClear = 0; let inHigh = false;
   while (true) {
-    const tray = generate(lo, hi, recent, genRng, { ...ctx, trayIndex: m.trays });
+    const tray = generate(lo, hi, recent, genRng, { ...ctx, trayIndex: m.trays, ...(gen === 'flow' ? { score: m.blastScore } : {}) });
+    if (tray.kind) m.kinds[tray.kind] = (m.kinds[tray.kind] || 0) + 1;
     recent = tray.recent;
     m.trays++;
     if (tray.mood) m.moods[tray.mood] = (m.moods[tray.mood] || 0) + 1;

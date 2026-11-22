@@ -146,7 +146,7 @@ export class Effects {
     this.board.el.classList.add('squish');
     this.later(() => this.board.el.classList.remove('squish'), 320);
     // Blast clears get their own big score pop (see blast()).
-    if (!(move.mode === 'blast' && move.lines)) this.label('+' + move.points, 'pts', { x: c.x, y: c.y - 10 }, 800);
+    if (!(move.arcade && move.lines)) this.label('+' + move.points, 'pts', { x: c.x, y: c.y - 10 }, 800);
   }
 
   clear(move) {
@@ -181,7 +181,7 @@ export class Effects {
     const pts = [...move.rows.map((r) => r * 8 + 3), ...move.cols.map((c) => 24 + c)];
     for (const i of pts) { const b = this.board.cellBox(i, this.layer); this.later(() => this.spawn(b.x + b.w, b.y + b.h / 2, perLine, colors), 60); }
     if (multi) {
-      if (move.mode !== 'blast') this.label(move.lines + ' Lines!', 'multi');
+      if (!move.arcade) this.label(move.lines + ' Lines!', 'multi');
       this.board.el.classList.remove('shake'); void this.board.el.offsetWidth;
       this.board.el.classList.add('pulse');
       this.later(() => this.board.el.classList.remove('pulse'), 500);
@@ -190,7 +190,7 @@ export class Effects {
 
   combo(move) {
     const c = this.centerOf(move.placed);
-    const cap = move.mode === 'blast' ? 8 : 5;
+    const cap = move.arcade ? 8 : 5;
     this.label('Combo ×' + move.combo, 'combo lvl' + Math.min(move.combo, cap), { x: c.x, y: c.y - 44 }, 1200);
   }
 

@@ -4,7 +4,7 @@
 // Occupancy is a 64-bit bitboard split into two unsigned 32-bit numbers:
 // lo = rows 0..3, hi = rows 4..7, bit index = row * 8 + col (minus 32 for hi).
 
-import { SHAPES, getShape } from './shapes.js';
+import { ALL_SHAPES, getShape } from './shapes.js';
 
 export const SIZE = 8;
 export const CELLS = SIZE * SIZE;
@@ -38,7 +38,7 @@ export function popcount(lo, hi) { return popcount32(lo >>> 0) + popcount32(hi >
 
 // Precomputed legal-in-bounds placements for each shape.
 const PLACEMENTS = {};
-for (const s of SHAPES) {
+for (const s of ALL_SHAPES) {
   const list = [];
   for (let r = 0; r + s.h <= SIZE; r++) {
     for (let c = 0; c + s.w <= SIZE; c++) {

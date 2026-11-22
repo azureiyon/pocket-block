@@ -7,6 +7,7 @@ const PREFIX = 'pocketBlocks.';
 export const DEFAULTS = {
   best: 0,
   bestBlast: 0,
+  bestFlow: 0,
   mode: 'classic',
   theme: 'pastel',
   autoSwitch: false,
@@ -18,7 +19,8 @@ export const DEFAULTS = {
 const VALIDATORS = {
   best: (v) => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : undefined),
   bestBlast: (v) => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : undefined),
-  mode: (v) => (v === 'classic' || v === 'blast' ? v : undefined),
+  bestFlow: (v) => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : undefined),
+  mode: (v) => (v === 'classic' || v === 'blast' || v === 'flow' ? v : undefined),
   theme: (v) => (typeof v === 'string' && v.length < 40 ? v : undefined),
   autoSwitch: (v) => (typeof v === 'boolean' ? v : undefined),
   animBg: (v) => (typeof v === 'boolean' ? v : undefined),

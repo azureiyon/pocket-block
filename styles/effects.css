@@ -184,8 +184,8 @@
 .board.wipe { animation: wipe-flash .6s ease-out; }
 @keyframes wipe-flash { 25% { filter: brightness(1.25) saturate(1.2); transform: scale(1.02); } }
 /* Blast feels snappier: quicker clear ghosts. */
-:root[data-mode="blast"] .clear-ghost { animation-duration: .38s; }
-:root[data-mode="blast"] .clear-ghost.multi { animation-duration: .46s; }
+:root:is([data-mode="blast"], [data-mode="flow"]) .clear-ghost { animation-duration: .38s; }
+:root:is([data-mode="blast"], [data-mode="flow"]) .clear-ghost.multi { animation-duration: .46s; }
 @media (prefers-reduced-motion: reduce) { .board.wipe { animation: none; } }
 
 /* ---------- themes 15–24: placement ---------- */
