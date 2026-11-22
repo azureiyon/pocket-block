@@ -8,6 +8,9 @@
 //            multiplied by the streak. Wiping the last blocks of a colour
 //            and clearing the whole board pay bonuses. Trays come from the
 //            clear-hungry "blast" generator.
+//   flow     Blast's scoring and streaks with the "flow" director: a larger
+//            piece pool, rescue pieces when the board gets crowded, and a
+//            difficulty ramp by score that ends long runs.
 
 import { scoreFor } from './rules.js';
 
@@ -30,6 +33,7 @@ export const MODES = {
   blast: {
     id: 'blast',
     name: 'Blast',
+    arcade: true,
     generator: 'blast',
     palette: 5, // fewer colours, so colour wipes actually happen
     streakWindow: BLAST_STREAK_WINDOW,
@@ -45,13 +49,15 @@ export const MODES = {
   },
 };
 
+MODES.flow = { ...MODES.blast, id: 'flow', name: 'Flow', generator: 'flow', scoreAware: true };
+
 export const MODE_IDS = Object.keys(MODES);
 export const DEFAULT_MODE = 'classic';
 
 export function getMode(id) { return MODES[id] || MODES[DEFAULT_MODE]; }
 
 /** Settings key for a mode's high score; classic keeps the original key. */
-export function bestKey(modeId) { return modeId === 'blast' ? 'bestBlast' : 'best'; }
+export function bestKey(modeId) { return modeId === 'blast' ? 'bestBlast' : modeId === 'flow' ? 'bestFlow' : 'best'; }
 
 /**
  * Colours whose every block was removed by this clear. Only colours that were

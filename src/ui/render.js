@@ -16,6 +16,11 @@ export function decorateBlock(el, theme, colorIndex) {
     const mark = MAHJONG_MARKS[(colorIndex - 1) % MAHJONG_MARKS.length];
     el.dataset.mark = mark;
     inner.textContent = MAHJONG_GLYPHS[mark] || '';
+  } else if (theme.marks) {
+    // Per-colour marks (card suits, emblems): shape coding on top of colour.
+    const mark = theme.marks[(colorIndex - 1) % theme.marks.length];
+    el.dataset.mark = mark;
+    inner.textContent = (theme.glyphs && theme.glyphs[mark]) || '';
   } else {
     delete el.dataset.mark;
     inner.textContent = '';

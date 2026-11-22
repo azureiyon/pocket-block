@@ -41,12 +41,36 @@ const DEFS = [
   ['rect-v', 'rect23', ['##', '##', '##']],
 ];
 
-export const SHAPES = DEFS.map(([id, family, rows], index) => ({
-  id, family, index, ...fromRows(rows), size: rows.join('').split('').filter((c) => c === '#').length,
+// Extra orientations used only by Flow mode's generator. The classic, rhythm
+// and blast generators keep drawing from the original 27 above.
+const FLOW_DEFS = [
+  ['diag2-a', 'diag2', ['#.', '.#']],
+  ['diag2-b', 'diag2', ['.#', '#.']],
+  ['diag3-a', 'diag3', ['#..', '.#.', '..#']],
+  ['diag3-b', 'diag3', ['..#', '.#.', '#..']],
+  ['z-h', 'zigzag', ['##.', '.##']],
+  ['z-v', 'zigzag', ['.#', '##', '#.']],
+  ['j-a', 'l4', ['.#', '.#', '##']],
+  ['j-b', 'l4', ['#..', '###']],
+  ['j-c', 'l4', ['##', '#.', '#.']],
+  ['j-d', 'l4', ['###', '..#']],
+  ['bigl-a', 'bigl', ['#..', '#..', '###']],
+  ['bigl-b', 'bigl', ['###', '#..', '#..']],
+  ['bigl-c', 'bigl', ['###', '..#', '..#']],
+  ['bigl-d', 'bigl', ['..#', '..#', '###']],
+];
+
+const build = (defs, offset) => defs.map(([id, family, rows], k) => ({
+  id, family, index: offset + k, ...fromRows(rows), size: rows.join('').split('').filter((c) => c === '#').length,
 }));
 
-export const SHAPE_BY_ID = Object.fromEntries(SHAPES.map((s) => [s.id, s]));
+export const SHAPES = build(DEFS, 0);
+export const FLOW_EXTRA_SHAPES = build(FLOW_DEFS, DEFS.length);
+export const ALL_SHAPES = [...SHAPES, ...FLOW_EXTRA_SHAPES];
+
+export const SHAPE_BY_ID = Object.fromEntries(ALL_SHAPES.map((s) => [s.id, s]));
 export const SHAPE_IDS = SHAPES.map((s) => s.id);
+export const FLOW_SHAPE_IDS = ALL_SHAPES.map((s) => s.id);
 
 export function getShape(id) {
   const s = SHAPE_BY_ID[id];

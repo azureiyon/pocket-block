@@ -71,11 +71,12 @@ function aggregate(results, gens, strategies) {
       const clearMoves = rs.reduce((a, r) => a + r.clearMoves, 0);
       const multi = rs.reduce((a, r) => a + r.multiMoves, 0);
       const trays = rs.reduce((a, r) => a + r.trays, 0);
-      const shapes = {}; const triples = {}; const moods = {}; const deaths = {}; const trayLines = [0, 0, 0, 0];
+      const shapes = {}; const triples = {}; const moods = {}; const kinds = {}; const deaths = {}; const trayLines = [0, 0, 0, 0];
       for (const r of rs) {
         for (const [k, v] of Object.entries(r.shapes)) shapes[k] = (shapes[k] || 0) + v;
         for (const [k, v] of Object.entries(r.triples)) triples[k] = (triples[k] || 0) + v;
         for (const [k, v] of Object.entries(r.moods)) moods[k] = (moods[k] || 0) + v;
+        for (const [k, v] of Object.entries(r.kinds || {})) kinds[k] = (kinds[k] || 0) + v;
         if (r.death) deaths[r.death.cause] = (deaths[r.death.cause] || 0) + 1;
         r.trayLinesHist.forEach((v, i) => { trayLines[i] += v; });
       }
@@ -120,7 +121,7 @@ function aggregate(results, gens, strategies) {
         deathViable: mean(rs.filter((r) => r.death).map((r) => r.death.viableAtOffer)),
         deathViableLow: rs.filter((r) => r.death && r.death.viableAtOffer <= 4).length,
         stuckBig: rs.filter((r) => r.death && r.death.stuck.some((id) => getShape(id).size >= 5)).length,
-        moods,
+        moods, kinds,
         blastScoreMedian: pct(rs.map((r) => r.blastScore), 0.5),
         maxStreakMean: mean(rs.map((r) => r.maxStreak)),
         streakClearShare: rs.reduce((a, r) => a + r.streakClears, 0) / Math.max(1, clearMoves),
@@ -167,6 +168,7 @@ function toMarkdown(rep, gens, strategies) {
     ['Longest combo streak per game (mean, Blast rules)', (s) => f1(s.maxStreakMean)],
     ['Clears made at streak 3+', (s) => pc(s.streakClearShare)],
     ['Move of the first clear (median)', (s) => String(s.firstClearMedian)],
+    ['Tray kinds (flow/blast)', (s) => Object.entries(s.kinds || {}).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k} ${v}`).join(', ') || '–'],
     ['Tray moods', (s) => Object.entries(s.moods).map(([k, v]) => `${k} ${v}`).join(', ') || '–'],
   ];
   let md = `# Simulation: ${gens.join(' vs ')}\n\n${rep.meta.totalGames} games, ${rep.meta.games} seeds per generator × strategy, move cap ${rep.meta.cap}, ${rep.meta.seconds.toFixed(0)}s.\n`;

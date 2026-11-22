@@ -272,4 +272,4 @@ kbd { font: inherit; font-size: 13px; padding: 1px 6px; border-radius: 6px; bord
 @keyframes pip-warn { to { transform: scale(1.45); filter: brightness(1.25); } }
 @media (prefers-reduced-motion: reduce) { .streak.last .pips i.on, .streak.hot .num { animation: none; } }
 .seg button:disabled { opacity: .4; cursor: default; }
-:root[data-mode="blast"] #tray-title { color: var(--accent); }
+:root:is([data-mode="blast"], [data-mode="flow"]) #tray-title { color: var(--accent); }

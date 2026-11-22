@@ -113,6 +113,13 @@
         <li>Colour Wipe: clear the last blocks of a colour for 50 &times; streak per colour. Board Clear pays 300 &times; streak.</li>
         <li>Blast keeps its own best score. Switch modes in Settings &rarr; Game.</li>
       </ul>
+      <h3>Flow mode</h3>
+      <ul class="help">
+        <li>Scored like Blast, with more piece shapes: diagonals, big L's and every L, J, S and Z.</li>
+        <li>When the board gets crowded or your streak is about to break, you get pieces that can clear lines.</li>
+        <li>As your score climbs (2,000, 6,000, 12,000), the help fades, bulky pieces get commoner and some trays only fit in one order. Eventually a tray won't fit at all, and the run ends.</li>
+        <li>Flow keeps its own best score.</li>
+      </ul>
       <h3>Keyboard</h3>
       <p class="sub"><kbd>1</kbd>&ndash;<kbd>3</kbd> select a piece &middot; arrows aim &middot; <kbd>Enter</kbd>/<kbd>Space</kbd> place &middot; <kbd>Esc</kbd> cancel</p>
       <div class="row"><button class="btn primary" data-close type="button">Got it</button></div>
@@ -159,9 +166,10 @@
         </div>
         <div class="pane" data-pane="game" hidden>
           <h3>Game mode</h3>
-          <div id="opt-game-mode" class="seg two" role="radiogroup" aria-label="Game mode">
+          <div id="opt-game-mode" class="seg" role="radiogroup" aria-label="Game mode">
             <button type="button" role="radio" data-gmode="classic">Classic</button>
             <button type="button" role="radio" data-gmode="blast">Blast</button>
+            <button type="button" role="radio" data-gmode="flow">Flow</button>
           </div>
           <p class="note" id="game-mode-note">Classic: the original rules.</p>
           <h3>Starting board</h3>

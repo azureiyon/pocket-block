@@ -18,7 +18,7 @@ const $ = (id) => document.getElementById(id);
 export class App {
   constructor({ gen, storage, generator, mode } = {}) {
     this.settings = new Settings(storage);
-    // ?mode=blast (or classic) switches and remembers the mode.
+    // ?mode=blast, ?mode=flow (or classic) switches and remembers the mode.
     if (mode && MODES[mode]) this.settings.set('mode', mode);
     this.game = new Game({ gen, settings: this.settings, generator });
     this.reduceMQ = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
@@ -144,11 +144,11 @@ export class App {
         this.effects.combo(move);
         this.later(() => this.audio.play('combo', { n: move.combo }), 140);
       }
-      if (move.mode === 'blast') {
+      if (move.arcade) {
         this.effects.blast(move);
         if (move.wiped.length) this.later(() => this.audio.play('combo', { n: move.combo + 2 }), 300);
       }
-    } else if (move.mode === 'blast' && move.prevCombo > 0 && move.combo === 0) {
+    } else if (move.arcade && move.prevCombo > 0 && move.combo === 0) {
       this.effects.streakEnd(move.prevCombo);
     }
     this.renderStreak(move);
@@ -165,7 +165,7 @@ export class App {
 
   renderStreak(move) {
     const g = this.game; const el = $('streak');
-    const on = g.modeId === 'blast' && g.combo > 0;
+    const on = !!g.mode.arcade && g.combo > 0;
     el.hidden = !on;
     if (!on) return;
     $('streak-n').textContent = '×' + g.combo;
@@ -180,7 +180,7 @@ export class App {
   renderScore(pulse) {
     $('score').textContent = String(this.game.score);
     $('best').textContent = String(this.game.best);
-    $('tray-title').textContent = this.game.modeId === 'blast' ? 'Blast Mode' : 'Next Pieces';
+    $('tray-title').textContent = this.game.mode.arcade ? this.game.mode.name + ' Mode' : 'Next Pieces';
     if (pulse) { const b = $('best'); b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); }
   }
 
@@ -346,14 +346,17 @@ export class App {
     $('vol-out').textContent = Math.round(s.volume * 100) + '%';
     const gm = this.settings.get('mode');
     document.querySelectorAll('#opt-game-mode [data-gmode]').forEach((b) => { const on = b.dataset.gmode === gm; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
-    $('game-mode-note').textContent = gm === 'blast'
-      ? 'Blast: pieces built for fast clears, streaks that survive 3 moves without a clear, multiplied scores and colour wipes. Always starts on an empty board.'
-      : 'Classic: the original rules and pacing.';
-    document.querySelectorAll('#opt-mode button').forEach((b) => { b.disabled = gm === 'blast'; });
+    $('game-mode-note').textContent = {
+      classic: 'Classic: the original rules and pacing.',
+      blast: 'Blast: pieces built for fast clears, streaks that survive 3 moves without a clear, multiplied scores and colour wipes. Always starts on an empty board.',
+      flow: 'Flow: Blast scoring with a smarter dealer. More piece shapes, rescue pieces when the board gets crowded, and it gets tougher as your score climbs until the run ends.',
+    }[gm];
+    const arcade = !!getMode(gm).arcade;
+    document.querySelectorAll('#opt-mode button').forEach((b) => { b.disabled = arcade; });
     const o = this.settings.get('opening');
     document.querySelectorAll('#opt-mode [data-mode]').forEach((b) => { const on = b.dataset.mode === o.mode; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); });
     $('opt-variant').value = o.variant;
-    $('opt-variant').disabled = o.mode === 'off' || gm === 'blast';
+    $('opt-variant').disabled = o.mode === 'off' || arcade;
     $('mode-note').textContent = { off: 'Off: every game starts with an empty board.', random: 'Random: about one game in four starts with some blocks already on the board.', always: 'Always: every game starts with some blocks on the board.' }[o.mode];
   }
 

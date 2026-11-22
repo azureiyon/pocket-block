@@ -40,6 +40,33 @@ function shuffleStroke(a, t, g) {
   a.noise({ t, a: 0.012, d: 0.09, g, type: 'bandpass', f: a.rand(1700, 2600), q: 1.1, color: 'pink' });
 }
 
+// ---- shared gestures for themes 15–24 ----
+function twinkle(a, f, t, g) { a.tone({ f, t, a: 0.002, d: 0.28, g }); a.tone({ f: f * 2.01, t, a: 0.002, d: 0.12, g: g * 0.35 }); }
+function porcelain(a, f, t, g) { a.modal({ f, t, g, lp: 7000, ratios: [1, 2.76, 5.4], decays: [0.32, 0.18, 0.09], gains: [1, 0.5, 0.25] }); }
+function piano(a, f, t, g, d = 0.9) { a.modal({ f, t, g, lp: 3800, a: 0.003, ratios: [1, 2, 3, 4.01], decays: [d, d * 0.7, d * 0.45, d * 0.3], gains: [1, 0.42, 0.18, 0.08] }); }
+function churchBell(a, f, t, g, d = 1.6) {
+  // Hum, prime, minor tierce, quint, nominal: the inharmonic recipe of a cast bell.
+  a.modal({ f, t, g, lp: 4200, ratios: [0.5, 1, 1.183, 1.506, 2, 2.5], decays: [d, d * 0.85, d * 0.7, d * 0.55, d * 0.45, d * 0.3], gains: [0.7, 1, 0.55, 0.3, 0.42, 0.18] });
+}
+function flap(a, t, g, f = 1600) { a.noise({ t, a: 0.004, d: 0.035, g, type: 'bandpass', f: f * a.rand(0.8, 1.25), q: 0.9, color: 'pink' }); }
+function riffle(a, t, n, g) { for (let i = 0; i < n; i++) a.noise({ t: t + i * a.rand(0.011, 0.019), d: 0.009, g, type: 'bandpass', f: a.rand(1800, 3400), q: 1.4 }); }
+function plastic(a, t, g) { a.tone({ f: a.rand(2900, 4300), t, a: 0.001, d: 0.014, g, type: 'triangle' }); a.noise({ t, d: 0.004, g: g * 0.6, type: 'highpass', f: 5000 }); }
+function tick(a, f, t, g) { a.tone({ f, t, a: 0.001, d: 0.012, g, type: 'triangle' }); a.noise({ t, d: 0.004, g: g * 1.2, type: 'highpass', f: 6000 }); }
+function stamp(a, t, g) { a.tone({ f: 130, f2: 70, t, d: 0.1, g }); a.noise({ t, d: 0.05, g: g * 0.5, type: 'lowpass', f: 450, color: 'brown' }); a.noise({ t, d: 0.012, g: g * 0.3, type: 'bandpass', f: 1200, q: 1 }); }
+function shutter(a, t, g) {
+  a.noise({ t, d: 0.007, g, type: 'bandpass', f: 3200, q: 1.6 }); a.tone({ f: 4300, t, a: 0.001, d: 0.015, g: g * 0.2, type: 'triangle' });
+  a.noise({ t: t + 0.012, a: 0.008, d: 0.035, g: g * 0.2, type: 'bandpass', f: 900, q: 4 });
+  a.noise({ t: t + 0.055, d: 0.011, g: g * 0.85, type: 'bandpass', f: 1900, q: 1.4 }); a.tone({ f: 3100, t: t + 0.055, a: 0.001, d: 0.02, g: g * 0.18, type: 'triangle' });
+}
+function chirp(a, t, g, base = 3200) {
+  a.tone({ f: base * a.rand(0.92, 1.08), f2: base * a.rand(1.35, 1.6), glide: 0.045, t, a: 0.004, d: 0.055, g, vib: { rate: 38, depth: 90 } });
+  a.tone({ f: base * a.rand(1.2, 1.35), f2: base * a.rand(0.9, 1.0), glide: 0.04, t: t + 0.075, a: 0.004, d: 0.05, g: g * 0.8 });
+}
+function shing(a, t, g, up = true) {
+  a.noise({ t, a: 0.02, d: 0.26, g, type: 'bandpass', f: up ? 1800 : 7000, f2: up ? 7500 : 1500, q: 7, sweep: 0.26 });
+  a.modal({ f: 1870, t: t + 0.05, g: g * 0.8, lp: 9000, ratios: [1, 2.76, 5.4, 8.9], decays: [0.9, 0.45, 0.22, 0.1], gains: [1, 0.45, 0.2, 0.08] });
+}
+
 export const KITS = {
   pastel: {
     place(a) {
@@ -383,6 +410,275 @@ export const KITS = {
       a.noise({ t: 0.95, d: 0.18, g: 0.12, type: 'lowpass', f: 400, color: 'brown' });
     },
     ui(a) { clack(a, 0, 0.22, 1.15, false); },
+  },
+  // 15 Starflower Post: sticker press, sticker peel, twinkling stars
+  starflower: {
+    place(a) {
+      a.tone({ f: 210, f2: 120, d: 0.06, g: 0.26, lp: 900 });
+      a.noise({ d: 0.03, g: 0.13, type: 'bandpass', f: 1800, q: 0.8, color: 'pink' });
+      a.noise({ t: 0.012, d: 0.005, g: 0.05, type: 'highpass', f: 5200 });
+    },
+    invalid(a) { a.noise({ d: 0.04, g: 0.1, type: 'lowpass', f: 700, color: 'pink' }); a.tone({ f: 180, f2: 150, d: 0.06, g: 0.1, lp: 600 }); },
+    clear(a, { lines = 1 }) {
+      a.noise({ a: 0.02, d: 0.16, g: 0.11, type: 'bandpass', f: 800, f2: 4400, q: 2.2, sweep: 0.16 });
+      const n = Math.min(3 + lines * 2, 9);
+      for (let i = 0; i < n; i++) twinkle(a, NOTE(PENTA[i], 1568), 0.15 + i * 0.055, 0.045);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 3 + Math.min(k, 4); i++) twinkle(a, NOTE(PENTA[i + k - 1] ?? 21, 1318), i * 0.05, 0.04);
+      a.noise({ a: 0.05, d: 0.25, g: 0.03, type: 'highpass', f: 6000 });
+    },
+    allClear(a) {
+      a.noise({ a: 0.05, d: 0.35, g: 0.12, type: 'bandpass', f: 600, f2: 5000, q: 2, sweep: 0.35 });
+      for (let i = 0; i < 12; i++) twinkle(a, NOTE(PENTA[9 - (i % 10)], 1318), 0.25 + i * 0.07, 0.045);
+    },
+    gameOver(a) { [9, 7, 4, 0].forEach((s, i) => twinkle(a, NOTE(PENTA[s] ?? 0, 784), i * 0.24, 0.04)); a.tone({ f: 160, f2: 110, t: 0.95, d: 0.2, g: 0.12, lp: 600 }); },
+    ui(a) { twinkle(a, 2093, 0, 0.035); },
+  },
+
+  // 16 Moonside Mechanism: quartz tick with a chrome hum, reverse swell into a minor lunar chime
+  moonside: {
+    place(a) {
+      metal(a, 5200, 0, 0.07, 0.012);
+      a.noise({ d: 0.004, g: 0.1, type: 'highpass', f: 6500 });
+      a.tone({ f: 92, d: 0.12, g: 0.2 });
+      glass(a, 1760, 0.01, 0.025, 0.45, 6000);
+    },
+    invalid(a) { metal(a, 1500, 0, 0.05, 0.02); metal(a, 1300, 0.07, 0.04, 0.02); },
+    clear(a, { lines = 1 }) {
+      a.noise({ a: 0.22, d: 0.04, g: 0.09, type: 'bandpass', f: 400, f2: 3200, q: 1.2, sweep: 0.24 });
+      const notes = lines > 1 ? [0, 3, 7, 10, 14] : [0, 3, 7];
+      notes.forEach((s, i) => bell(a, NOTE(s, 659.25), 0.24 + i * 0.07, 0.07, 0.9, 6000));
+      a.tone({ f: 110, f2: 55, t: 0.24, glide: 0.5, d: 0.5, g: 0.16 });
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6); const step = 0.07 - k * 0.007;
+      for (let i = 0; i < 4 + k; i++) tick(a, i % 2 ? 4700 : 5300, i * step, 0.05);
+      bell(a, NOTE(PENTA[k] + 3, 880), (4 + k) * step, 0.06, 0.7, 6000);
+    },
+    allClear(a) {
+      a.noise({ a: 0.4, d: 0.05, g: 0.1, type: 'bandpass', f: 300, f2: 4000, q: 1, sweep: 0.42 });
+      [0, 7, 3, 10].forEach((s, i) => bell(a, NOTE(s, 330), 0.45 + i * 0.32, 0.09, 1.4, 5000));
+    },
+    gameOver(a) { [0, 0.16, 0.36, 0.62, 0.95].forEach((t) => tick(a, 5000, t, 0.05)); bell(a, 196, 1.2, 0.09, 1.6, 3000); },
+    ui(a) { metal(a, 5600, 0, 0.05, 0.01); },
+  },
+
+  // 17 Pixel Crush: 8-bit square-wave blips, coin pickups and a 1-up jingle
+  chiptune: {
+    place(a) {
+      a.tone({ f: 784, d: 0.03, g: 0.065, type: 'square', a: 0.001 });
+      a.tone({ f: 1046.5, t: 0.03, d: 0.04, g: 0.055, type: 'square', a: 0.001 });
+      a.tone({ f: 131, d: 0.06, g: 0.13, type: 'triangle', a: 0.001 });
+    },
+    invalid(a) { a.tone({ f: 110, d: 0.12, g: 0.07, type: 'square', a: 0.001 }); a.noise({ d: 0.05, g: 0.06, type: 'lowpass', f: 1200 }); },
+    clear(a, { lines = 1 }) {
+      a.tone({ f: 988, d: 0.055, g: 0.06, type: 'square', a: 0.001 });
+      a.tone({ f: 1318.5, t: 0.06, d: 0.2, g: 0.06, type: 'square', a: 0.001 });
+      if (lines > 1) [0, 4, 7, 12].forEach((s, i) => a.tone({ f: NOTE(s, 1046.5), t: 0.14 + i * 0.045, d: 0.05, g: 0.05, type: 'square', a: 0.001 }));
+      a.noise({ d: 0.06, g: 0.05, type: 'highpass', f: 3000 });
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 3 + k; i++) a.tone({ f: NOTE([0, 4, 7, 12, 16, 19, 24, 28, 31][i] ?? 31, 523.25 + k * 30), t: i * 0.04, d: 0.04, g: 0.05, type: 'square', a: 0.001 });
+    },
+    allClear(a) {
+      [0, 4, 7, 12, 16, 19, 24].forEach((s, i) => a.tone({ f: NOTE(s, 523.25), t: i * 0.075, d: 0.07, g: 0.055, type: 'square', a: 0.001 }));
+      [0, 7, 12].forEach((s, i) => a.tone({ f: NOTE(s, 130.8), t: i * 0.17, d: 0.15, g: 0.12, type: 'triangle', a: 0.001 }));
+    },
+    gameOver(a) { [7, 6, 5, 4, 3, 2, 1, 0].forEach((s, i) => a.tone({ f: NOTE(s, 392), t: i * 0.09, d: 0.08, g: 0.055, type: 'square', a: 0.001 })); a.tone({ f: 98, t: 0.75, d: 0.4, g: 0.12, type: 'triangle' }); },
+    ui(a) { a.tone({ f: 1568, d: 0.025, g: 0.045, type: 'square', a: 0.001 }); },
+  },
+
+  // 18 Capsule Field Notes: pill rattle, capsule snap and powder hiss, rubber stamp
+  capsule: {
+    place(a) {
+      for (let i = 0; i < 3; i++) plastic(a, i * a.rand(0.018, 0.03), 0.09 - i * 0.02);
+      a.tone({ f: 170, f2: 120, d: 0.05, g: 0.14, lp: 700 });
+    },
+    invalid(a) { a.noise({ d: 0.03, g: 0.1, type: 'lowpass', f: 800 }); plastic(a, 0, 0.04); },
+    clear(a, { lines = 1 }) {
+      a.noise({ d: 0.012, g: 0.28, type: 'bandpass', f: 2500, q: 3 });
+      a.modal({ f: 1800, g: 0.08, ratios: [1, 2.2], decays: [0.03, 0.015], gains: [1, 0.4] });
+      a.noise({ t: 0.01, a: 0.02, d: 0.22 + lines * 0.05, g: 0.05, type: 'highpass', f: 3200, color: 'pink' });
+      stamp(a, 0.2, 0.26);
+      if (lines > 1) stamp(a, 0.34, 0.2);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      const clicks = Math.min(6 + k * 2, 14);
+      for (let i = 0; i < clicks; i++) plastic(a, i * 0.022 + a.rand(0, 0.01), 0.05);
+      stamp(a, clicks * 0.022 + 0.04, 0.2);
+    },
+    allClear(a) {
+      for (let i = 0; i < 14; i++) plastic(a, i * 0.026, 0.05);
+      a.noise({ t: 0.42, a: 0.04, d: 0.25, g: 0.07, type: 'bandpass', f: 900, f2: 2600, q: 0.9, color: 'pink' });
+      stamp(a, 0.7, 0.32);
+    },
+    gameOver(a) { [0, 0.12, 0.26, 0.42].forEach((t) => plastic(a, t, 0.06)); stamp(a, 0.7, 0.24); },
+    ui(a) { plastic(a, 0, 0.07); },
+  },
+
+  // 19 Queen's Tea Party: card snapped on felt, riffle shuffle and a teacup clink
+  wonderland: {
+    place(a) {
+      a.noise({ d: 0.025, g: 0.3, type: 'bandpass', f: 1300, q: 0.9 });
+      a.noise({ d: 0.008, g: 0.1, type: 'highpass', f: 4200 });
+      a.tone({ f: 230, f2: 140, d: 0.035, g: 0.09 });
+    },
+    invalid(a) { a.noise({ d: 0.06, g: 0.1, type: 'lowpass', f: 900, color: 'pink' }); },
+    clear(a, { lines = 1 }) {
+      const n = Math.min(10 + lines * 4, 22);
+      riffle(a, 0, n, 0.06);
+      const t = n * 0.015 + 0.03;
+      porcelain(a, 2850, t, 0.09); porcelain(a, 2920, t + 0.012, 0.05);
+      if (lines > 1) porcelain(a, 3500, t + 0.14, 0.06);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      a.noise({ a: 0.03, d: 0.12, g: 0.07, type: 'bandpass', f: 1500, f2: 3500, q: 0.8, color: 'pink' });
+      for (let i = 0; i < 1 + Math.min(k, 4); i++) porcelain(a, 3000 + i * 260, 0.1 + i * 0.09, 0.06);
+    },
+    allClear(a) {
+      riffle(a, 0, 12, 0.055); riffle(a, 0.3, 12, 0.055);
+      [0, 0.14, 0.26].forEach((t, i) => porcelain(a, 3300 + (i % 2) * 140, 0.62 + t, 0.06));
+    },
+    gameOver(a) { let t = 0; let gap = 0.03; for (let i = 0; i < 10; i++) { a.noise({ t, d: 0.02, g: 0.12, type: 'bandpass', f: a.rand(900, 1600), q: 0.9 }); t += gap; gap *= 1.3; } porcelain(a, 2200, t + 0.1, 0.06); },
+    ui(a) { a.noise({ d: 0.012, g: 0.14, type: 'bandpass', f: 2200, q: 1.1 }); },
+  },
+
+  // 20 Paper Sky Daydream: paper tap and pencil tick; pages flutter, a paper plane, soft piano
+  papersky: {
+    place(a) {
+      a.noise({ d: 0.04, g: 0.14, type: 'bandpass', f: 2200, q: 0.7, color: 'pink' });
+      a.tone({ f: 180, d: 0.05, g: 0.1, lp: 700 });
+      a.noise({ t: 0.02, d: 0.003, g: 0.05, type: 'highpass', f: 5200 });
+    },
+    invalid(a) { for (let i = 0; i < 4; i++) a.noise({ t: i * 0.02, d: 0.015, g: 0.06, type: 'lowpass', f: 1500, color: 'pink' }); },
+    clear(a, { lines = 1 }) {
+      const flaps = Math.min(4 + lines * 2, 10);
+      for (let i = 0; i < flaps; i++) flap(a, i * 0.045, 0.07);
+      a.noise({ a: 0.1, d: 0.3, g: 0.06, type: 'bandpass', f: 500, f2: 2600, q: 1.2, color: 'pink', sweep: 0.4 });
+      (lines > 1 ? [0, 7, 16, 19] : [0, 7, 16]).forEach((s, i) => piano(a, NOTE(s, 523.25), 0.1 + i * 0.09, 0.06));
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 2 + Math.min(k, 4); i++) piano(a, NOTE([0, 4, 7, 11, 14, 16, 19][i], 659.25), i * 0.08, 0.05, 0.6);
+      flap(a, 0, 0.05); flap(a, 0.06, 0.05);
+    },
+    allClear(a) {
+      for (let i = 0; i < 9; i++) flap(a, i * 0.05, 0.06);
+      a.noise({ a: 0.2, d: 0.6, g: 0.07, type: 'bandpass', f: 400, f2: 3000, q: 1, color: 'pink', sweep: 0.8 });
+      [0, 4, 7, 11, 14, 19].forEach((s, i) => piano(a, NOTE(s, 523.25), 0.2 + i * 0.1, 0.055, 1.1));
+    },
+    gameOver(a) { [7, 4, 2, 0].forEach((s, i) => piano(a, NOTE(s, 392), i * 0.28, 0.06, 1.0)); flap(a, 1.2, 0.05, 900); },
+    ui(a) { piano(a, 1568, 0, 0.035, 0.4); },
+  },
+
+  // 21 Prism Desk: glass UI tap; camera shutter and a lens shimmer
+  prism: {
+    place(a) {
+      a.tone({ f: 2400, d: 0.015, g: 0.045 });
+      a.noise({ d: 0.004, g: 0.06, type: 'highpass', f: 6000 });
+      a.tone({ f: 320, f2: 180, d: 0.03, g: 0.13 });
+    },
+    invalid(a) { a.tone({ f: 260, f2: 200, d: 0.05, g: 0.1, lp: 900 }); a.tone({ f: 240, f2: 190, t: 0.07, d: 0.05, g: 0.08, lp: 900 }); },
+    clear(a, { lines = 1 }) {
+      shutter(a, 0, 0.26);
+      const notes = lines > 1 ? [0, 4, 7, 11, 14] : [0, 7, 11];
+      notes.forEach((s, i) => glass(a, NOTE(s, 2093), 0.1 + i * 0.035, 0.028, 0.35, 8000));
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 1 + Math.min(k, 4); i++) shutter(a, i * 0.11, 0.18);
+    },
+    allClear(a) {
+      shutter(a, 0, 0.26);
+      for (let i = 0; i < 8; i++) a.noise({ t: 0.15 + i * 0.035, d: 0.006, g: 0.08, type: 'bandpass', f: 2600, q: 2 });
+      thud(a, 0.48, 0.18, 120);
+      [0, 4, 7, 11].forEach((s, i) => glass(a, NOTE(s, 1760), 0.55 + i * 0.06, 0.03, 0.5, 8000));
+    },
+    gameOver(a) { thud(a, 0, 0.2, 110); a.tone({ f: 620, f2: 70, glide: 0.8, t: 0.05, d: 0.85, g: 0.07, type: 'triangle', lp: 1400 }); },
+    ui(a) { a.tone({ f: 2600, d: 0.012, g: 0.04 }); a.tone({ f: 300, f2: 200, d: 0.02, g: 0.06 }); },
+  },
+
+  // 22 Lily Reliquary: wax seal press and signet; a cast church bell and ember crackle
+  reliquary: {
+    place(a) {
+      a.tone({ f: 110, f2: 78, d: 0.1, g: 0.26 });
+      a.noise({ d: 0.05, g: 0.12, type: 'lowpass', f: 900, color: 'brown' });
+      metal(a, 2600, 0.02, 0.04, 0.06);
+    },
+    invalid(a) { a.noise({ d: 0.05, g: 0.1, type: 'lowpass', f: 500, color: 'brown' }); },
+    clear(a, { lines = 1 }) {
+      churchBell(a, 233, 0, 0.11, 1.1 + lines * 0.15);
+      if (lines > 1) churchBell(a, 311, 0.28, 0.08, 1.0);
+      for (let i = 0; i < 4 + lines * 2; i++) a.noise({ t: 0.05 + Math.random() * 0.5, d: 0.006, g: 0.05, type: 'highpass', f: a.rand(2500, 5000) });
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 4);
+      [0, -2, -4, -5, -7].slice(0, 1 + k).forEach((s, i) => churchBell(a, NOTE(s, 466), i * 0.15, 0.06, 0.8));
+    },
+    allClear(a) {
+      [0, 7, 12, 15].forEach((s) => a.tone({ f: NOTE(s, 220) * a.rand(0.997, 1.003), a: 0.35, d: 1.4, g: 0.022, type: 'sawtooth', lp: 1300 }));
+      churchBell(a, 116.5, 0.2, 0.14, 2.2);
+      for (let i = 0; i < 12; i++) a.noise({ t: 0.2 + Math.random() * 1.2, d: 0.006, g: 0.045, type: 'highpass', f: a.rand(2500, 5000) });
+    },
+    gameOver(a) { churchBell(a, 98, 0, 0.13, 2.4); for (let i = 0; i < 6; i++) a.noise({ t: 0.4 + i * 0.25, d: 0.006, g: 0.03, type: 'highpass', f: 3000 }); },
+    ui(a) { bell(a, 1760, 0, 0.04, 0.25); },
+  },
+
+  // 23 Gilt & Ink: ink brush dab and gold-foil crinkle; a sword drawn and its ringing blade
+  gilt: {
+    place(a) {
+      a.noise({ a: 0.006, d: 0.06, g: 0.14, type: 'bandpass', f: 700, q: 0.6, color: 'pink' });
+      for (let i = 0; i < 3; i++) a.noise({ t: 0.02 + i * a.rand(0.012, 0.025), d: 0.004, g: 0.04, type: 'highpass', f: a.rand(5000, 8000) });
+      glass(a, 3500, 0.01, 0.018, 0.2, 9000);
+    },
+    invalid(a) { a.noise({ d: 0.05, g: 0.1, type: 'lowpass', f: 600, color: 'pink' }); },
+    clear(a, { lines = 1 }) {
+      shing(a, 0, 0.09);
+      metal(a, 2800, 0.32, 0.05, 0.02); metal(a, 2500, 0.38, 0.04, 0.02);
+      if (lines > 1) shing(a, 0.2, 0.06);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 1 + Math.min(k, 3); i++) a.modal({ f: 1870 * Math.pow(2, (PENTA[i + 1] ?? 12) / 12), t: i * 0.09, g: 0.05, ratios: [1, 2.76, 5.4], decays: [0.6, 0.3, 0.15], gains: [1, 0.4, 0.15] });
+    },
+    allClear(a) {
+      shing(a, 0, 0.1);
+      [0, 4, 7].forEach((s, i) => a.modal({ f: NOTE(s, 1245), t: 0.3 + i * 0.06, g: 0.05, ratios: [1, 2.76, 5.4], decays: [1.2, 0.6, 0.3], gains: [1, 0.4, 0.15] }));
+      a.modal({ f: 98, t: 0.3, g: 0.12, ratios: [1, 1.48, 2.1, 2.9], decays: [2, 1.5, 1.1, 0.8], gains: [1, 0.6, 0.4, 0.2] });
+    },
+    gameOver(a) { shing(a, 0, 0.07, false); thud(a, 0.3, 0.2, 100); },
+    ui(a) { a.noise({ d: 0.005, g: 0.06, type: 'highpass', f: 6500 }); glass(a, 3200, 0, 0.015, 0.15, 9000); },
+  },
+
+  // 24 Garden Ticket: ticket punch; birdsong and rustling petals
+  garden: {
+    place(a) {
+      a.noise({ d: 0.012, g: 0.22, type: 'bandpass', f: 3000, q: 2 });
+      metal(a, 2200, 0, 0.04, 0.02);
+      a.tone({ f: 200, f2: 140, d: 0.03, g: 0.1 });
+    },
+    invalid(a) { a.noise({ d: 0.04, g: 0.08, type: 'lowpass', f: 900, color: 'pink' }); },
+    clear(a, { lines = 1 }) {
+      const n = Math.min(2 + lines, 6);
+      for (let i = 0; i < n; i++) chirp(a, 0.03 + i * a.rand(0.16, 0.22), 0.045, a.rand(2800, 3600));
+      a.noise({ a: 0.03, d: 0.25, g: 0.035, type: 'bandpass', f: 3200, q: 0.8, color: 'pink' });
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      a.tone({ f: 3600 + k * 120, d: 0.28, g: 0.035, vib: { rate: 26, depth: 260 } });
+      chirp(a, 0.3, 0.04, 3800);
+    },
+    allClear(a) {
+      for (let i = 0; i < 8; i++) chirp(a, Math.random() * 1.1, 0.035, a.rand(2600, 4200));
+      bell(a, 2349, 0.15, 0.05, 0.6, 8000); bell(a, 2349, 0.38, 0.05, 0.6, 8000);
+    },
+    gameOver(a) { a.tone({ f: 3400, f2: 1800, glide: 0.5, d: 0.5, g: 0.035 }); bell(a, 1175, 0.6, 0.05, 0.9); },
+    ui(a) { a.tone({ f: 3800, f2: 4600, glide: 0.03, d: 0.04, g: 0.03 }); },
   },
 };
 

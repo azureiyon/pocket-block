@@ -7,9 +7,10 @@ A mobile-first block puzzle on an 8×8 board, written in vanilla HTML, CSS and J
 - Score = `5 × blocks placed + 80 × lines²`. Two lines in one move give 320 line points. Combos and board clears get celebration effects but no bonus points.
 - You get three pieces per tray. The tray refills only after all three are placed, and the game ends when none of the remaining pieces fit.
 - Keyboard: `1`–`3` select a piece, arrow keys aim, `Enter`/`Space` place, `Esc` cancels.
-- 14 themes, each with its own block material, environment, particles, motion and synthesized sound kit.
+- 24 themes, each with its own block material, environment, particles, motion and synthesized sound kit.
 - Optional starting boards (Settings → Game): Off, Random (the default, a 25% chance) or Always. You can also pick a variant: Scattered Start, Almost There or Corner Trouble.
 - **Blast mode** (Settings → Game → Game mode, or open the game with `?mode=blast`): a faster, more generous version built around quick clears and long combo streaks. See [Blast mode](#blast-mode) below.
+- **Flow mode** (`?mode=flow`): Blast's scoring with a board-aware difficulty director that ramps up with your score until the run ends. See [Flow mode](#flow-mode) below.
 
 ## Blast mode
 
@@ -51,6 +52,27 @@ Simulation, 300 seeds per strategy, Blast rules scoring applied to both (`tools/
 
 The full comparison is in the results file. The planning bot hits the 600-move cap with both generators, so its game length says little.
 
+## Flow mode
+
+Flow uses Blast's scoring, streaks and colour wipes, but deals pieces with `src/core/generator-flow.js`, a difficulty director built to a friend's spec:
+
+- **Pool:** the classic 27 orientations plus 2- and 3-tile diagonals, Z and J tetrominoes and the 5-tile big L, 41 in all. The other modes still use only the classic 27.
+- **Board analyzer:** density, rows and columns missing 1–4 cells (with the exact cells), combo urgency (critical when a streak is one miss from breaking), and a tier from the score: under 2,000, 2,000–6,000, 6,000–12,000 and 12,000+. Flow is the only mode whose generator sees the score.
+- **Rescue boost:** when the board is over 60% full or the streak is critical, shapes that fit and complete a line right now get up to 6× weight. Lines 1–3 cells from full trigger half strength. The boost fades towards 1× as the tier rises, while 3×3s, 1×5s, big L's and 3-tile diagonals get commoner.
+- **Lookahead:** every wave is checked against every distinct placement order (up to 3! = 6), with line clears applied after each piece. Waves with no solvable order are re-drawn, then replaced by small fillers, then by a complete constructive search. Three identical pieces are never dealt outside a clutch wave.
+- **Clutch waves (tier 2+):** some of the time, a wave that only fits in one or two orders, ideally one that fits only because a line clears.
+- **Punish waves (tier 3+, crowded or fragmented board):** sometimes the first two pieces fit but the third can't, so long runs end naturally. These are the only trays in the game without a verified full sequence.
+
+Simulation, 200 seeds per strategy, Blast vs Flow (`tools/sim/results/blast-vs-flow.md`):
+
+| Blast → Flow | random | greedy | space (1-ply) | lookahead |
+|---|---|---|---|---|
+| Moves per game, median | 20 → 20 | 71 → 47 | 197 → 80 | 600 (cap) → 131 |
+| Score per game, median | 239 → 208 | 2659 → 1819 | 10500 → 4693 | 54916 → 7780 |
+| Longest streak per game (mean) | 2.5 → 2.6 | 10.6 → 9.7 | 16.3 → 14.1 | 34.6 → 18.5 |
+
+Casual play feels about the same as Blast. Strong play now reaches the score tiers and ends, instead of running forever.
+
 ## Running locally
 
 ES modules and the Web Worker need an HTTP server. Opening the HTML file directly (`file://`) won't work.
@@ -81,10 +103,11 @@ What the suites cover:
 | Whole-tray solvability (pieces that fit alone but not together), clears between simulated moves, recency ordering, uniform orientation weighting, constructive fallback | `tests/rules.test.js`, `tests/generator.test.js` |
 | 100 accepted seeded boards per variant with accepted/rejected counts, layout constraints, opening-batch sequence, Almost There early clear, bounded fallback that keeps the same tray, Off mode matching normal generation, reproducibility, fresh layouts | `tests/openings.test.js` |
 | Blast generator (solvability, clear bias vs rhythm, streak rescue, pressure weights), Blast scoring, streak window, colour wipes, separate best score, classic unchanged | `tests/generator-blast.test.js` |
+| Flow catalog (41 orientations), tiers, analyzer, rescue decay, order counting with clears, clutch and punish waves, mode wiring | `tests/generator-flow.test.js` |
 | Game over, refill timing, many successive batches, duplicate input, stale worker results after restart, scoring of pre-placed blocks, touch/mouse drag and cancellation | `tests/game.test.js` |
 | Theme registry completeness, preview/cancel/commit, theme switching without gameplay changes, auto-switch only on an all-clear | `tests/themes.test.js` |
 | Settings persistence and unavailable storage, audio unlock/drop-when-suspended/voice limits/buffer cache/cleanup (fake Web Audio) | `tests/settings-audio.test.js` |
-| DOM, layout at 320×568 to 430×932 plus landscape, 14 themes × 3 variants | `tests/dom.test.js` (browser only) |
+| DOM, layout at 320×568 to 430×932 plus landscape, 24 themes × 3 variants | `tests/dom.test.js` (browser only) |
 
 ## Gameplay simulation
 
@@ -126,6 +149,7 @@ src/core/rules.js        Bitboard rules shared by real moves, the generator sear
 src/core/generator.js    Classic fair tray generation (recency ordering, 12 + 16 proposals, constructive fallback)
 src/core/generator-rhythm.js  Board-aware default generator (moods, candidate drafts, beam-search evaluation)
 src/core/generator-blast.js   Blast mode generator (clear-hungry drafts, streak-aware scoring)
+src/core/generator-flow.js    Flow mode director (board analyzer, rescue weights, 6-order lookahead, score tiers)
 src/core/modes.js        Game modes: scoring, combo streak window, generator, palette, best-score key
 src/core/generators.js   Generator registry; DEFAULT_GENERATOR and ?gen=classic rollback
 src/core/boardeval.js    Bitboard board features (fragmentation, room for big pieces, near-complete lines)
