@@ -260,3 +260,228 @@
 [data-theme="mahjong"] .modal, [data-theme="mahjong"] .sheet { background: #43181290; background: #3f1611; }
 [data-theme="aero"] .slot, [data-theme="aero"] .icon-btn { background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(220,245,255,.75)); }
 [data-theme="patisserie"] .slot { background: repeating-linear-gradient(45deg, #fff 0 6px, #fff3f6 6px 12px); }
+
+/* =====================================================================
+   Themes 15–24. Each tile is built from its reference's own material.
+   ===================================================================== */
+
+/* 15 Starflower Post — chalky gouache sticker, white die-cut edge, painted star flower */
+.m-gouache {
+  border-radius: 30% 24% 32% 26%;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(255,255,255,.5), transparent 42%),
+    repeating-linear-gradient(118deg, rgba(255,255,255,.08) 0 1.5px, transparent 1.5px 4px),
+    radial-gradient(circle at 70% 85%, rgba(30,30,120,.18), transparent 55%),
+    var(--c);
+  box-shadow: 0 0 0 2px #fdfdff, 0 2px 0 2px rgba(60,66,170,.22);
+}
+.m-gouache > i {
+  inset: 24%; border-radius: 0;
+  clip-path: polygon(50% 0, 63% 33%, 98% 36%, 71% 58%, 80% 94%, 50% 75%, 20% 94%, 29% 58%, 2% 36%, 37% 33%);
+  background: radial-gradient(circle at 50% 54%, var(--c) 0 16%, #fbfbff 19%);
+  opacity: .95;
+}
+.m-gouache[data-c="2"] > i, .m-gouache[data-c="5"] > i, .m-gouache[data-c="7"] > i { inset: 32%; opacity: .8; }
+
+/* 16 Moonside Mechanism — brushed chrome bezel around an enamel lens; each colour is a moon phase */
+.m-chrome {
+  border-radius: 18%;
+  background: conic-gradient(from 30deg, #f6f8fd, #a9afc0, #eef1f8, #858ba0, #dfe3ee, #9aa0b3, #f6f8fd);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.8), inset 0 -2px 3px rgba(20,24,50,.35), 0 2px 4px rgba(0,0,0,.45);
+}
+.m-chrome > i {
+  inset: 9%; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.35), transparent 45%), var(--c);
+  box-shadow: inset 0 0 0 1.5px #1a1f3a, inset 0 2px 4px rgba(0,0,0,.3), 0 0 0 1px rgba(255,255,255,.7);
+}
+.m-chrome > i::before {
+  content: ""; inset: 27%; border-radius: 50%;
+  background: radial-gradient(circle at 78% 50%, transparent 0 46%, rgba(250,246,226,.95) 48%);
+}
+.m-chrome[data-c="2"] > i::before { background: radial-gradient(circle at 60% 50%, transparent 0 44%, rgba(250,246,226,.95) 46%); }
+.m-chrome[data-c="3"] > i::before { background: radial-gradient(circle at 40% 36%, #fffdf2, rgba(250,246,226,.9) 60%, rgba(200,196,170,.9)); }
+.m-chrome[data-c="4"] > i::before { background: linear-gradient(90deg, rgba(250,246,226,.95) 50%, transparent 50%); }
+.m-chrome[data-c="5"] > i::before { background: radial-gradient(circle at 22% 50%, transparent 0 46%, rgba(30,30,50,.85) 48%); }
+.m-chrome[data-c="6"] > i::before { background: radial-gradient(circle at 115% 50%, transparent 0 40%, rgba(250,246,226,.95) 42%); }
+.m-chrome[data-c="7"] > i::before { background: none; box-shadow: inset 0 0 0 1.5px rgba(250,246,226,.95), 0 0 4px rgba(250,246,226,.7); }
+
+/* 17 Pixel Crush — hard pixel block: stepped bevel, dither, pixel hearts */
+.m-pixel {
+  border-radius: 0;
+  background: var(--c);
+  box-shadow: inset 3px 3px 0 rgba(255,255,255,.6), inset -3px -3px 0 rgba(120,20,70,.28), 0 0 0 1px rgba(150,30,90,.35);
+}
+.piece .m-pixel { box-shadow: inset 2px 2px 0 rgba(255,255,255,.6), inset -2px -2px 0 rgba(120,20,70,.28); }
+.m-pixel > i {
+  inset: 58% 14% 14% 58%; border-radius: 0;
+  background: repeating-conic-gradient(rgba(255,255,255,.55) 0 25%, transparent 0 50%) 0 0 / 4px 4px;
+}
+.m-pixel[data-c="1"] > i::before, .m-pixel[data-c="3"] > i::before, .m-pixel[data-c="5"] > i::before { content: none; }
+.m-pixel[data-c="1"] > i, .m-pixel[data-c="3"] > i, .m-pixel[data-c="5"] > i {
+  inset: 26% 22% 30% 22%; background: #fff;
+  clip-path: polygon(14.3% 0, 42.9% 0, 42.9% 16.7%, 57.1% 16.7%, 57.1% 0, 85.7% 0, 85.7% 16.7%, 100% 16.7%, 100% 50%, 85.7% 50%, 85.7% 66.7%, 71.4% 66.7%, 71.4% 83.3%, 57.1% 83.3%, 57.1% 100%, 42.9% 100%, 42.9% 83.3%, 28.6% 83.3%, 28.6% 66.7%, 14.3% 66.7%, 14.3% 50%, 0 50%, 0 16.7%, 14.3% 16.7%);
+  opacity: .9;
+}
+
+/* 18 Capsule Field Notes — two-tone medicine capsule, sketchy ink outline, visible powder */
+.m-capsule {
+  border-radius: 46%;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.55) 0 16%, rgba(255,255,255,0) 32% 70%, rgba(80,30,10,.14)),
+    linear-gradient(90deg, var(--c) 0 50%, #f8eedb 50%);
+  box-shadow: inset 0 0 0 1.5px rgba(95,45,25,.62), 0 2px 0 rgba(95,45,25,.22);
+}
+.m-capsule:is([data-c="2"], [data-c="4"], [data-c="6"]) {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.5) 0 14%, rgba(255,255,255,0) 30% 70%, rgba(80,30,10,.14)),
+    linear-gradient(180deg, var(--c) 0 50%, #f8eedb 50%);
+}
+.m-capsule > i { inset: 10% 48.5%; border-radius: 2px; background: rgba(95,45,25,.4); }
+.m-capsule:is([data-c="2"], [data-c="4"], [data-c="6"]) > i { inset: 48.5% 10%; }
+.m-capsule::after {
+  content: ""; inset: 30% 14% 30% 60%; border-radius: 40%;
+  background: radial-gradient(circle, var(--c) 0 1.1px, transparent 1.5px) 0 0 / 4px 4px;
+  opacity: .6;
+}
+.m-capsule:is([data-c="2"], [data-c="4"], [data-c="6"])::after { inset: 60% 30% 14% 30%; }
+
+/* 19 Queen's Tea Party — playing card: cream face, coloured frame, a suit per colour, acrylic shine */
+.m-card {
+  border-radius: 14%;
+  background: linear-gradient(160deg, rgba(255,255,255,.75), rgba(255,255,255,0) 45%), #f8eedc;
+  box-shadow: inset 0 0 0 2px #f8eedc, inset 0 0 0 3.5px var(--c), 0 2px 0 rgba(70,10,20,.45), 0 3px 6px rgba(70,10,20,.25);
+}
+.m-card > i {
+  inset: 0; display: grid; place-items: center; color: var(--c); line-height: 1;
+  font-family: "Apple Symbols", "Segoe UI Symbol", "Baskerville", serif; font-weight: 700; font-size: 10px;
+}
+.cell .m-card > i, .clear-ghost.m-card > i { font-size: calc(var(--bsize) * 0.072); }
+.piece .m-card > i { font-size: calc(var(--tcs) * 0.72); }
+.m-card::after {
+  content: ""; inset: 0; border-radius: inherit;
+  background: linear-gradient(120deg, transparent 38%, rgba(255,255,255,.6) 46%, transparent 54%);
+}
+
+/* 20 Paper Sky Daydream — deckled paper, coloured-pencil hatching, holographic folded corner */
+.m-paper {
+  border-radius: 0;
+  clip-path: polygon(0 4%, 9% 0, 42% 2%, 83% 0, 100% 17%, 98% 52%, 100% 93%, 93% 100%, 56% 98%, 13% 100%, 0 97%, 2% 50%);
+  background:
+    repeating-linear-gradient(-38deg, rgba(255,255,255,.26) 0 1px, transparent 1px 3.5px),
+    linear-gradient(200deg, rgba(255,255,255,.5), rgba(255,255,255,0) 55%),
+    var(--c);
+}
+.m-paper > i { inset: 0; border-radius: 0; background: linear-gradient(28deg, rgba(50,50,130,.24), transparent 46%); }
+.m-paper::after {
+  content: ""; top: 0; right: 0; width: 17%; height: 17%; transform: scale(1.25); transform-origin: 0 100%;
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+  background: linear-gradient(135deg, #ffffff, #d6efff 35%, #f7d3ef 65%, #fff3c4);
+}
+
+/* 21 Prism Desk — frosted glass widget: tinted glass, a status bar, prism refraction at the corner */
+.m-frost {
+  border-radius: 20%;
+  background: linear-gradient(140deg, rgba(255,255,255,.86), rgba(255,255,255,.5) 55%, rgba(255,255,255,.72)), var(--c);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.95), inset 0 1px 0 #fff, 0 4px 10px rgba(30,45,70,.18);
+}
+.m-frost > i { inset: 64% 18% 20% 18%; border-radius: 999px; background: var(--c); opacity: .9; }
+.m-frost::before { content: ""; left: 18%; top: 18%; width: 18%; height: 18%; border-radius: 50%; background: var(--c); opacity: .8; box-shadow: 0 0 0 2px rgba(255,255,255,.7); }
+.m-frost::after {
+  content: ""; inset: 0; border-radius: inherit; opacity: .7;
+  background: conic-gradient(from 200deg at 100% 100%, transparent 0 62%, rgba(255,130,130,.55), rgba(255,230,120,.55), rgba(130,255,200,.55), rgba(130,170,255,.55), transparent 90%);
+}
+
+/* 22 Lily Reliquary — black embossed plate, engraved double frame, gold-foil emblem per colour; red wax seal */
+.m-foil {
+  border-radius: 8%;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,236,190,.1), transparent 62%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px),
+    #1d1a15;
+  box-shadow: inset 0 0 0 1px var(--c), inset 0 0 0 3px #1d1a15, inset 0 0 0 3.6px rgba(205,178,122,.45), 0 2px 0 #000, 0 3px 6px rgba(0,0,0,.6);
+}
+.m-foil > i {
+  inset: 0; display: grid; place-items: center; line-height: 1;
+  font-family: "Apple Symbols", "Segoe UI Symbol", "Cochin", serif; font-size: 10px;
+  color: var(--c);
+  background: linear-gradient(165deg, #fff6dc 10%, var(--c) 45%, #5a4520 95%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.8));
+}
+.cell .m-foil > i, .clear-ghost.m-foil > i { font-size: calc(var(--bsize) * 0.07); }
+.piece .m-foil > i { font-size: calc(var(--tcs) * 0.7); }
+.m-foil[data-c="3"] {
+  border-radius: 42% 46% 40% 48%;
+  background: radial-gradient(circle at 34% 28%, #ef5466, #b0162a 55%, #6e0b18);
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,.12), inset 0 -3px 4px rgba(0,0,0,.35), 0 2px 0 #3c050c;
+}
+.m-foil[data-c="3"] > i { background: linear-gradient(165deg, #ffd9a0, #c99a4a 60%, #7a5420); -webkit-background-clip: text; background-clip: text; }
+
+/* 23 Gilt & Ink — washi paper with fibres and a crumpled gold-leaf patch */
+.m-washi {
+  border-radius: 10%;
+  background:
+    repeating-linear-gradient(78deg, rgba(255,255,255,.12) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(-12deg, rgba(90,70,40,.06) 0 1px, transparent 1px 9px),
+    radial-gradient(circle at 80% 80%, rgba(70,50,20,.16), transparent 55%),
+    var(--c);
+  box-shadow: inset 0 0 0 1px rgba(80,60,30,.28), inset 0 -2px 0 rgba(0,0,0,.1), 0 1px 2px rgba(60,45,20,.25);
+}
+.m-washi > i {
+  inset: 10% 50% 54% 10%; border-radius: 0;
+  clip-path: polygon(0 10%, 38% 0, 72% 14%, 100% 2%, 88% 46%, 100% 82%, 58% 100%, 30% 86%, 4% 100%, 12% 56%);
+  background: linear-gradient(135deg, #fbe9a8, #c9993c 40%, #f6db8c 62%, #b88a32);
+  opacity: .92;
+}
+.m-washi:is([data-c="2"], [data-c="5"], [data-c="7"]) > i { inset: 56% 10% 12% 54%; opacity: .75; }
+
+/* 24 Garden Ticket — notched ticket stub, dashed frame, a little flower */
+.m-ticket {
+  border-radius: 10%;
+  background: linear-gradient(45deg, rgba(255,255,255,.14) 25%, transparent 25% 50%, rgba(255,255,255,.14) 50% 75%, transparent 75%) 0 0 / 50% 50%, var(--c);
+  -webkit-mask: radial-gradient(circle at 0 50%, transparent 0 17%, #000 18%) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 0 17%, #000 18%) right / 51% 100% no-repeat;
+  mask: radial-gradient(circle at 0 50%, transparent 0 17%, #000 18%) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 0 17%, #000 18%) right / 51% 100% no-repeat;
+}
+.m-ticket > i { inset: 14% 22%; border-radius: 8%; border: 1.5px dashed rgba(255,255,255,.8); }
+.piece .m-ticket > i { border-width: 1px; }
+.m-ticket > i::before {
+  content: ""; inset: 22%;
+  background:
+    radial-gradient(circle at 50% 50%, #f4d36f 0 15%, transparent 17%),
+    radial-gradient(circle at 50% 20%, #fffaf0 0 17%, transparent 19%),
+    radial-gradient(circle at 79% 41%, #fffaf0 0 17%, transparent 19%),
+    radial-gradient(circle at 68% 76%, #fffaf0 0 17%, transparent 19%),
+    radial-gradient(circle at 32% 76%, #fffaf0 0 17%, transparent 19%),
+    radial-gradient(circle at 21% 41%, #fffaf0 0 17%, transparent 19%);
+}
+
+/* ---------- new theme boards and panels ---------- */
+[data-theme="starflower"] .board { box-shadow: 0 0 0 4px #fff, 0 0 0 6px #9da3e6, 0 8px 0 6px #8b91dc, 0 16px 30px rgba(60,60,160,.25); }
+[data-theme="starflower"] .cell { border-radius: 30% 26% 32% 24%; }
+[data-theme="starflower"] .slot { box-shadow: inset 0 0 0 2px #fff, 0 3px 0 #b2b7ec; }
+[data-theme="moonside"] .board { border-radius: calc(var(--bsize) * 0.06); background: radial-gradient(circle at 50% 50%, #1d2552, #10142f 75%); box-shadow: 0 0 0 2px #c9ccd6, 0 0 0 5px #3b4372, 0 0 0 6px #e8b6d8, 0 0 0 9px #0f1430, 0 0 0 10px #8f97c4, 0 16px 34px rgba(0,0,0,.55); }
+[data-theme="moonside"] .cell { border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(160,170,220,.12); }
+[data-theme="moonside"] .icon-btn, [data-theme="moonside"] .slot { box-shadow: inset 0 0 0 1.5px #3c4680, inset 0 0 0 3px #171d40, inset 0 0 0 3.5px rgba(201,204,214,.35); }
+[data-theme="pixel"] .board { border-radius: 0; background: #fff0f7; box-shadow: 0 0 0 3px #fff, 0 0 0 6px #ff8dbf, 6px 6px 0 6px #ffb3d6, 0 16px 26px rgba(255,80,150,.18); }
+[data-theme="pixel"] .cell { border-radius: 0; box-shadow: inset 2px 2px 0 #ffc4df; }
+[data-theme="pixel"] .icon-btn, [data-theme="pixel"] .slot, [data-theme="pixel"] .btn { border-radius: 0; box-shadow: inset 0 0 0 2px #ff8dbf, 4px 4px 0 #ffb3d6; }
+[data-theme="capsule"] .board { border-radius: calc(var(--bsize) * 0.02); background: linear-gradient(rgba(140,90,50,.13) 1px, transparent 1px) 0 0 / 9px 9px, linear-gradient(90deg, rgba(140,90,50,.13) 1px, transparent 1px) 0 0 / 9px 9px, #f8ecd7; box-shadow: inset 0 0 0 1.5px #8a5a3c, 0 0 0 5px #b07a50, 0 0 0 7px #6b3b26, 0 12px 24px rgba(90,50,20,.25); }
+[data-theme="capsule"] .cell { background: rgba(241,225,196,.55); border-radius: 30%; box-shadow: inset 0 0 0 1px rgba(160,110,70,.18); }
+[data-theme="capsule"] .slot { background: linear-gradient(rgba(140,90,50,.1) 1px, transparent 1px) 0 0 / 9px 9px, #fbf2e2; }
+[data-theme="wonderland"] .board { background: repeating-linear-gradient(45deg, rgba(0,0,0,.08) 0 10%, transparent 10% 20%), repeating-linear-gradient(-45deg, rgba(0,0,0,.08) 0 10%, transparent 10% 20%), #a3263a; box-shadow: inset 0 0 0 2px #f2d28a, 0 0 0 5px #fff8ef, 0 0 0 7px #231a1f, 0 12px 26px rgba(100,15,30,.35); }
+[data-theme="wonderland"] .cell { background: rgba(110,20,36,.55); border-radius: 14%; }
+[data-theme="wonderland"] .slot { background: linear-gradient(45deg, #fff8ef 25%, #fbefe2 25% 50%, #fff8ef 50% 75%, #fbefe2 75%) 0 0 / 18px 18px; box-shadow: inset 0 0 0 1.5px #d9a6a0, 0 3px 0 #c41f3b; }
+[data-theme="papersky"] .board { border-radius: calc(var(--bsize) * 0.015); background: linear-gradient(rgba(130,140,210,.12) 1px, transparent 1px) 0 0 / 100% 14px, #f4f5fd; box-shadow: 0 0 0 1px #c3c9ef, 6px 8px 0 -2px #e8ebfa, 6px 8px 0 -1px #c3c9ef, 0 18px 30px rgba(90,100,180,.2); transform: rotate(-.6deg); }
+[data-theme="papersky"] .cell { border-radius: 4%; }
+[data-theme="prism"] .board { background: rgba(255,255,255,.42); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.95), 0 18px 40px rgba(40,50,70,.18); }
+[data-theme="prism"] .slot, [data-theme="prism"] .icon-btn { -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 0 0 1px rgba(255,255,255,.95), 0 6px 16px rgba(40,50,70,.12); }
+[data-theme="reliquary"] .board { border-radius: calc(var(--bsize) * 0.012); box-shadow: inset 0 0 0 1px #8a7448, 0 0 0 4px #0e0d0b, 0 0 0 5px #cdb27a, 0 0 0 9px #0e0d0b, 0 0 0 10px #6b5a3a, 0 16px 34px rgba(0,0,0,.7); }
+[data-theme="reliquary"] .cell { border-radius: 6%; }
+[data-theme="reliquary"] .icon-btn svg { fill: #cdb27a; }
+[data-theme="reliquary"] .icon-btn, [data-theme="reliquary"] .slot { background: #1d1914; box-shadow: inset 0 0 0 1px #6b5a3a, inset 0 0 0 3px #1d1914, inset 0 0 0 3.6px rgba(205,178,122,.3); }
+[data-theme="reliquary"] .modal, [data-theme="reliquary"] .sheet { background: #1d1914; }
+[data-theme="gilt"] .board { border-radius: calc(var(--bsize) * 0.02); box-shadow: inset 0 0 0 1px #f6f1e4, 0 0 0 3px #a8926a, 0 0 0 5px #f6f1e4, 0 0 0 6px #c9a24b, 0 12px 26px rgba(90,70,30,.22); }
+[data-theme="gilt"] .cell { border-radius: 8%; }
+[data-theme="garden"] .board { box-shadow: 0 0 0 4px #fbf5e6, 0 0 0 6px #9db68a, 0 0 0 9px #fbf5e6, 0 0 0 10px #f0919f, 0 14px 28px rgba(80,110,70,.2); }
+[data-theme="garden"] .cell { border-radius: 12%; }
+[data-theme="garden"] .slot { box-shadow: inset 0 0 0 1.5px #c4d4b2, inset 0 0 0 5px #fbf8ee, inset 0 0 0 6px rgba(240,145,159,.5); }

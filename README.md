@@ -7,7 +7,7 @@ A mobile-first block puzzle on an 8×8 board, written in vanilla HTML, CSS and J
 - Score = `5 × blocks placed + 80 × lines²`. Two lines in one move give 320 line points. Combos and board clears get celebration effects but no bonus points.
 - You get three pieces per tray. The tray refills only after all three are placed, and the game ends when none of the remaining pieces fit.
 - Keyboard: `1`–`3` select a piece, arrow keys aim, `Enter`/`Space` place, `Esc` cancels.
-- 14 themes, each with its own block material, environment, particles, motion and synthesized sound kit.
+- 24 themes, each with its own block material, environment, particles, motion and synthesized sound kit.
 - Optional starting boards (Settings → Game): Off, Random (the default, a 25% chance) or Always. You can also pick a variant: Scattered Start, Almost There or Corner Trouble.
 - **Blast mode** (Settings → Game → Game mode, or open the game with `?mode=blast`): a faster, more generous version built around quick clears and long combo streaks. See [Blast mode](#blast-mode) below.
 
@@ -84,7 +84,7 @@ What the suites cover:
 | Game over, refill timing, many successive batches, duplicate input, stale worker results after restart, scoring of pre-placed blocks, touch/mouse drag and cancellation | `tests/game.test.js` |
 | Theme registry completeness, preview/cancel/commit, theme switching without gameplay changes, auto-switch only on an all-clear | `tests/themes.test.js` |
 | Settings persistence and unavailable storage, audio unlock/drop-when-suspended/voice limits/buffer cache/cleanup (fake Web Audio) | `tests/settings-audio.test.js` |
-| DOM, layout at 320×568 to 430×932 plus landscape, 14 themes × 3 variants | `tests/dom.test.js` (browser only) |
+| DOM, layout at 320×568 to 430×932 plus landscape, 24 themes × 3 variants | `tests/dom.test.js` (browser only) |
 
 ## Gameplay simulation
 
