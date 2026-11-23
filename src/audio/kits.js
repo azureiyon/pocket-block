@@ -67,6 +67,11 @@ function shing(a, t, g, up = true) {
   a.modal({ f: 1870, t: t + 0.05, g: g * 0.8, lp: 9000, ratios: [1, 2.76, 5.4, 8.9], decays: [0.9, 0.45, 0.22, 0.1], gains: [1, 0.45, 0.2, 0.08] });
 }
 
+function bowl(a, f, t, g, d = 1.4) { a.modal({ f, t, g, lp: 6000, a: 0.02, ratios: [1, 2.71, 5.1], decays: [d, d * 0.6, d * 0.3], gains: [1, 0.4, 0.15] }); }
+function gong(a, f, t, g, d = 2) { a.modal({ f, t, g, lp: 3000, a: 0.01, ratios: [1, 1.48, 2.1, 2.9], decays: [d, d * 0.75, d * 0.55, d * 0.4], gains: [1, 0.6, 0.4, 0.2] }); }
+function beep(a, f, t, g, d = 0.05) { a.tone({ f, t, a: 0.002, d, g }); }
+function crackle(a, t, n, g, span = 0.3) { for (let i = 0; i < n; i++) a.noise({ t: t + Math.random() * span, d: 0.004, g: g * a.rand(0.5, 1), type: 'highpass', f: a.rand(2500, 6000) }); }
+
 export const KITS = {
   pastel: {
     place(a) {
@@ -629,32 +634,6 @@ export const KITS = {
     ui(a) { bell(a, 1760, 0, 0.04, 0.25); },
   },
 
-  // 23 Gilt & Ink: ink brush dab and gold-foil crinkle; a sword drawn and its ringing blade
-  gilt: {
-    place(a) {
-      a.noise({ a: 0.006, d: 0.06, g: 0.14, type: 'bandpass', f: 700, q: 0.6, color: 'pink' });
-      for (let i = 0; i < 3; i++) a.noise({ t: 0.02 + i * a.rand(0.012, 0.025), d: 0.004, g: 0.04, type: 'highpass', f: a.rand(5000, 8000) });
-      glass(a, 3500, 0.01, 0.018, 0.2, 9000);
-    },
-    invalid(a) { a.noise({ d: 0.05, g: 0.1, type: 'lowpass', f: 600, color: 'pink' }); },
-    clear(a, { lines = 1 }) {
-      shing(a, 0, 0.09);
-      metal(a, 2800, 0.32, 0.05, 0.02); metal(a, 2500, 0.38, 0.04, 0.02);
-      if (lines > 1) shing(a, 0.2, 0.06);
-    },
-    combo(a, { n = 2 }) {
-      const k = cap(n, 6);
-      for (let i = 0; i < 1 + Math.min(k, 3); i++) a.modal({ f: 1870 * Math.pow(2, (PENTA[i + 1] ?? 12) / 12), t: i * 0.09, g: 0.05, ratios: [1, 2.76, 5.4], decays: [0.6, 0.3, 0.15], gains: [1, 0.4, 0.15] });
-    },
-    allClear(a) {
-      shing(a, 0, 0.1);
-      [0, 4, 7].forEach((s, i) => a.modal({ f: NOTE(s, 1245), t: 0.3 + i * 0.06, g: 0.05, ratios: [1, 2.76, 5.4], decays: [1.2, 0.6, 0.3], gains: [1, 0.4, 0.15] }));
-      a.modal({ f: 98, t: 0.3, g: 0.12, ratios: [1, 1.48, 2.1, 2.9], decays: [2, 1.5, 1.1, 0.8], gains: [1, 0.6, 0.4, 0.2] });
-    },
-    gameOver(a) { shing(a, 0, 0.07, false); thud(a, 0.3, 0.2, 100); },
-    ui(a) { a.noise({ d: 0.005, g: 0.06, type: 'highpass', f: 6500 }); glass(a, 3200, 0, 0.015, 0.15, 9000); },
-  },
-
   // 24 Garden Ticket: ticket punch; birdsong and rustling petals
   garden: {
     place(a) {
@@ -679,6 +658,179 @@ export const KITS = {
     },
     gameOver(a) { a.tone({ f: 3400, f2: 1800, glide: 0.5, d: 0.5, g: 0.035 }); bell(a, 1175, 0.6, 0.05, 0.9); },
     ui(a) { a.tone({ f: 3800, f2: 4600, glide: 0.03, d: 0.04, g: 0.03 }); },
+  },
+  // 23 Starry Alchemy: a brush daub with a glass ting; a singing bowl over bubbling flasks
+  alchemy: {
+    place(a) {
+      a.noise({ a: 0.008, d: 0.07, g: 0.15, type: 'bandpass', f: 650, q: 0.6, color: 'pink' });
+      a.tone({ f: 160, f2: 110, d: 0.07, g: 0.14, lp: 700 });
+      glass(a, 2637, 0.02, 0.025, 0.25, 8000);
+    },
+    invalid(a) { a.noise({ d: 0.06, g: 0.1, type: 'lowpass', f: 600, color: 'pink' }); },
+    clear(a, { lines = 1 }) {
+      bowl(a, NOTE(lines > 1 ? 7 : 0, 523.25), 0, 0.09, 1.2 + lines * 0.2);
+      for (let i = 0; i < Math.min(3 + lines * 2, 9); i++) a.drop({ f: a.rand(500, 1100), t: 0.05 + i * a.rand(0.05, 0.09), g: 0.06 });
+      if (lines > 1) bowl(a, NOTE(12, 523.25), 0.18, 0.06, 1.0);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 1 + Math.min(k, 3); i++) bowl(a, NOTE(PENTA[i + k - 1] ?? 12, 659.25), i * 0.12, 0.05, 0.8);
+      twinkle(a, 2093, 0.05, 0.03);
+    },
+    allClear(a) {
+      [0, 4, 7, 11].forEach((s, i) => bowl(a, NOTE(s, 392), i * 0.15, 0.06, 1.8));
+      for (let i = 0; i < 10; i++) a.drop({ f: a.rand(450, 1200), t: 0.2 + i * 0.07, g: 0.05 });
+    },
+    gameOver(a) { bowl(a, 196, 0, 0.1, 2.0); a.tone({ f: 260, f2: 130, glide: 1.2, t: 0.1, d: 1.2, g: 0.04, type: 'triangle', lp: 900 }); },
+    ui(a) { glass(a, 2349, 0, 0.03, 0.2, 8000); },
+  },
+
+  // 25 End of the World: a scissor snip; a flock taking off and a starburst chime
+  endworld: {
+    place(a) {
+      a.noise({ d: 0.01, g: 0.2, type: 'highpass', f: 4200 });
+      a.noise({ t: 0.035, d: 0.012, g: 0.16, type: 'bandpass', f: 3000, q: 2 });
+      a.tone({ f: 190, f2: 130, d: 0.04, g: 0.1 });
+    },
+    invalid(a) { a.noise({ d: 0.05, g: 0.08, type: 'lowpass', f: 900 }); },
+    clear(a, { lines = 1 }) {
+      const flaps = Math.min(5 + lines * 3, 14);
+      let t = 0; let gap = 0.09;
+      for (let i = 0; i < flaps; i++) { a.noise({ t, a: 0.006, d: 0.05, g: 0.08, type: 'bandpass', f: a.rand(350, 800), q: 0.9, color: 'pink' }); t += gap; gap = Math.max(0.035, gap * 0.88); }
+      (lines > 1 ? [0, 7, 14, 21] : [0, 7, 14]).forEach((s, i) => glass(a, NOTE(s, 1046.5), 0.05 + i * 0.04, 0.035, 0.4, 8000));
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 4 + k; i++) a.noise({ t: i * 0.05, a: 0.006, d: 0.045, g: 0.06, type: 'bandpass', f: a.rand(400, 900), q: 0.9, color: 'pink' });
+      glass(a, NOTE(PENTA[k], 1318.5), 0.1, 0.035, 0.4, 8000);
+    },
+    allClear(a) {
+      for (let i = 0; i < 12; i++) a.noise({ t: i * 0.055, a: 0.006, d: 0.05, g: 0.07, type: 'bandpass', f: a.rand(350, 900), q: 0.9, color: 'pink' });
+      [0, 4, 7, 11, 14].forEach((s, i) => glass(a, NOTE(s, 880), 0.3 + i * 0.06, 0.035, 0.6, 8000));
+    },
+    gameOver(a) { a.tone({ f: 520, f2: 180, glide: 0.9, d: 0.9, g: 0.05, type: 'triangle', lp: 1500 }); a.noise({ t: 0.2, a: 0.01, d: 0.08, g: 0.06, type: 'bandpass', f: 500, q: 0.9, color: 'pink' }); },
+    ui(a) { a.noise({ d: 0.008, g: 0.12, type: 'highpass', f: 4500 }); },
+  },
+
+  // 26 Garden of Doors: a door latch; glass shattering into wind chimes
+  doors: {
+    place(a) {
+      metal(a, 1900, 0, 0.06, 0.03);
+      wood(a, 320, 0.015, 0.16);
+    },
+    invalid(a) { wood(a, 220, 0, 0.1); },
+    clear(a, { lines = 1 }) {
+      a.noise({ d: 0.12 + lines * 0.04, g: 0.13, type: 'highpass', f: 3500 });
+      const n = Math.min(4 + lines, 7);
+      for (let i = 0; i < n; i++) glass(a, a.rand(2600, 5200), 0.01 + Math.random() * 0.25, 0.03, a.rand(0.15, 0.4), 9000);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 2 + Math.min(k, 4); i++) glass(a, NOTE(PENTA[(i * 2 + k) % 10], 1568), i * 0.08, 0.03, 0.6, 8000);
+    },
+    allClear(a) {
+      a.noise({ d: 0.3, g: 0.14, type: 'highpass', f: 3000 });
+      for (let i = 0; i < 7; i++) glass(a, NOTE(PENTA[i], 1318.5), 0.1 + i * 0.07, 0.03, 0.7, 8000);
+    },
+    gameOver(a) { a.tone({ f: 420, f2: 300, glide: 0.5, d: 0.5, g: 0.03, type: 'sawtooth', lp: 1200, vib: { rate: 9, depth: 6 } }); thud(a, 0.55, 0.28, 90); },
+    ui(a) { metal(a, 2100, 0, 0.04, 0.02); },
+  },
+
+  // 27 Heaven 404: a CRT tick and a goldfish bubble; a glitch stutter into a two-tone chime
+  heaven: {
+    place(a) {
+      a.noise({ d: 0.005, g: 0.12, type: 'highpass', f: 6000 });
+      a.drop({ f: a.rand(700, 1000), g: 0.16 });
+      a.tone({ f: 120, d: 0.05, g: 0.1, type: 'triangle' });
+    },
+    invalid(a) { a.tone({ f: 330, d: 0.12, g: 0.06, type: 'square', lp: 1400 }); a.tone({ f: 311, t: 0.12, d: 0.12, g: 0.06, type: 'square', lp: 1400 }); },
+    clear(a, { lines = 1 }) {
+      for (let i = 0; i < Math.min(4 + lines, 8); i++) a.tone({ f: a.rand(300, 1800), t: i * 0.03, a: 0.001, d: 0.025, g: 0.05, type: i % 2 ? 'square' : 'sawtooth', lp: 4000 });
+      a.noise({ d: 0.12, g: 0.06, type: 'bandpass', f: 2000, q: 3 });
+      a.tone({ f: NOTE(7, 659.25), t: 0.18, a: 0.005, d: 0.3, g: 0.06, type: 'triangle' });
+      a.tone({ f: NOTE(lines > 1 ? 16 : 12, 659.25), t: 0.3, a: 0.005, d: 0.45, g: 0.06, type: 'triangle' });
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 3 + k; i++) a.tone({ f: NOTE([0, 4, 7, 12, 16, 19, 24, 28, 31][i] ?? 31, 523.25 + k * 25), t: i * 0.045, d: 0.06, g: 0.045, type: 'triangle' });
+      a.drop({ f: 900, t: 0.1, g: 0.08 });
+    },
+    allClear(a) {
+      a.tone({ f: 200, f2: 1600, glide: 0.6, d: 0.6, g: 0.04, type: 'sawtooth', lp: 3000 });
+      for (let i = 0; i < 8; i++) a.drop({ f: a.rand(600, 1300), t: 0.1 + i * 0.08, g: 0.07 });
+      [0, 4, 7, 12].forEach((s, i) => a.tone({ f: NOTE(s, 784), t: 0.65 + i * 0.08, d: 0.3, g: 0.05, type: 'triangle' }));
+    },
+    gameOver(a) { a.tone({ f: 900, f2: 40, glide: 0.5, d: 0.55, g: 0.06, type: 'sawtooth', lp: 2000 }); a.noise({ t: 0.05, d: 0.4, g: 0.05, type: 'lowpass', f: 2000 }); },
+    ui(a) { a.noise({ d: 0.004, g: 0.1, type: 'highpass', f: 6000 }); a.tone({ f: 1046.5, d: 0.04, g: 0.04, type: 'triangle' }); },
+  },
+
+  // 28 Surveil: a targeting beep; lock-on beeps accelerating into a hold tone, radio static
+  surveil: {
+    place(a) { beep(a, 1760, 0, 0.06, 0.035); beep(a, 2637, 0.045, 0.05, 0.04); a.noise({ d: 0.03, g: 0.05, type: 'bandpass', f: 2500, q: 4 }); },
+    invalid(a) { beep(a, 440, 0, 0.06, 0.12); },
+    clear(a, { lines = 1 }) {
+      let t = 0; let gap = 0.1;
+      for (let i = 0; i < 6; i++) { beep(a, 2093, t, 0.05, 0.03); t += gap; gap *= 0.7; }
+      beep(a, lines > 1 ? 2637 : 2093, t, 0.06, 0.32);
+      a.noise({ t: t + 0.05, d: 0.25, g: 0.05, type: 'bandpass', f: 1800, q: 1.2 });
+      crackle(a, t, 6, 0.06, 0.3);
+    },
+    combo(a, { n = 2 }) { const k = cap(n, 6); for (let i = 0; i < 2 + k; i++) beep(a, 2093 + i * 120, i * 0.06, 0.045, 0.04); },
+    allClear(a) {
+      for (let i = 0; i < 6; i++) beep(a, i % 2 ? 1568 : 2093, i * 0.16, 0.05, 0.14);
+      a.noise({ t: 1, d: 0.3, g: 0.06, type: 'bandpass', f: 1500, q: 1.2 });
+    },
+    gameOver(a) { a.noise({ a: 0.02, d: 0.9, g: 0.06, type: 'bandpass', f: 1800, f2: 400, q: 1.2 }); beep(a, 220, 0.4, 0.06, 0.6); },
+    ui(a) { beep(a, 2637, 0, 0.04, 0.025); },
+  },
+
+  // 29 Totality: a stone tap with a low hum; a deep gong under a rising drone
+  logos: {
+    place(a) {
+      a.modal({ f: 900, g: 0.08, ratios: [1, 2.3, 3.9], decays: [0.04, 0.025, 0.015], gains: [1, 0.4, 0.2] });
+      a.tone({ f: 73, a: 0.01, d: 0.25, g: 0.18 });
+    },
+    invalid(a) { a.noise({ d: 0.05, g: 0.08, type: 'lowpass', f: 500, color: 'brown' }); },
+    clear(a, { lines = 1 }) {
+      a.noise({ a: 0.25, d: 0.05, g: 0.06, type: 'bandpass', f: 300, f2: 2400, q: 1, sweep: 0.28 });
+      gong(a, lines > 1 ? 147 : 110, 0.27, 0.12, 1.6 + lines * 0.2);
+      a.tone({ f: NOTE(19, 220), t: 0.27, a: 0.2, d: 0.8, g: 0.02, type: 'sine' });
+    },
+    combo(a, { n = 2 }) { const k = cap(n, 6); gong(a, NOTE(PENTA[k], 220), 0, 0.07, 1.0); a.tone({ f: NOTE(PENTA[k] + 12, 220), a: 0.1, d: 0.5, g: 0.02 }); },
+    allClear(a) {
+      [0, 7, 12, 19].forEach((s) => a.tone({ f: NOTE(s, 110) * a.rand(0.997, 1.003), a: 0.5, d: 1.6, g: 0.022, type: 'sawtooth', lp: 1100 }));
+      gong(a, 82.4, 0.3, 0.14, 2.6);
+      twinkle(a, 2637, 0.9, 0.03);
+    },
+    gameOver(a) { a.tone({ f: 110, f2: 55, glide: 1.6, a: 0.2, d: 1.6, g: 0.06, type: 'sawtooth', lp: 600 }); gong(a, 73.4, 0.2, 0.1, 2.4); },
+    ui(a) { a.modal({ f: 1200, g: 0.05, ratios: [1, 2.3], decays: [0.05, 0.02], gains: [1, 0.3] }); },
+  },
+
+  // 30 Room 201: a needle drop with vinyl crackle; a record scratch and spin-up
+  vinyl: {
+    place(a) {
+      a.tone({ f: 140, f2: 90, d: 0.06, g: 0.2 });
+      a.noise({ d: 0.015, g: 0.1, type: 'bandpass', f: 1200, q: 1.5 });
+      crackle(a, 0.01, 5, 0.05, 0.2);
+    },
+    invalid(a) { a.noise({ d: 0.08, g: 0.08, type: 'bandpass', f: 900, f2: 500, q: 3 }); },
+    clear(a, { lines = 1 }) {
+      a.noise({ a: 0.01, d: 0.09, g: 0.14, type: 'bandpass', f: 600, f2: 2600, q: 5, sweep: 0.09 });
+      a.noise({ t: 0.1, a: 0.01, d: 0.08, g: 0.12, type: 'bandpass', f: 2600, f2: 700, q: 5, sweep: 0.08 });
+      a.tone({ f: 110, f2: NOTE(lines > 1 ? 7 : 0, 220), glide: 0.25, t: 0.2, d: 0.45, g: 0.06, type: 'triangle', lp: 2000 });
+      crackle(a, 0.2, 8, 0.05, 0.5);
+    },
+    combo(a, { n = 2 }) {
+      const k = cap(n, 6);
+      for (let i = 0; i < 1 + Math.min(k, 4); i++) a.noise({ t: i * 0.09, a: 0.008, d: 0.06, g: 0.1, type: 'bandpass', f: i % 2 ? 2400 : 700, f2: i % 2 ? 700 : 2400, q: 5, sweep: 0.06 });
+    },
+    allClear(a) {
+      for (let i = 0; i < 6; i++) a.noise({ t: i * 0.05, a: 0.005, d: 0.04, g: 0.1, type: 'bandpass', f: 3000 - i * 300, f2: 600, q: 5, sweep: 0.04 });
+      [0, 4, 7, 12].forEach((s, i) => a.tone({ f: NOTE(s, 330), t: 0.35 + i * 0.07, d: 0.5, g: 0.04, type: 'triangle', lp: 2400 }));
+      crackle(a, 0.3, 12, 0.05, 0.8);
+    },
+    gameOver(a) { a.tone({ f: 330, f2: 60, glide: 1.0, d: 1.1, g: 0.06, type: 'triangle', lp: 1500 }); crackle(a, 0, 14, 0.05, 1.2); },
+    ui(a) { crackle(a, 0, 2, 0.06, 0.02); a.tone({ f: 160, d: 0.03, g: 0.08 }); },
   },
 };
 

@@ -9,11 +9,11 @@ import { Game } from '../src/core/game.js';
 
 const EVENTS = ['place', 'invalid', 'clear', 'combo', 'allClear', 'gameOver', 'ui'];
 
-test('themes: twenty-four complete, distinct themes in the registry', () => {
-  eq(THEMES.length, 24);
-  eq(THEMES.map((t) => t.name), ['Classic Pastel', 'Neon Arcade', 'Jelly Pop', 'Cloud Palace', 'Cream Soda Pop', 'Nostalgic Steampunk', 'Moonlit Koi Pond', 'Little Witch’s Apothecary', 'Strawberry Patisserie', 'Abyssal Aquarium', 'Clockwork Toybox', 'Stained Glass Reverie', 'Dreamware 2004', 'Mahjong Parlor', 'Starflower Post', 'Moonside Mechanism', 'Pixel Crush', 'Capsule Field Notes', 'Queen’s Tea Party', 'Paper Sky Daydream', 'Prism Desk', 'Lily Reliquary', 'Gilt & Ink', 'Garden Ticket']);
-  for (const key of ['id', 'material', 'env', 'sound']) eq(new Set(THEMES.map((t) => t[key])).size, 24, `unique ${key}`);
-  eq(new Set(THEMES.map((t) => t.particle)).size, 24, 'unique particle kinds');
+test('themes: thirty complete, distinct themes in the registry', () => {
+  eq(THEMES.length, 30);
+  eq(THEMES.map((t) => t.name), ['Classic Pastel', 'Neon Arcade', 'Jelly Pop', 'Cloud Palace', 'Cream Soda Pop', 'Nostalgic Steampunk', 'Moonlit Koi Pond', 'Little Witch’s Apothecary', 'Strawberry Patisserie', 'Abyssal Aquarium', 'Clockwork Toybox', 'Stained Glass Reverie', 'Dreamware 2004', 'Mahjong Parlor', 'Starflower Post', 'Moonside Mechanism', 'Pixel Crush', 'Capsule Field Notes', 'Queen’s Tea Party', 'Paper Sky Daydream', 'Prism Desk', 'Lily Reliquary', 'Starry Alchemy', 'Garden Ticket', 'End of the World', 'Garden of Doors', 'Heaven 404', 'Surveil', 'Totality', 'Room 201']);
+  for (const key of ['id', 'material', 'env', 'sound']) eq(new Set(THEMES.map((t) => t[key])).size, 30, `unique ${key}`);
+  eq(new Set(THEMES.map((t) => t.particle)).size, 30, 'unique particle kinds');
     for (const t of THEMES.filter((x) => x.marks)) {
       eq(t.marks.length, 7, t.id + ' marks per colour');
       eq(new Set(t.marks).size, 7, t.id + ' every colour has its own mark');
@@ -121,7 +121,7 @@ test('themes: registry is extensible and validates entries', () => {
   registerTheme(t);
   assert(THEME_BY_ID['test-theme']);
   THEMES.splice(THEMES.indexOf(t), 1); delete THEME_BY_ID['test-theme'];
-  eq(THEMES.length, 24);
+  eq(THEMES.length, 30);
 });
 
 test('themes: new sound kits fit every event inside the voice limit', async () => {

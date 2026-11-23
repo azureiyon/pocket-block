@@ -209,10 +209,6 @@
 .m-foil.fx-place > i { animation: place-foil .7s ease-out var(--d, 0ms) both; }
 @keyframes place-seal { 0% { transform: scale(1.25); filter: brightness(1.5); } 70% { transform: scale(.95); } 100% { transform: none; filter: none; } }
 @keyframes place-foil { 0% { filter: drop-shadow(0 0 6px #ffe6a0) brightness(1.8); } 100% { filter: drop-shadow(0 1px 0 rgba(0,0,0,.8)); } }
-.m-washi.fx-place { animation: place-press .4s ease-out var(--d, 0ms) both; }
-.m-washi.fx-place > i { animation: place-leaf .5s ease-out var(--d, 0ms) both; }
-@keyframes place-press { 0% { transform: scale(1.1); opacity: .5; filter: saturate(.4); } 100% { transform: none; opacity: 1; filter: none; } }
-@keyframes place-leaf { 0% { transform: translate(-30%, -40%) rotate(-30deg); opacity: 0; } 100% { transform: none; opacity: .92; } }
 .m-ticket.fx-place { animation: place-punch .32s cubic-bezier(.3,1.6,.5,1) var(--d, 0ms) both; }
 @keyframes place-punch { 0% { transform: translateX(-14%) rotate(-6deg) scale(1.08); } 100% { transform: none; } }
 
@@ -233,8 +229,6 @@
 @keyframes clr-snap { 0% { transform: none; } 15% { filter: brightness(2.4) saturate(.2); transform: scale(1.06); } 100% { transform: scale(1.25); opacity: 0; filter: brightness(1.6) blur(5px); } }
 .clear-ghost.m-foil { animation-name: clr-ash; animation-duration: .85s; }
 @keyframes clr-ash { 0% { filter: none; } 25% { filter: brightness(1.8) sepia(.6); box-shadow: 0 0 14px rgba(255,120,60,.8); } 100% { transform: translateY(-35%) scale(.75); opacity: 0; filter: brightness(.4) sepia(1) blur(2px); } }
-.clear-ghost.m-washi { animation-name: clr-ink; animation-duration: .7s; }
-@keyframes clr-ink { 0% { transform: none; } 40% { filter: brightness(1.15); transform: scale(1.05); } 100% { transform: translate(-20%, -25%) scale(1.3) rotate(-8deg); opacity: 0; filter: blur(4px); } }
 .clear-ghost.m-ticket { animation-name: clr-tear; animation-duration: .55s; }
 @keyframes clr-tear { 0% { transform: none; clip-path: inset(0); } 35% { transform: rotate(-4deg) translateY(-6%); clip-path: inset(0 0 0 0); } 100% { transform: translate(40%, 40%) rotate(22deg); clip-path: inset(0 0 0 52%); opacity: 0; } }
 
@@ -257,3 +251,54 @@
 [data-mat="pixel"] .board.is-over .blk { animation: settle-pixel .6s steps(3, end) calc(var(--i, 0) * 8ms) both; }
 @keyframes settle-pixel { to { filter: grayscale(.9) brightness(.85); } }
 [data-mat="foil"] .board.is-over .blk { animation-name: settle-water; }
+
+/* ---------- themes 23, 25–30: placement ---------- */
+.m-impasto.fx-place { animation: place-daub .4s cubic-bezier(.3,1.4,.5,1) var(--d, 0ms) both; }
+.m-impasto.fx-place > i { animation: place-swirl .7s ease-out var(--d, 0ms) both; }
+@keyframes place-daub { 0% { transform: scale(1.2) rotate(-8deg); filter: brightness(1.35); } 100% { transform: none; filter: none; } }
+@keyframes place-swirl { 0% { transform: rotate(-200deg) scale(.4); } 100% { transform: rotate(28deg); } }
+.m-halftone.fx-place { animation: place-paste .3s cubic-bezier(.4,1.5,.5,1) var(--d, 0ms) both; }
+@keyframes place-paste { 0% { transform: translate(6%, -10%) rotate(6deg); filter: contrast(1.6); } 100% { transform: none; filter: none; } }
+.m-door.fx-place { animation: place-door .42s ease-out var(--d, 0ms) both; }
+.m-door.fx-place > i::before { animation: place-leaf-swing .5s ease-out var(--d, 0ms) both; }
+@keyframes place-door { 0% { transform: scaleY(.6); transform-origin: 50% 100%; opacity: .5; } 100% { transform: none; opacity: 1; } }
+@keyframes place-leaf-swing { 0% { transform: perspective(40px) rotateY(0); } 100% { transform: perspective(40px) rotateY(-28deg); } }
+.m-dialog.fx-place { animation: place-popup .28s steps(4, end) var(--d, 0ms) both; }
+@keyframes place-popup { 0% { transform: scale(.4); filter: hue-rotate(160deg) saturate(2); } 100% { transform: none; filter: none; } }
+.m-scan.fx-place { animation: place-lock .4s ease-out var(--d, 0ms) both; }
+.m-scan.fx-place::before { animation: place-bracket .4s ease-out var(--d, 0ms) both; }
+@keyframes place-lock { 0% { filter: brightness(1.8) contrast(1.4); } 100% { filter: none; } }
+@keyframes place-bracket { 0% { transform: scale(1.6); opacity: 0; } 70% { transform: scale(.94); opacity: 1; } 100% { transform: none; } }
+.m-monolith.fx-place { animation: place-rise .5s cubic-bezier(.2,.8,.3,1) var(--d, 0ms) both; }
+@keyframes place-rise { 0% { transform: translateY(20%); opacity: 0; filter: brightness(2); } 100% { transform: none; opacity: 1; filter: none; } }
+.m-vinyl.fx-place { animation: place-drop .3s cubic-bezier(.4,1.6,.5,1) var(--d, 0ms) both; }
+.m-vinyl.fx-place > i { animation: place-spin .6s ease-out var(--d, 0ms) both; }
+@keyframes place-drop { 0% { transform: scale(1.15); } 100% { transform: none; } }
+@keyframes place-spin { 0% { transform: rotate(-540deg); } 100% { transform: none; } }
+
+/* ---------- clears ---------- */
+.clear-ghost.m-impasto { animation-name: clr-swirl; animation-duration: .7s; }
+@keyframes clr-swirl { 0% { transform: none; } 35% { transform: rotate(60deg) scale(1.1); filter: brightness(1.5); } 100% { transform: rotate(320deg) scale(.15); opacity: 0; filter: brightness(2) blur(1px); } }
+.clear-ghost.m-halftone { animation-name: clr-scatter; animation-duration: .6s; }
+@keyframes clr-scatter { 0% { transform: none; } 30% { transform: skewX(-12deg) scale(1.05); filter: contrast(1.6); } 100% { transform: translate(60%, -40%) skewX(-30deg) rotate(-20deg) scale(.4); opacity: 0; } }
+.clear-ghost.m-door { animation-name: clr-doorshatter; animation-duration: .6s; }
+@keyframes clr-doorshatter { 0% { transform: none; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } 30% { filter: brightness(1.4); } 100% { transform: scale(1.3) rotate(12deg); opacity: 0; clip-path: polygon(20% 0, 70% 30%, 100% 80%, 30% 100%, 0 60%); } }
+.clear-ghost.m-dialog { animation-name: clr-glitch; animation-duration: .5s; animation-timing-function: steps(6, end); }
+@keyframes clr-glitch { 0% { transform: none; } 30% { transform: translateX(-12%) skewX(14deg); filter: hue-rotate(120deg) saturate(2); } 60% { transform: translateX(10%); filter: hue-rotate(260deg); clip-path: inset(30% 0 30% 0); } 100% { transform: scaleY(.05); opacity: 0; } }
+.clear-ghost.m-scan { animation-name: clr-target; animation-duration: .55s; }
+@keyframes clr-target { 0% { transform: none; } 25% { filter: invert(1) brightness(1.2); } 45% { filter: none; } 100% { transform: scale(.2); opacity: 0; filter: brightness(2) sepia(1) hue-rotate(-40deg) saturate(6); } }
+.clear-ghost.m-monolith { animation-name: clr-ascend; animation-duration: .8s; }
+@keyframes clr-ascend { 0% { transform: none; } 30% { filter: brightness(2.2); } 100% { transform: translateY(-60%) scaleY(1.4); opacity: 0; filter: brightness(3) blur(3px); } }
+.clear-ghost.m-vinyl { animation-name: clr-record; animation-duration: .6s; }
+@keyframes clr-record { 0% { transform: none; } 100% { transform: rotate(720deg) scale(.1); opacity: 0; } }
+
+/* ---------- particles ---------- */
+.pt-bird { width: 14px; height: 7px; background: var(--pc); clip-path: polygon(0 20%, 30% 45%, 50% 70%, 70% 45%, 100% 20%, 72% 70%, 50% 100%, 28% 70%); }
+.pt-blossom { width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle, #ffd24a 0 22%, var(--pc) 26%); }
+.pt-goldfish { width: 14px; height: 8px; border-radius: 60% 40% 40% 60%; background: linear-gradient(90deg, #ff7a1a 70%, transparent 70%), linear-gradient(90deg, transparent 68%, #ffb24a 68%); clip-path: polygon(0 50%, 25% 0, 70% 10%, 100% 0, 88% 50%, 100% 100%, 70% 90%, 25% 100%); }
+.pt-node { width: 6px; height: 6px; background: #e0241f; box-shadow: 0 0 0 1px rgba(255,255,255,.6), 0 0 6px #e0241f; }
+.pt-glint { width: 14px; height: 14px; background: #fff; clip-path: polygon(50% 0, 54% 46%, 100% 50%, 54% 54%, 50% 100%, 46% 54%, 0 50%, 46% 46%); filter: drop-shadow(0 0 3px #fff); }
+.pt-sparkle { width: 12px; height: 12px; background: var(--pc); clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%); }
+[data-mat="monolith"] .celebrate-ring { border-color: #fff; border-width: 1px; box-shadow: 0 0 20px #fff; }
+[data-mat="scan"] .celebrate-ring { border-radius: 0; border-color: #e0241f; border-width: 2px; }
+[data-mat="impasto"] .celebrate-ring { border-color: #f2c230; border-style: dotted; border-width: 8px; }

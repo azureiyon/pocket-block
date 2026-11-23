@@ -40,8 +40,14 @@ const WATCH = '<svg viewBox="0 0 60 90" class="watch-svg"><path d="M30 0 V18" cl
 const PLANE = '<svg viewBox="0 0 60 30" class="plane-svg"><path d="M2 14 L58 2 L24 18Z" class="top"/><path d="M24 18 L58 2 L30 28Z" class="side"/></svg>';
 const LILY = '<svg viewBox="0 0 60 60" class="lily-svg"><path d="M30 4 L35 22 L52 14 L40 30 L56 38 L37 38 L30 56 L23 38 L4 38 L20 30 L8 14 L25 22Z"/><circle cx="30" cy="30" r="5" class="eye"/></svg>';
 const ARCH = '<svg viewBox="0 0 100 200" preserveAspectRatio="none" class="arch-svg"><path d="M0 200 V70 Q0 8 50 0 Q100 8 100 70 V200 H86 V74 Q86 22 50 14 Q14 22 14 74 V200Z"/></svg>';
-const CLOUD_INK = '<svg viewBox="0 0 120 50" class="ink-svg"><path d="M6 40 C0 26 18 18 28 26 C28 10 52 6 58 22 C64 8 90 10 88 28 C100 22 118 32 108 42 C92 48 30 50 6 40Z"/><path d="M40 34 C44 26 56 28 54 34 C52 38 46 36 48 33" class="curl"/></svg>';
 const TULIP = '<svg viewBox="0 0 40 70" class="tulip-svg"><path d="M20 30 V70" class="stem"/><path d="M20 52 C8 44 4 52 6 60 C12 56 16 56 20 58Z" class="leaf"/><path d="M8 10 C8 26 14 32 20 32 C26 32 32 26 32 10 L26 16 L20 6 L14 16Z" class="bloom"/></svg>';
+
+const ZODIAC = ['♈', '♉', '♊', '♋', '♌', '♍', '♎', '♏', '♐', '♑', '♒', '♓'];
+const ZODIAC_WHEEL = `<svg viewBox="-100 -100 200 200" class="zodiac-svg"><circle r="96" class="r"/><circle r="74" class="r"/><circle r="40" class="r"/>${ZODIAC.map((z, i) => { const a = (i / 12) * Math.PI * 2; return `<text x="${(Math.cos(a) * 85).toFixed(1)}" y="${(Math.sin(a) * 85 + 4).toFixed(1)}">${z}︎</text><line x1="${(Math.cos(a + 0.26) * 74).toFixed(1)}" y1="${(Math.sin(a + 0.26) * 74).toFixed(1)}" x2="${(Math.cos(a + 0.26) * 96).toFixed(1)}" y2="${(Math.sin(a + 0.26) * 96).toFixed(1)}" class="r"/>`; }).join('')}${repeat(8, (i) => { const a = (i / 8) * Math.PI * 2; return `<circle cx="${(Math.cos(a) * 57).toFixed(1)}" cy="${(Math.sin(a) * 57).toFixed(1)}" r="7" class="moon m${i}"/>`; })}</svg>`;
+const BIRD = '<svg viewBox="0 0 40 20" class="bird-svg"><path d="M0 6 C8 2 14 6 20 14 C26 6 32 2 40 6 C32 6 26 10 20 18 C14 10 8 6 0 6Z"/></svg>';
+const DOOR = '<svg viewBox="0 0 60 110" class="door-svg"><rect x="2" y="2" width="44" height="106" class="frame"/><rect x="6" y="6" width="36" height="102" class="view"/><path d="M42 6 L58 12 L58 104 L42 108Z" class="leaf"/></svg>';
+const FISH = '<svg viewBox="0 0 60 30" class="fish-svg"><path d="M10 15 C16 3 34 3 42 13 L56 4 L52 15 L56 26 L42 17 C34 27 16 27 10 15Z" class="body"/><path d="M24 6 L30 0 L34 7Z M26 24 L32 30 L34 23Z" class="fin"/><circle cx="17" cy="13" r="1.8" class="eye"/></svg>';
+const DIALOG = (t) => `<div class="e-dlg"><b>${t}</b><p>Brain not found.</p><i>OK</i></div>`;
 
 export const ENVIRONMENTS = {
   paper: {
@@ -147,16 +153,44 @@ export const ENVIRONMENTS = {
     motion: () => repeat(12, () => `<span class="e-ember" style="${vars({ x: R(2, 96) + '%', d: R(5, 10).toFixed(1) + 's', dl: -R(0, 10).toFixed(1) + 's', w: R(-30, 30).toFixed(0) + 'px' })}"></span>`)
       + repeat(5, () => `<span class="e-twinkle gold" style="${vars({ x: R(2, 96) + '%', y: R(2, 96) + '%', s: R(10, 22).toFixed(0) + 'px', d: R(3, 6).toFixed(1) + 's', dl: -R(0, 5).toFixed(1) + 's' })}">${SPARK4}</span>`),
   },
-  scroll: {
-    static: () => '<div class="e-frame"></div><svg class="e-sword" viewBox="0 0 40 400" preserveAspectRatio="xMidYMid meet"><path d="M20 4 L24 60 L23 300 L20 330 L17 300 L16 60Z" class="blade"/><path d="M2 70 H38 V76 H2Z M17 40 H23 V70 H17Z" class="hilt"/><path d="M20 76 C26 140 14 200 22 300" class="thread"/></svg>',
-    motion: () => repeat(4, () => `<span class="e-ink" style="${vars({ y: R(4, 80) + '%', s: R(0.6, 1.3).toFixed(2), d: R(30, 50).toFixed(0) + 's', dl: -R(0, 50).toFixed(0) + 's' })}">${CLOUD_INK}</span>`)
-      + repeat(7, () => `<span class="e-leaf" style="${vars({ x: R(3, 95) + '%', d: R(10, 18).toFixed(1) + 's', dl: -R(0, 18).toFixed(1) + 's' })}"></span>`)
-      + [[-6, 70, 22, 12, 1, 40], [84, 6, 16, 10, -1, 30]].map(([x, y, sz, t, dir, dur]) => `<svg class="e-gear" viewBox="-50 -50 100 100" style="${vars({ x: x + '%', y: y + '%', s: sz + 'vmin', d: dur + 's', dir })}"><path d="${gearPath(t, 48, 40, 12)}"/></svg>`).join(''),
-  },
   argyle: {
     static: () => `<div class="e-bouquet b1">${TULIP}${TULIP}</div><div class="e-bouquet b2">${TULIP}</div>`,
     motion: () => repeat(9, () => `<span class="e-petal" style="${vars({ x: R(2, 96) + '%', d: R(9, 16).toFixed(1) + 's', dl: -R(0, 16).toFixed(1) + 's', h: rint(0, 1) })}"></span>`)
       + repeat(5, () => `<span class="e-dew" style="${vars({ x: R(3, 95) + '%', y: R(4, 94) + '%', d: R(3, 6).toFixed(1) + 's', dl: -R(0, 5).toFixed(1) + 's' })}"></span>`),
+  },
+  starrynight: {
+    static: () => `<div class="e-wheel">${ZODIAC_WHEEL}</div><div class="e-frame"></div>`,
+    motion: () => repeat(5, (i) => `<span class="e-swirl" style="${vars({ x: R(-10, 80) + '%', y: R(-5, 85) + '%', s: R(24, 46).toFixed(0) + 'vmin', d: R(18, 30).toFixed(0) + 's', dir: i % 2 ? 1 : -1 })}"></span>`)
+      + repeat(8, () => `<span class="e-twinkle gold" style="${vars({ x: R(2, 96) + '%', y: R(2, 96) + '%', s: R(10, 24).toFixed(0) + 'px', d: R(2.5, 5).toFixed(1) + 's', dl: -R(0, 5).toFixed(1) + 's' })}">${SPARK4}</span>`),
+  },
+  endworld: {
+    static: () => '<div class="e-orbitdots o1"></div><div class="e-orbitdots o2"></div><div class="e-phases"></div><div class="e-burst"></div>',
+    motion: () => repeat(7, () => `<span class="e-bird" style="${vars({ y: R(4, 80) + '%', s: R(0.5, 1.2).toFixed(2), d: R(14, 26).toFixed(1) + 's', dl: -R(0, 26).toFixed(1) + 's' })}">${BIRD}</span>`)
+      + repeat(4, () => `<span class="e-shard" style="${vars({ x: R(0, 90) + '%', y: R(0, 90) + '%', r: R(-40, 40).toFixed(0) + 'deg', d: R(6, 10).toFixed(1) + 's', dl: -R(0, 8).toFixed(1) + 's' })}"></span>`),
+  },
+  doorgarden: {
+    static: () => `<div class="e-door d1">${DOOR}</div><div class="e-door d2">${DOOR}</div><div class="e-meadow"></div>`,
+    motion: () => repeat(10, () => `<span class="e-bloom" style="${vars({ x: R(2, 96) + '%', d: R(9, 16).toFixed(1) + 's', dl: -R(0, 16).toFixed(1) + 's', h: rint(0, 2) })}"></span>`)
+      + repeat(3, () => `<span class="e-ray" style="${vars({ x: R(10, 80) + '%', d: R(8, 14).toFixed(1) + 's', dl: -R(0, 10).toFixed(1) + 's' })}"></span>`),
+  },
+  heaven: {
+    static: () => '<div class="e-rainbowarc"></div>' + DIALOG('ERROR 404'),
+    motion: () => repeat(5, () => `<span class="e-fish" style="${vars({ y: R(4, 88) + '%', s: R(0.6, 1.3).toFixed(2), d: R(12, 22).toFixed(1) + 's', dl: -R(0, 22).toFixed(1) + 's' })}">${FISH}</span>`)
+      + repeat(3, () => `<span class="e-glitch" style="${vars({ y: R(5, 90) + '%', d: R(3, 6).toFixed(1) + 's', dl: -R(0, 5).toFixed(1) + 's' })}"></span>`),
+  },
+  surveil: {
+    static: () => '<div class="e-skyline"></div><div class="e-tag t1">Are you alone ?</div><svg class="e-web" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M8 12 L60 4 L92 30 M8 12 L30 60 L92 30 M30 60 L70 88 L92 30 M60 4 L70 88"/><circle cx="8" cy="12" r="1"/><circle cx="60" cy="4" r="1"/><circle cx="92" cy="30" r="1"/><circle cx="30" cy="60" r="1"/><circle cx="70" cy="88" r="1"/></svg>',
+    motion: () => '<div class="e-scanbox b1"><i>Human #1</i></div><div class="e-scanbox b2"><i>Human #2</i></div><div class="e-scanline"></div>',
+  },
+  logos: {
+    static: () => '<div class="e-dome"></div><div class="e-sun"></div><svg class="e-sigil" viewBox="-50 -50 100 100"><circle r="44" class="l"/><circle r="30" class="l blue"/><path d="M0 -40 L35 20 L-35 20Z M0 40 L35 -20 L-35 -20Z" class="l"/><path d="M-50 0 H50 M0 -50 V50" class="l thin"/></svg>',
+    motion: () => repeat(6, () => `<span class="e-twinkle white" style="${vars({ x: R(2, 96) + '%', y: R(2, 70) + '%', s: R(12, 30).toFixed(0) + 'px', d: R(3, 6).toFixed(1) + 's', dl: -R(0, 5).toFixed(1) + 's' })}">${SPARK4}</span>`)
+      + '<span class="e-dust"></span>',
+  },
+  hotel: {
+    static: () => '<div class="e-cornice top"></div><div class="e-cornice bottom"></div><div class="e-stripe"></div>' + ['201', '100', '102', '331', '244'].map((n, i) => `<span class="e-num n${i}">${n}</span>`).join(''),
+    motion: () => repeat(4, (i) => `<span class="e-eye" style="${vars({ x: [6, 78, 14, 84][i] + '%', y: [12, 22, 74, 66][i] + '%', s: R(10, 18).toFixed(0) + 'vmin', d: R(6, 12).toFixed(1) + 's' })}"></span>`)
+      + repeat(8, () => `<span class="e-pstar" style="${vars({ x: R(2, 96) + '%', y: R(30, 70) + '%', d: R(2, 4).toFixed(1) + 's', dl: -R(0, 4).toFixed(1) + 's' })}"></span>`),
   },
 };
 
