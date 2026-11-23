@@ -39,6 +39,12 @@ const KINDS = {
   ember: { dur: [900, 1400], make: (el, col) => { const hot = Math.random() < 0.6 ? '#ff5a2a' : col; const s = R(2.5, 5); el.style.width = el.style.height = s + 'px'; el.style.background = hot; el.style.boxShadow = `0 0 6px 2px ${hot}`; }, motion: () => ({ dx: R(-25, 25), dy: R(-120, -60), g: 0, rot: 0, s0: 1, s1: 0.4, wobble: R(6, 14), pulse: true }) },
   goldleaf: { dur: [900, 1300], make: (el) => { const s = R(6, 11); el.style.width = s + 'px'; el.style.height = s * 0.8 + 'px'; }, motion: () => ({ dx: R(-50, 50), dy: R(-60, -20), g: 140, rot: R(-300, 300), s0: 1, s1: 0.9, flip: true, wobble: 10 }) },
   petal: { dur: [900, 1300], make: (el, col) => { el.style.background = `linear-gradient(135deg, #fff, ${col})`; el.style.width = R(6, 10) + 'px'; el.style.height = R(5, 8) + 'px'; }, motion: () => ({ dx: R(-60, 60), dy: R(-60, -15), g: 120, rot: R(-260, 260), s0: 1, s1: 0.9, wobble: 12 }) },
+  bird: { dur: [900, 1300], make: (el, col) => { el.style.setProperty('--pc', Math.random() < 0.6 ? '#1c1c1e' : col); }, motion: () => ({ dx: R(40, 110) * (Math.random() < 0.5 ? -1 : 1), dy: R(-110, -50), g: 0, rot: R(-20, 20), fixedRot: true, s0: 0.6, s1: 1.1, wobble: 8 }) },
+  blossom: { dur: [800, 1200], make: (el, col) => { el.style.setProperty('--pc', Math.random() < 0.5 ? '#ffffff' : col); }, motion: () => ({ dx: R(-60, 60), dy: R(-70, -20), g: 110, rot: R(-200, 200), s0: 1, s1: 0.8, wobble: 6 }) },
+  goldfish: { dur: [1000, 1400], make: () => {}, motion: () => { const dir = Math.random() < 0.5 ? -1 : 1; return { dx: dir * R(60, 120), dy: R(-50, 10), g: 0, rot: dir < 0 ? 0 : 180, fixedRot: true, s0: 0.7, s1: 1.1, wobble: 10 }; } },
+  node: { dur: [500, 800], make: () => {}, motion: () => ({ dx: Math.round(R(-6, 6)) * 12, dy: Math.round(R(-6, 3)) * 12, g: 0, rot: 0, fixedRot: true, s0: 1.4, s1: 0.4, pulse: true }) },
+  glint: { dur: [800, 1200], make: (el) => { const s = R(8, 18); el.style.width = el.style.height = s + 'px'; }, motion: () => ({ dx: R(-20, 20), dy: R(-90, -40), g: 0, rot: 0, fixedRot: true, s0: 0.3, s1: 1.2, pulse: true }) },
+  sparkle: { dur: [700, 1000], make: (el, col) => { el.style.setProperty('--pc', Math.random() < 0.6 ? '#e85a7a' : col); }, motion: () => { const a = R(0, Math.PI * 2); const d = R(30, 80); return { dx: Math.cos(a) * d, dy: Math.sin(a) * d, g: 40, rot: R(-180, 180), s0: 1, s1: 0.4 }; } },
 };
 export const PARTICLE_KINDS = Object.keys(KINDS);
 

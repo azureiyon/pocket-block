@@ -322,18 +322,6 @@
 @keyframes ember { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: 1; } 100% { transform: translate(var(--w), -80vh); opacity: 0; } }
 .e-twinkle.gold .spark-svg { fill: #e8d39a; }
 
-/* 23 Gilt & Ink — washi paper, an ornate double frame, a sword with a red thread, ink clouds, gold leaf */
-.env-scroll { background: repeating-linear-gradient(80deg, rgba(255,255,255,.18) 0 1px, transparent 1px 9px), repeating-linear-gradient(-8deg, rgba(120,100,60,.05) 0 1px, transparent 1px 13px), radial-gradient(ellipse at 50% 40%, #f3eddd, #ded5bd); }
-.e-frame { inset: 14px; border: 1.5px solid rgba(168,146,106,.55); box-shadow: inset 0 0 0 6px transparent, inset 0 0 0 7px rgba(168,146,106,.35); border-radius: 46% 46% 6px 6px / 14% 14% 6px 6px; }
-.e-sword { left: 50%; top: 2%; width: 8vmin; height: 70vh; margin-left: -4vmin; opacity: .22; }
-.e-sword .blade { fill: #8d8f96; } .e-sword .hilt { fill: #b6a77b; } .e-sword .thread { fill: none; stroke: #c0504a; stroke-width: 1.5; }
-.e-ink { left: -30vmin; top: var(--y); width: 30vmin; height: 12.5vmin; animation: ink-drift var(--d) linear var(--dl) infinite; }
-.ink-svg { width: 100%; height: 100%; fill: rgba(91,132,196,.35); } .ink-svg .curl { fill: none; stroke: rgba(91,132,196,.5); stroke-width: 2; }
-@keyframes ink-drift { from { transform: translateX(0) scale(var(--s)); } to { transform: translateX(150vw) scale(var(--s)); } }
-.e-leaf { left: var(--x); top: -20px; width: 10px; height: 8px; clip-path: polygon(0 10%, 45% 0, 100% 20%, 85% 70%, 100% 100%, 40% 90%, 5% 100%, 12% 50%); background: linear-gradient(135deg, #fbe9a8, #c9993c 50%, #f6db8c); animation: leaf-fall var(--d) linear var(--dl) infinite; }
-@keyframes leaf-fall { 0% { transform: translate(0, 0) rotate(0) rotateX(0); } 50% { transform: translate(24px, 55vh) rotate(180deg) rotateX(360deg); } 100% { transform: translate(-10px, 110vh) rotate(360deg) rotateX(720deg); } }
-.env-scroll .e-gear { fill: rgba(168,146,106,.22); }
-
 /* 24 Garden Ticket — sage argyle, tulip bouquets, falling petals and dew */
 .env-argyle { background: linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25% 75%, rgba(255,255,255,.35) 75%) 0 0 / 80px 80px, linear-gradient(45deg, rgba(255,255,255,.35) 25%, transparent 25% 75%, rgba(255,255,255,.35) 75%) 40px 40px / 80px 80px, repeating-linear-gradient(45deg, transparent 0 55px, rgba(120,150,110,.18) 55px 56px), var(--bg); }
 .e-bouquet { display: flex; }
@@ -346,3 +334,91 @@
 @keyframes petal-fall { 0% { transform: translate(0, 0) rotate(0); } 50% { transform: translate(40px, 55vh) rotate(200deg); } 100% { transform: translate(0, 110vh) rotate(400deg); } }
 .e-dew { left: var(--x); top: var(--y); width: 10px; height: 13px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; background: radial-gradient(circle at 35% 30%, #fff, rgba(255,255,255,.3) 60%); box-shadow: 0 1px 2px rgba(80,110,70,.3); animation: dew var(--d) ease-in-out var(--dl) infinite; }
 @keyframes dew { 50% { filter: brightness(1.4); transform: scale(1.15); } }
+
+/* 23 Starry Alchemy — swirling ultramarine night, a gold frame, a turning zodiac wheel */
+.env-starrynight { background: radial-gradient(ellipse at 70% 20%, #24389a, transparent 55%), radial-gradient(ellipse at 20% 80%, #1a2a7a, transparent 50%), linear-gradient(180deg, #070b2a, #0d1650 60%, #2a2a10); }
+.e-wheel { left: 50%; top: 46%; width: 120vmin; height: 120vmin; margin: -60vmin 0 0 -60vmin; opacity: .35; }
+.env-starrynight.animated .e-wheel { animation: orbit 160s linear infinite; }
+.zodiac-svg { width: 100%; height: 100%; }
+.zodiac-svg .r { fill: none; stroke: #c9a23a; stroke-width: .5; }
+.zodiac-svg text { fill: #f2c230; font: 10px "Apple Symbols", serif; text-anchor: middle; }
+.zodiac-svg .moon { fill: #f6e7a6; } .zodiac-svg .moon:nth-of-type(odd) { fill: #2346c8; stroke: #f6e7a6; stroke-width: .6; }
+.e-frame { left: 50%; top: 8%; width: 30vmin; height: 22vmin; margin-left: -15vmin; border: 5px double #c9a23a; transform: rotate(-12deg); box-shadow: 0 0 18px rgba(242,194,48,.4); opacity: .6; }
+.e-swirl { left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; border: 3px solid transparent; border-top-color: rgba(242,194,48,.3); border-left-color: rgba(127,176,245,.25); box-shadow: inset 0 0 0 10px transparent, inset 0 0 0 12px rgba(74,127,232,.15); animation: swirl var(--d) linear infinite; }
+@keyframes swirl { to { transform: rotate(calc(var(--dir) * 360deg)); } }
+
+/* 25 End of the World — white constructivist collage: dotted orbits, moon phases, a starburst, birds */
+.env-endworld { background: radial-gradient(circle, rgba(0,0,0,.05) 0 1px, transparent 1.5px) 0 0 / 8px 8px, linear-gradient(170deg, #f4f4f1, #dcdcd7); }
+.e-orbitdots { border-radius: 50%; border: 2px dotted rgba(28,28,30,.25); }
+.e-orbitdots.o1 { left: -20vmin; top: 4%; width: 90vmin; height: 40vmin; transform: rotate(-10deg); }
+.e-orbitdots.o2 { right: -30vmin; bottom: 6%; width: 100vmin; height: 46vmin; transform: rotate(14deg); border-color: rgba(47,154,144,.35); }
+.e-phases { left: 6%; top: 12%; width: 70vmin; height: 8vmin; transform: rotate(-12deg); background: radial-gradient(circle at 50% 50%, #2b2b2e 0 40%, transparent 42%) 0 0 / 8vmin 8vmin repeat-x; -webkit-mask: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent); mask: linear-gradient(90deg, transparent, #000 30%, #000 70%, transparent); opacity: .6; }
+.e-burst { right: 4%; top: 10%; width: 30vmin; height: 30vmin; background: repeating-conic-gradient(from 0deg, rgba(28,28,30,.55) 0 2deg, transparent 2deg 15deg), radial-gradient(circle, transparent 0 18%, rgba(207,51,56,.3) 20% 26%, transparent 28%); border-radius: 50%; -webkit-mask: radial-gradient(circle, #000 30%, transparent 70%); mask: radial-gradient(circle, #000 30%, transparent 70%); }
+.e-bird { left: -50px; top: var(--y); width: 30px; height: 15px; animation: bird-fly var(--d) linear var(--dl) infinite; }
+.bird-svg { width: 100%; height: 100%; fill: #1c1c1e; animation: flap .5s ease-in-out infinite alternate; transform-origin: 50% 70%; }
+.e-bird:nth-child(3n) .bird-svg { fill: #2f9a90; }
+@keyframes bird-fly { from { transform: translateX(0) scale(var(--s)); } to { transform: translate(120vw, -14vh) scale(var(--s)); } }
+@keyframes flap { to { transform: scaleY(.4); } }
+.e-shard { left: var(--x); top: var(--y); width: 40vmin; height: 3px; background: linear-gradient(90deg, transparent, #2f9a90, #cf3338 60%, transparent); transform: rotate(var(--r)); opacity: .45; animation: shard var(--d) ease-in-out var(--dl) infinite alternate; }
+@keyframes shard { to { transform: rotate(var(--r)) translateX(8vmin); opacity: .15; } }
+
+/* 26 Garden of Doors — overgrown meadow, open white doors, drifting blossoms, light rays */
+.env-doorgarden { background: linear-gradient(180deg, #c7e6ef 0, #dff0e9 45%, #b9d8a8 80%, #6f9a5a); }
+.e-door { bottom: 12%; width: 18vmin; height: 33vmin; opacity: .9; }
+.e-door.d1 { left: 3%; } .e-door.d2 { right: 6%; bottom: 16%; transform: scale(.8); }
+.door-svg { width: 100%; height: 100%; } .door-svg .frame { fill: #fbfbf8; stroke: #c6c6be; } .door-svg .view { fill: #7fd0e0; } .door-svg .leaf { fill: #ffffff; stroke: #c6c6be; }
+.e-door.d2 .view { fill: #8fc97a; }
+.e-meadow { left: 0; right: 0; bottom: 0; height: 18%; background: radial-gradient(circle at 10% 40%, #e0533c 0 4px, transparent 5px) 0 0 / 46px 30px, radial-gradient(circle at 60% 70%, #efb13a 0 4px, transparent 5px) 0 0 / 38px 34px, radial-gradient(circle at 30% 20%, #ffffff 0 4px, transparent 5px) 0 0 / 52px 28px, linear-gradient(180deg, #7aa868, #4c7a40); }
+.e-bloom { left: var(--x); top: -20px; width: 9px; height: 9px; border-radius: 50%; background: radial-gradient(circle, #ffd24a 0 25%, #ffffff 30%); animation: petal-fall var(--d) linear var(--dl) infinite; }
+.e-bloom[style*="--h:1"] { background: radial-gradient(circle, #ffd24a 0 25%, #e0533c 30%); }
+.e-ray { left: var(--x); top: -10%; width: 14vmin; height: 70vh; background: linear-gradient(180deg, rgba(255,255,230,.5), transparent); transform: rotate(18deg); filter: blur(6px); animation: ray var(--d) ease-in-out var(--dl) infinite alternate; }
+@keyframes ray { to { opacity: .2; transform: rotate(14deg) translateX(4vmin); } }
+
+/* 27 Heaven 404 — rainbow sky, an error dialog, goldfish swimming through glitch bands */
+.env-heaven { background: radial-gradient(ellipse at 20% 20%, #ffd8f4, transparent 50%), radial-gradient(ellipse at 80% 80%, #b8f0ff, transparent 50%), linear-gradient(160deg, #bcd2ff, #e6c8ff); }
+.e-rainbowarc { left: 50%; top: 16%; width: 120vmin; height: 120vmin; margin-left: -60vmin; border-radius: 50%; background: radial-gradient(circle, transparent 0 52%, rgba(255,80,80,.35) 52% 54%, rgba(255,200,60,.35) 54% 56%, rgba(120,240,80,.35) 56% 58%, rgba(60,170,255,.35) 58% 60%, rgba(160,90,255,.35) 60% 62%, transparent 62%); }
+.e-dlg { left: 5%; bottom: 6%; width: 42vmin; background: #f4f3ee; border: 2px solid #2f6bff; border-radius: 4px; font: 11px Tahoma, Verdana, sans-serif; color: #25165c; box-shadow: 3px 3px 0 rgba(255,0,170,.4); transform: rotate(-4deg); }
+.e-dlg b { display: block; padding: 2px 6px; background: linear-gradient(90deg, #2f6bff, #7a4cff); color: #fff; }
+.e-dlg p { margin: 8px 10px; } .e-dlg i { display: block; width: 40px; margin: 0 auto 8px; text-align: center; font-style: normal; border: 1px solid #25165c; border-radius: 2px; }
+.e-fish { left: -80px; top: var(--y); width: 54px; height: 27px; animation: fish-swim var(--d) linear var(--dl) infinite; }
+.fish-svg .body { fill: #ff7a1a; } .fish-svg .fin { fill: #ffb24a; } .fish-svg .eye { fill: #25165c; }
+@keyframes fish-swim { 0% { transform: translate(0, 0) scale(var(--s)) scaleX(-1); } 50% { transform: translate(60vw, -4vh) scale(var(--s)) scaleX(-1); } 100% { transform: translate(125vw, 3vh) scale(var(--s)) scaleX(-1); } }
+.e-glitch { left: 0; right: 0; top: var(--y); height: 8px; background: linear-gradient(90deg, rgba(255,0,170,.35), rgba(0,230,255,.35), rgba(255,240,0,.35)); mix-blend-mode: multiply; animation: glitch var(--d) steps(1) var(--dl) infinite; }
+@keyframes glitch { 0%, 70% { opacity: 0; } 72% { opacity: 1; transform: translateX(-6vw); } 80% { transform: translateX(4vw) scaleY(2); } 88%, 100% { opacity: 0; } }
+
+/* 28 Surveil — grainy B&W city, a red web of sightlines, scanning boxes */
+.env-surveil { background: repeating-radial-gradient(circle at 30% 30%, rgba(255,255,255,.03) 0 1px, transparent 1px 3px), linear-gradient(180deg, #2a2a2a, #141414 55%, #0c0c0c); }
+.e-skyline { left: 0; right: 0; bottom: 0; height: 22%; background: linear-gradient(transparent 20%, #0c0c0c 21%) 0 0 / 34px 100%, linear-gradient(transparent 50%, #191919 51%) 12px 0 / 22px 100%, linear-gradient(transparent 35%, #121212 36%) 5px 0 / 46px 100%; opacity: .9; }
+.e-tag { font: italic 600 4.4vmin Georgia, serif; color: #e0241f; }
+.e-tag.t1 { left: 6%; top: 10%; }
+.e-web { inset: 0; width: 100%; height: 100%; fill: none; stroke: rgba(224,36,31,.55); stroke-width: .25; }
+.e-web circle { fill: #e0241f; stroke: none; }
+.e-scanbox { border: 1.5px solid #e0241f; }
+.e-scanbox i { position: absolute; left: 0; bottom: -14px; font: 600 9px "Helvetica Neue", Arial, sans-serif; color: #e0241f; font-style: normal; }
+.e-scanbox.b1 { left: 8%; top: 22%; width: 14vmin; height: 26vmin; animation: scan-hunt 7s ease-in-out infinite alternate; }
+.e-scanbox.b2 { right: 10%; top: 60%; width: 10vmin; height: 18vmin; animation: scan-hunt 9s ease-in-out infinite alternate-reverse; }
+@keyframes scan-hunt { 0% { transform: translate(0, 0); } 40% { transform: translate(6vw, 4vh) scale(.8); } 100% { transform: translate(-2vw, 10vh) scale(1.1); } }
+.e-scanline { left: 0; right: 0; top: 0; height: 2px; background: rgba(224,36,31,.6); box-shadow: 0 0 8px #e0241f; animation: scanline 6s linear infinite; }
+@keyframes scanline { to { transform: translateY(100vh); } }
+
+/* 29 Totality — a dark dome, a rust half-sun, a sigil of circle and triangles, falling dust */
+.env-logos { background: radial-gradient(ellipse at 50% 30%, #3a3c47, transparent 60%), linear-gradient(180deg, #24252d, #16171c 60%, #2a2c36); }
+.e-dome { left: -10%; right: -10%; top: -30vh; height: 80vh; border-radius: 50%; border: 1px solid rgba(220,222,235,.25); box-shadow: inset 0 0 60px rgba(0,0,0,.6); }
+.e-sun { left: 50%; top: 12%; width: 22vmin; height: 11vmin; margin-left: -11vmin; border-radius: 22vmin 22vmin 0 0; background: radial-gradient(circle at 50% 100%, #b0442e, #6a2618); opacity: .75; }
+.e-sigil { left: 50%; top: 46%; width: 110vmin; height: 110vmin; margin: -55vmin 0 0 -55vmin; opacity: .3; }
+.e-sigil .l { fill: none; stroke: #d9d9dd; stroke-width: .3; } .e-sigil .blue { stroke: #3d49b0; stroke-width: .8; } .e-sigil .thin { stroke-width: .15; }
+.env-logos.animated .e-sigil { animation: orbit 240s linear infinite; }
+.e-twinkle.white .spark-svg { fill: #f4f4f6; }
+.e-dust { inset: 0; background: radial-gradient(circle, rgba(255,255,255,.35) 0 1px, transparent 1.5px) 0 0 / 60px 80px, radial-gradient(circle, rgba(255,255,255,.2) 0 1px, transparent 1.5px) 30px 40px / 90px 70px; animation: dust 30s linear infinite; }
+@keyframes dust { to { background-position: 0 80px, 30px 110px; } }
+
+/* 30 Room 201 — a hotel collage: ornate cornices, a teal band, eye records, pink stars, room numbers */
+.env-hotel { background: linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px) 0 0 / 28px 28px, linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px) 0 0 / 28px 28px, #e6e7e3; }
+.e-cornice { left: 0; right: 0; height: 26px; background: radial-gradient(ellipse at 50% 100%, #c9ccc8 0 40%, transparent 42%) 0 0 / 40px 26px, linear-gradient(180deg, #f4f4f0 0 40%, #b9bfbc 40% 46%, #f4f4f0 46% 70%, #9aa09d 70% 74%, #f4f4f0 74%); }
+.e-cornice.top { top: 0; } .e-cornice.bottom { bottom: 0; transform: scaleY(-1); }
+.e-stripe { left: 0; right: 0; top: 30%; height: 40%; background: radial-gradient(circle, rgba(255,255,255,.1) 0 .7px, transparent 1px) 0 0 / 3px 3px, repeating-linear-gradient(90deg, #2f8f8a 0 40px, #2a7e79 40px 46px); border-top: 6px solid #1e1e1e; border-bottom: 6px solid #1e1e1e; opacity: .35; }
+.e-num { font: 600 11px "DIN Alternate", Arial, sans-serif; color: #1e2b2a; border: 1px solid #1e2b2a; padding: 1px 5px; background: #f4f4f0; }
+.e-num.n0 { left: 3%; top: calc(env(safe-area-inset-top, 0px) + 72px); } .e-num.n1 { left: 46%; bottom: 34px; } .e-num.n2 { right: 3%; top: calc(env(safe-area-inset-top, 0px) + 72px); } .e-num.n3 { left: 3%; bottom: 34px; } .e-num.n4 { right: 3%; bottom: 34px; }
+.e-eye { left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: radial-gradient(circle, #111 0 16%, #f3f3ee 18% 46%, transparent 48%); box-shadow: 0 0 0 1px rgba(30,30,30,.4); outline: 1px dashed rgba(30,30,30,.35); outline-offset: 2vmin; animation: blink-eye var(--d) ease-in-out infinite; }
+@keyframes blink-eye { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+.e-pstar { left: var(--x); top: var(--y); width: 18px; height: 18px; background: #e85a7a; clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%); animation: twinkle var(--d) ease-in-out var(--dl) infinite; }
