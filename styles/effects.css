@@ -302,3 +302,7 @@
 [data-mat="monolith"] .celebrate-ring { border-color: #fff; border-width: 1px; box-shadow: 0 0 20px #fff; }
 [data-mat="scan"] .celebrate-ring { border-radius: 0; border-color: #e0241f; border-width: 2px; }
 [data-mat="impasto"] .celebrate-ring { border-color: #f2c230; border-style: dotted; border-width: 8px; }
+
+/* Canvas spell layer: sits inside the effects layer, overhanging the board so
+   beams, circles and pillars can spill past its edges. */
+.vfx { position: absolute; z-index: 7; pointer-events: none; }

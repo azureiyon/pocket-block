@@ -9,6 +9,7 @@ import './openings.test.js';
 import './game.test.js';
 import './themes.test.js';
 import './settings-audio.test.js';
+import './vfx.test.js';
 
 const filter = process.argv[2] || null;
 const t0 = Date.now();

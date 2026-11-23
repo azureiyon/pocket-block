@@ -10,6 +10,7 @@ import { THEMES, getTheme, ThemeController } from '../themes/themes.js';
 import { AudioEngine } from '../audio/engine.js';
 import { BoardView, TrayView, makeBlock } from './render.js';
 import { Effects } from './effects.js';
+import { Vfx } from './vfx.js';
 import { EnvironmentManager } from './environments.js';
 import { bindInput } from './input.js';
 
@@ -30,7 +31,9 @@ export class App {
     this.ghostEl = $('ghost');
     this.boardView = new BoardView(this.boardEl);
     this.trayView = new TrayView(this.trayEl);
-    this.effects = new Effects({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion });
+    const vfxOn = () => this.settings.get('vfx') && !this.reducedMotion();
+    this.effects = new Effects({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion, canvasParticles: vfxOn });
+    this.vfx = new Vfx({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion, enabled: () => this.settings.get('vfx') });
     this.env = new EnvironmentManager($('env'), { reducedMotion: this.reducedMotion });
     this.audio = new AudioEngine({ settings: this.settings });
     this.audio.attach(window);
@@ -68,6 +71,7 @@ export class App {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme.vars['--bg']);
     this.boardView.setTheme(theme);
+    if (this.vfx) this.vfx.warm(theme);
     this.boardView.render(this.game.cells);
     this.renderTray(true);
     this.env.set(theme.env, this.settings.get('animBg'));
@@ -95,6 +99,7 @@ export class App {
   async newGame(seed) {
     this.clearTimers();
     this.effects.reset();
+    this.vfx.reset();
     if (this.input) this.input.reset();
     this.closeModal('m-over');
     $('over-bar').hidden = true;
@@ -131,17 +136,21 @@ export class App {
     this.renderScore(move.newBest);
     this.renderTray();
     this.effects.place(move);
+    this.vfx.place(move);
     this.audio.play('place', { size: move.placed.length });
     if (move.lines > 0) {
       this.effects.clear(move);
+      this.vfx.clear(move);
       if (move.allClear) {
         this.effects.allClear();
+        this.vfx.allClear();
         this.audio.play('allClear');
       } else {
         this.audio.play('clear', { lines: move.lines });
       }
       if (move.combo >= 2) {
         this.effects.combo(move);
+        this.vfx.combo(move);
         this.later(() => this.audio.play('combo', { n: move.combo }), 140);
       }
       if (move.arcade) {
@@ -302,6 +311,7 @@ export class App {
 
     $('opt-auto').addEventListener('change', (e) => this.settings.set('autoSwitch', e.target.checked));
     $('opt-bg').addEventListener('change', (e) => { this.settings.set('animBg', e.target.checked); this.env.set(this.theme.env, e.target.checked); });
+    $('opt-vfx').addEventListener('change', (e) => { this.settings.set('vfx', e.target.checked); if (!e.target.checked) { this.vfx.reset(); if (this.demo) this.demo.vfx.reset(); } });
 
     // Sound
     $('opt-sound').addEventListener('change', (e) => { this.audio.setEnabled(e.target.checked); if (e.target.checked) this.audio.play('ui'); });
@@ -340,6 +350,7 @@ export class App {
   syncSettingsUi() {
     $('opt-auto').checked = this.settings.get('autoSwitch');
     $('opt-bg').checked = this.settings.get('animBg');
+    $('opt-vfx').checked = this.settings.get('vfx');
     const s = this.settings.get('sound');
     $('opt-sound').checked = s.enabled;
     $('opt-volume').value = String(Math.round(s.volume * 100));
@@ -389,12 +400,13 @@ class EffectsDemo {
   constructor(app) {
     this.app = app;
     this.view = new BoardView($('demo-board'));
-    this.fx = new Effects({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion });
+    this.fx = new Effects({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion, canvasParticles: () => app.settings.get('vfx') && !app.reducedMotion() });
+    this.vfx = new Vfx({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion, enabled: () => app.settings.get('vfx') });
     this.cells = new Uint8Array(CELLS);
     this.timers = [];
   }
   setTheme(t) { this.theme = t; this.view.setTheme(t); this.view.render(this.cells); }
-  stop() { this.timers.forEach(clearTimeout); this.timers = []; this.fx.reset(); this.view.clearPreview(); }
+  stop() { this.timers.forEach(clearTimeout); this.timers = []; this.fx.reset(); this.vfx.reset(); this.view.clearPreview(); }
   at(ms, fn) { this.timers.push(setTimeout(fn, ms)); }
   fill(list) { this.cells = new Uint8Array(CELLS); for (const [i, c] of list) this.cells[i] = c; this.view.render(this.cells); }
   move(shape, r, c, color, combo) {
@@ -404,11 +416,13 @@ class EffectsDemo {
     const move = { ...res, combo, color, allClear: res.lines > 0 && res.empty };
     this.view.render(this.cells, res.placed.filter((i) => this.cells[i]));
     this.fx.place(move);
+    this.vfx.place(move);
     this.app.audio.play('place');
     if (move.lines) {
       this.fx.clear(move);
-      if (move.allClear) { this.fx.allClear(); this.app.audio.play('allClear'); } else this.app.audio.play('clear', { lines: move.lines });
-      if (combo >= 2) { this.fx.combo(move); setTimeout(() => this.app.audio.play('combo', { n: combo }), 140); }
+      this.vfx.clear(move);
+      if (move.allClear) { this.fx.allClear(); this.vfx.allClear(); this.app.audio.play('allClear'); } else this.app.audio.play('clear', { lines: move.lines });
+      if (combo >= 2) { this.fx.combo(move); this.vfx.combo({ ...move, clearedCells: move.clearedCells || [] }); setTimeout(() => this.app.audio.play('combo', { n: combo }), 140); }
     }
   }
   run() {

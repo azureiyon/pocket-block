@@ -65,7 +65,8 @@ function keyframes(m) {
 }
 
 export class Effects {
-  constructor({ layer, board, getTheme, reducedMotion = () => false }) {
+  constructor({ layer, board, getTheme, reducedMotion = () => false, canvasParticles = () => false }) {
+    this.canvasParticles = canvasParticles; // the canvas spell layer draws particles instead
     this.layer = layer;
     this.board = board; // BoardView
     this.getTheme = getTheme;
@@ -100,7 +101,7 @@ export class Effects {
   }
 
   spawn(x, y, count, colors) {
-    if (this.reducedMotion()) return 0;
+    if (this.reducedMotion() || this.canvasParticles()) return 0;
     const theme = this.getTheme();
     const kind = KINDS[theme.particle] || KINDS.confetti;
     let made = 0;
