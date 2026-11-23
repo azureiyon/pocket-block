@@ -1,7 +1,7 @@
 // Offline support: precache every local asset on install, serve
 // network-first (refreshing the cache) and fall back to the cache offline.
 // Bump VERSION when the asset list changes.
-const VERSION = 'pocket-blocks-v7';
+const VERSION = 'pocket-blocks-v8';
 const ASSETS = [
   './',
   'index.html',
@@ -34,6 +34,8 @@ const ASSETS = [
   'src/ui/drag.js',
   'src/ui/input.js',
   'src/ui/effects.js',
+  'src/ui/vfx.js',
+  'src/ui/vfx-recipes.js',
   'src/ui/environments.js',
   'icons/icon.svg',
   'icons/icon-180.png',

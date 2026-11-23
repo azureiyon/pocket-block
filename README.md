@@ -73,6 +73,25 @@ Simulation, 200 seeds per strategy, Blast vs Flow (`tools/sim/results/blast-vs-f
 
 Casual play feels about the same as Blast. Strong play now reaches the score tiers and ends, instead of running forever.
 
+## Spell effects
+
+Every theme has game-style spell effects, drawn on one `<canvas>` laid over the board (`src/ui/vfx.js`). Each theme picks from a shared set of effects through a short recipe in `src/ui/vfx-recipes.js`: particle sprite, magic-circle style, signature effect and glow colours.
+
+- **Placing a piece:** a soft ring and a small puff of the theme's particles.
+- **Clearing a line:** a beam of light sweeps the row or column, and particles burst along it. Clearing 2+ lines also opens a magic circle with a starburst.
+- **Combos:** the theme's signature fires and grows with the streak. The signatures are crescent slashes, a vortex, a constellation, ribbon trails, ripples, glitch blocks, a light pillar, rays, and rising or falling particles. From combo 5, a second magic circle opens.
+- **Board clear:** the signature leads at full-board scale, with a magic circle and a big burst.
+
+Performance on iPhone Safari:
+- Glows are pre-rendered sprites; there's no live blur or `shadowBlur`.
+- Particles are capped at 520.
+- The canvas renders at 1.5× at most.
+- Strokes are batched.
+- The render loop stops as soon as nothing is on screen.
+- Measured in Chromium with the CPU throttled 4×, the engine's own drawing takes about 1 ms per frame (under 10 ms at worst).
+
+**Spell effects** (Settings → Themes) turns them off, and they're always off with reduced motion. While spell effects are on, the older DOM particles are skipped, so the two don't double up.
+
 ## Running locally
 
 ES modules and the Web Worker need an HTTP server. Opening the HTML file directly (`file://`) won't work.
@@ -106,6 +125,7 @@ What the suites cover:
 | Flow catalog (41 orientations), tiers, analyzer, rescue decay, order counting with clears, clutch and punish waves, mode wiring | `tests/generator-flow.test.js` |
 | Game over, refill timing, many successive batches, duplicate input, stale worker results after restart, scoring of pre-placed blocks, touch/mouse drag and cancellation | `tests/game.test.js` |
 | Theme registry completeness, preview/cancel/commit, theme switching without gameplay changes, auto-switch only on an all-clear | `tests/themes.test.js` |
+| Spell recipes for every theme, every signature running on every theme, particle budget, idle loop shutdown, off means no work (fake canvas) | `tests/vfx.test.js` |
 | Settings persistence and unavailable storage, audio unlock/drop-when-suspended/voice limits/buffer cache/cleanup (fake Web Audio) | `tests/settings-audio.test.js` |
 | DOM, layout at 320×568 to 430×932 plus landscape, 30 themes × 3 variants | `tests/dom.test.js` (browser only) |
 
@@ -166,6 +186,8 @@ src/ui/render.js         Board and tray rendering (diff-based)
 src/ui/drag.js           Pure drag controller (touch lift, snapping, cancellation)
 src/ui/input.js          Pointer, tap-to-place and keyboard bindings
 src/ui/effects.js        Effects layer and bounded particle system
+src/ui/vfx.js            Canvas spell layer (beams, magic circles, slashes, vortexes, trails)
+src/ui/vfx-recipes.js    Per-theme spell recipes
 src/ui/environments.js   Background motif builders
 src/ui/app.js            Wiring, dialogs, settings, isolated effects demo
 sw.js                    Offline cache (network-first, cache fallback)
