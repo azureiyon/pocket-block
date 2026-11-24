@@ -306,3 +306,17 @@
 /* Canvas spell layer: sits inside the effects layer, overhanging the board so
    beams, circles and pillars can spill past its edges. */
 .vfx { position: absolute; z-index: 7; pointer-events: none; }
+
+/* ---------- Batch 1 DOM motion (jelly) ---------- */
+/* Neighbours of a placed jelly piece answer with a smaller, slightly delayed wobble. */
+.blk.jelly-nudge { animation: jelly-nudge .5s cubic-bezier(.3,1.6,.4,1) 60ms both; }
+@keyframes jelly-nudge { 0% { transform: none; } 30% { transform: scale(1.05, .95); } 60% { transform: scale(.98, 1.02); } 100% { transform: none; } }
+/* Idle: a microscopic shiver in a random block. */
+.blk.jelly-idle { animation: jelly-idle 1.2s ease-in-out both; }
+@keyframes jelly-idle { 0%, 100% { transform: none; } 25% { transform: scale(1.025, .975); } 50% { transform: scale(.985, 1.015); } 75% { transform: scale(1.008, .992); } }
+/* Idle: the inner highlight slowly drifts, offset per cell. */
+:root.vfx-on[data-theme="jelly"] .cell .m-gel > i { animation: gel-drift 7s ease-in-out infinite; animation-delay: calc(var(--i, 0) * -0.53s); }
+@keyframes gel-drift { 0%, 100% { transform: translate(0, 0); opacity: .55; } 50% { transform: translate(-60%, -40%); opacity: .85; } }
+/* Canvas behind the board (scenery that should sit behind it). */
+.vfx.back { z-index: auto; }
+@media (prefers-reduced-motion: reduce) { .blk.jelly-nudge, .blk.jelly-idle, .cell .m-gel > i { animation: none !important; } }

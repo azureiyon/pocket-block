@@ -1,7 +1,7 @@
 // Offline support: precache every local asset on install, serve
 // network-first (refreshing the cache) and fall back to the cache offline.
 // Bump VERSION when the asset list changes.
-const VERSION = 'pocket-blocks-v8';
+const VERSION = 'pocket-blocks-v9';
 const ASSETS = [
   './',
   'index.html',
@@ -36,6 +36,14 @@ const ASSETS = [
   'src/ui/effects.js',
   'src/ui/vfx.js',
   'src/ui/vfx-recipes.js',
+  'src/ui/vfx-kit.js',
+  'src/ui/vfx-lab.js',
+  'src/ui/vfx-choreo/index.js',
+  'src/ui/vfx-choreo/pastel.js',
+  'src/ui/vfx-choreo/jelly.js',
+  'src/ui/vfx-choreo/cloud.js',
+  'src/ui/vfx-choreo/soda.js',
+  'src/ui/vfx-choreo/patisserie.js',
   'src/ui/environments.js',
   'icons/icon.svg',
   'icons/icon-180.png',

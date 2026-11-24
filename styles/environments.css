@@ -422,3 +422,32 @@
 .e-eye { left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: radial-gradient(circle, #111 0 16%, #f3f3ee 18% 46%, transparent 48%); box-shadow: 0 0 0 1px rgba(30,30,30,.4); outline: 1px dashed rgba(30,30,30,.35); outline-offset: 2vmin; animation: blink-eye var(--d) ease-in-out infinite; }
 @keyframes blink-eye { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
 .e-pstar { left: var(--x); top: var(--y); width: 18px; height: 18px; background: #e85a7a; clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%); animation: twinkle var(--d) ease-in-out var(--dl) infinite; }
+
+/* ---------- Batch 1 idle life (only with spell effects on; never with reduced motion) ---------- */
+/* Classic Pastel: pearlescent light passing over satin. */
+.e-satin { inset: -20%; opacity: 0; background: linear-gradient(112deg, transparent 38%, rgba(255,255,255,.0) 42%, rgba(255,240,250,.55) 47%, rgba(230,245,255,.5) 50%, rgba(255,250,235,.45) 53%, transparent 60%); transform: translateX(-60%); }
+:root.vfx-on .env-paper.sheen .e-satin { animation: satin-pass 3.1s cubic-bezier(.45,0,.25,1) both; }
+@keyframes satin-pass { 0% { transform: translateX(-60%); opacity: 0; } 15% { opacity: calc(.7 + var(--heat, 0) * .3); } 85% { opacity: calc(.7 + var(--heat, 0) * .3); } 100% { transform: translateX(60%); opacity: 0; } }
+/* Cloud Palace: depth layers, golden light through the gaps, clouds parting for big moments. */
+.env-clouds .e-cloud.far { opacity: .45; filter: none; }
+.env-clouds .e-cloud.near { opacity: .7; }
+.e-goldray { top: -10%; width: 18vmin; height: 90vh; background: linear-gradient(180deg, rgba(255,231,168,.0), rgba(255,231,168,.55) 30%, rgba(255,231,168,0)); transform-origin: 50% 0; opacity: calc(.12 + var(--heat, 0) * .25); transition: opacity 1.6s ease; }
+.e-goldray.r1 { left: 18%; transform: rotate(14deg); } .e-goldray.r2 { left: 52%; transform: rotate(8deg); width: 10vmin; } .e-goldray.r3 { left: 78%; transform: rotate(-6deg); }
+:root.vfx-on .env-clouds.gleam .e-goldray { animation: gleam 4.2s ease-in-out both; }
+@keyframes gleam { 0%, 100% { opacity: calc(.12 + var(--heat, 0) * .25); } 40% { opacity: .7; } }
+.env-clouds .e-cloud, .env-clouds .e-halo { transition: opacity 1.2s ease, translate 1.6s cubic-bezier(.3,.7,.2,1); }
+:root.vfx-on .env-clouds.parted .e-cloud { opacity: .15; translate: 0 -6vh; }
+:root.vfx-on .env-clouds.parted .e-halo { opacity: 1; }
+/* Cream Soda: bubble pairs that rise, drift together and merge. */
+.e-pair { left: var(--x); bottom: -20px; width: 30px; height: 20px; animation: pair-rise var(--d) linear var(--dl) infinite; }
+.e-pair i { position: absolute; top: 4px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.9); background: radial-gradient(circle at 30% 30%, #fff 0 18%, rgba(255,255,255,.15) 30%); }
+.e-pair i:first-child { left: 0; animation: pair-l var(--d) ease-in-out var(--dl) infinite; }
+.e-pair i:last-child { right: 0; animation: pair-r var(--d) ease-in-out var(--dl) infinite; }
+@keyframes pair-rise { to { transform: translateY(-110vh); } }
+@keyframes pair-l { 0%, 35% { transform: translateX(0); } 55% { transform: translateX(10px) scale(1.35); } 100% { transform: translateX(10px) scale(1.35); } }
+@keyframes pair-r { 0%, 35% { transform: translateX(0); opacity: 1; } 55% { transform: translateX(-10px) scale(.6); opacity: 0; } 100% { opacity: 0; } }
+.env-soda .e-sbub { opacity: calc(.6 + var(--heat, 0) * .4); }
+/* Strawberry Patisserie: a glossy highlight travelling over the ribbons. */
+:root.vfx-on .env-patisserie .e-ribbon svg { animation: ribbon-gloss 7s ease-in-out infinite; }
+@keyframes ribbon-gloss { 0%, 80%, 100% { filter: none; } 88% { filter: brightness(1.18) saturate(1.1); } }
+@media (prefers-reduced-motion: reduce) { .e-satin, .e-pair, .e-goldray { animation: none !important; } }

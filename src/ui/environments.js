@@ -51,6 +51,7 @@ const DIALOG = (t) => `<div class="e-dlg"><b>${t}</b><p>Brain not found.</p><i>O
 
 export const ENVIRONMENTS = {
   paper: {
+    static: () => '<div class="e-satin"></div>',
     motion: () => repeat(7, () => `<span class="e-paper s${rint(0, 2)}" style="${vars({ x: R(2, 92) + '%', y: R(4, 90) + '%', d: R(14, 26).toFixed(1) + 's', dl: -R(0, 20).toFixed(1) + 's', h: rint(0, 6) })}"></span>`),
   },
   neon: {
@@ -63,12 +64,15 @@ export const ENVIRONMENTS = {
       + repeat(8, () => `<span class="e-bub" style="${vars({ x: R(3, 95) + '%', s: R(8, 22).toFixed(0) + 'px', d: R(9, 16).toFixed(1) + 's', dl: -R(0, 16).toFixed(1) + 's' })}"></span>`),
   },
   clouds: {
-    static: () => '<div class="e-halo h1"></div><div class="e-halo h2"></div>',
-    motion: () => repeat(5, (i) => `<span class="e-cloud" style="${vars({ y: (6 + i * 19) + '%', s: R(0.6, 1.2).toFixed(2), d: R(40, 70).toFixed(0) + 's', dl: -R(0, 60).toFixed(0) + 's' })}"></span>`),
+    static: () => '<div class="e-halo h1"></div><div class="e-halo h2"></div><div class="e-goldray r1"></div><div class="e-goldray r2"></div><div class="e-goldray r3"></div>',
+    // Three depths of cloud: far (slow, faint), middle, near (fast, large).
+    motion: () => repeat(5, (i) => `<span class="e-cloud" style="${vars({ y: (6 + i * 19) + '%', s: R(0.6, 1.2).toFixed(2), d: R(40, 70).toFixed(0) + 's', dl: -R(0, 60).toFixed(0) + 's' })}"></span>`)
+      + repeat(4, (i) => `<span class="e-cloud far" style="${vars({ y: (2 + i * 24) + '%', s: R(0.4, 0.7).toFixed(2), d: R(90, 130).toFixed(0) + 's', dl: -R(0, 120).toFixed(0) + 's' })}"></span>`)
+      + repeat(2, (i) => `<span class="e-cloud near" style="${vars({ y: (30 + i * 45) + '%', s: R(1.4, 1.8).toFixed(2), d: R(28, 40).toFixed(0) + 's', dl: -R(0, 30).toFixed(0) + 's' })}"></span>`),
   },
   soda: {
     static: () => '<div class="e-stripes"></div>',
-    motion: () => repeat(14, (i) => `<span class="e-sbub" style="${vars({ x: ([8, 12, 88, 92][i % 4] + R(-3, 3)) + '%', s: R(4, 10).toFixed(0) + 'px', d: R(4, 8).toFixed(1) + 's', dl: -R(0, 8).toFixed(1) + 's' })}"></span>`),
+    motion: () => repeat(3, (i) => `<span class="e-pair" style="${vars({ x: [6, 90, 50][i] + '%', d: R(9, 14).toFixed(1) + 's', dl: -R(0, 12).toFixed(1) + 's' })}"><i></i><i></i></span>`) + repeat(14, (i) => `<span class="e-sbub" style="${vars({ x: ([8, 12, 88, 92][i % 4] + R(-3, 3)) + '%', s: R(4, 10).toFixed(0) + 'px', d: R(4, 8).toFixed(1) + 's', dl: -R(0, 8).toFixed(1) + 's' })}"></span>`),
   },
   gears: {
     static: () => '<div class="e-gauge"><div class="e-needle"></div></div>',

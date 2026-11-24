@@ -92,6 +92,21 @@ Performance on iPhone Safari:
 
 **Spell effects** (Settings → Themes) turns them off, and they're always off with reduced motion. While spell effects are on, the older DOM particles are skipped, so the two don't double up.
 
+## Premium VFX batches
+
+Themes are being moved, five at a time, from the shared recipe effects to hand-directed choreography (`src/ui/vfx-choreo/<theme>.js`, built on the drawing toolkit in `src/ui/vfx-kit.js`). Each choreographed theme has its own routine for idle life, placing, single-line clears, multi-line clears, streaks, score milestones (every 1,000 in Classic, every 2,500 in Blast and Flow) and board clears. Cleared blocks are redrawn as snapshots on the canvas, so an animation keeps running after the board has moved on and never blocks the next move.
+
+**Batch 1, Soft & Dreamy:**
+- **Classic Pastel:** satin ribbons that unfurl along cleared lines while the blocks flatten into strips, plus braids around the board and bow-knots.
+- **Jelly Pop:** gelatin masses that fuse, neck and release wobbling droplets; droplets merge on contact, and jelly waves meet across the board.
+- **Cloud Palace:** a sunbeam along the line, blocks turning into lit vapour that curls up, and a golden arch with ornament stars as the clouds part.
+- **Cream Soda Pop:** lines turn into a band of liquid that fizzes, with bubbles that rise, wobble and pop into droplets, a foam wave, and soda filling the board.
+- **Strawberry Patisserie:** frosting piped by a moving nozzle in scallops, cake crumbling into layered slices and crumbs, rosettes and strawberries.
+
+**Settings → Themes → Effect intensity** (25–100%) scales counts and brightness. Switching themes tears down every timer, emitter and idle loop.
+
+**VFX lab:** open the game with `?vfxlab` for replay buttons for every feedback type, at 1×, ½× or ¼× speed, seeded so each replay is identical. It uses a fixture board and leaves your real game untouched.
+
 ## Running locally
 
 ES modules and the Web Worker need an HTTP server. Opening the HTML file directly (`file://`) won't work.
