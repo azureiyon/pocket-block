@@ -241,7 +241,8 @@ export class Effects {
     const ring = document.createElement('div');
     ring.className = 'celebrate-ring';
     this.track(ring, 1400);
-    this.board.el.classList.add('celebrate');
+    // Choreographed themes stage their own finale; skip the brightness wash that would cover it.
+    if (!this.canvasGhosts()) this.board.el.classList.add('celebrate');
     this.later(() => this.board.el.classList.remove('celebrate'), 1400);
     this.label('Board Clear!', 'allclear', null, 1700);
     for (let w = 0; w < 3; w++) this.later(() => this.spawn(cx + R(-60, 60), cy + R(-60, 60), 14, theme.palette), w * 160);

@@ -6,8 +6,8 @@
 // their own colour, and vanish with a wink and a little heart.
 // Motif: character and rhythm. No particles carry the story; the blocks do.
 
-import { SUITE } from './jelly-c-suite.js';
-import { TAU, mix, rgba, easeOut, easeIn, easeInOut, easeOutBack, sine, spring, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, INK } from '../art/jelly-art.js';
+import { SUITE } from './ballet-suite.js';
+import { TAU, mix, rgba, easeOut, easeIn, easeInOut, easeOutBack, sine, spring, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, INK } from './jelly-art.js';
 
 export const params = [
   { key: 'stagger', label: 'Canon stagger', unit: 'ms', min: 20, max: 90, step: 5, def: 34 },

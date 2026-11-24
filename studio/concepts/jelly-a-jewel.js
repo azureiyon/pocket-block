@@ -6,7 +6,7 @@
 // the line. A glint sweeps the strand, then the jewels wink out in order.
 // Motif: weight and landing. Things fall *down* and settle; nothing floats.
 
-import { TAU, mix, rgba, easeOut, easeIn, easeInOut, easeOutBack, spring, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, INK } from '../art/jelly-art.js';
+import { TAU, mix, rgba, easeOut, easeIn, easeInOut, easeOutBack, spring, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, INK } from '../../src/ui/vfx-jelly/jelly-art.js';
 
 const SHAPES = ['heart', 'star', 'gem', 'drop'];
 const SP = 128; // sprite px

@@ -6,7 +6,7 @@
 // crystals dissolve from the top into fine sugar that drifts down, leaving
 // a shimmering trace. Motif: light and facets. Nothing pops or bounces.
 
-import { TAU, mix, rgba, clamp, easeOut, easeIn, easeInOut, sine, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, roundRectPath, INK } from '../art/jelly-art.js';
+import { TAU, mix, rgba, clamp, easeOut, easeIn, easeInOut, sine, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, roundRectPath, INK } from '../../src/ui/vfx-jelly/jelly-art.js';
 
 const SP = 128;
 

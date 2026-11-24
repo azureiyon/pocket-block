@@ -10,8 +10,8 @@
 //   milestone  a curtain call: a little troupe hops on above the board, bows, exits
 //   board      grand finale: arch, gather into a carousel ring, pinwheel out, heart
 
-import { TAU, mix, easeOut, easeIn, easeInOut, easeOutBack, sine, seg, env, lerp, sparkle, drawSprite } from '../art/jelly-art.js';
-import { sampler, bez, heartPts, heartSprite, hop, landing, dancer, trail, trailSparkles } from '../art/ballet-kit.js';
+import { TAU, mix, easeOut, easeIn, easeInOut, easeOutBack, sine, seg, env, lerp, sparkle, drawSprite } from './jelly-art.js';
+import { sampler, bez, heartPts, heartSprite, hop, landing, dancer, trail, trailSparkles } from './ballet-kit.js';
 
 const K = (P) => P.speed;
 const beats = (P) => ({ crouch: 90 * K(P), hopT: 240 * K(P), spinT: 290 * K(P), pose: 110 * K(P) });

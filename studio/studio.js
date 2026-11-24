@@ -10,10 +10,10 @@
 import { THEMES, getTheme } from '../src/themes/themes.js';
 import { BoardView } from '../src/ui/render.js';
 import { EnvironmentManager } from '../src/ui/environments.js';
-import { jellyBlock, roundRectPath } from './art/jelly-art.js';
+import { jellyBlock, roundRectPath } from '../src/ui/vfx-jelly/jelly-art.js';
 import conceptA from './concepts/jelly-a-jewel.js';
 import conceptB from './concepts/jelly-b-crystal.js';
-import conceptC from './concepts/jelly-c-ballet.js';
+import conceptC from '../src/ui/vfx-jelly/ballet.js';
 import { PRODUCTION } from './variants/production.js';
 
 const $ = (id) => document.getElementById(id);
@@ -227,8 +227,6 @@ function applyTheme() {
   for (const [k, v] of Object.entries(theme.vars)) root.style.setProperty(k, v);
   root.dataset.theme = theme.id; root.dataset.mat = theme.material; root.classList.toggle('dark', !!theme.dark);
   envMgr.set(theme.env, $('s-animbg').checked);
-  root.classList.toggle('blocks-matched', S.blocks !== 'current');
-  root.classList.toggle('blocks-faces', S.blocks === 'faces');
 }
 function maxDuration() { return Math.max(1, ...panels.filter((p) => p.supports()).map((p) => p.duration())); }
 function draw() {
@@ -287,8 +285,6 @@ function init() {
   $('s-fixture').addEventListener('change', (e) => { S.fixture = e.target.value; panels.forEach((p) => { p.dirty = true; }); draw(); });
   $('s-device').addEventListener('change', (e) => { S.device = Number(e.target.value); panels.forEach((p) => p.layout()); draw(); });
   $('s-animbg').addEventListener('change', applyTheme);
-  $('s-blocks').value = S.blocks;
-  $('s-blocks').addEventListener('change', (e) => { S.blocks = e.target.value; applyTheme(); });
   $('s-events').addEventListener('click', (e) => { const b = e.target.closest('[data-e]'); if (!b) return; S.event = b.dataset.e; if (EVENT_FIXTURE[S.event]) { S.fixture = EVENT_FIXTURE[S.event]; $('s-fixture').value = S.fixture; } $('s-events').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); panels.forEach((p) => { p.dirty = true; }); S.t = 0; draw(); });
   $('s-count').addEventListener('change', rebuild);
   $('s-play').addEventListener('click', () => { S.playing = !S.playing; draw(); });

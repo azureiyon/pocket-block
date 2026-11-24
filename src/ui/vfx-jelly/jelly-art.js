@@ -3,7 +3,7 @@
 // translucent pastel body, a soft top-left gloss and a small bottom-right dot.
 // Sprites are rendered once per shape x colour and reused every frame.
 
-import { TAU, mix, rgba, clamp } from '../../src/ui/vfx-kit.js';
+import { TAU, mix, rgba, clamp } from '../vfx-kit.js';
 
 export const INK = '#7a3a55';
 
@@ -70,7 +70,10 @@ export function sparkle(ctx, x, y, r, alpha, color = '#ffffff', rot = 0) {
 const cache = new Map();
 export function spriteOf(key, size, paint) {
   let c = cache.get(key);
-  if (!c) { c = document.createElement('canvas'); c.width = c.height = size; paint(c.getContext('2d'), size); cache.set(key, c); }
+  if (!c) {
+    if (typeof document === 'undefined') return { width: size, height: size }; // headless tests
+    c = document.createElement('canvas'); c.width = c.height = size; paint(c.getContext('2d'), size); cache.set(key, c);
+  }
   return c;
 }
 export function drawSprite(ctx, img, x, y, size, { rot = 0, sx = 1, sy = 1, alpha = 1 } = {}) {

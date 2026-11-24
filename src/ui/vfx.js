@@ -136,10 +136,12 @@ export class Vfx {
       this.ctx = this.canvas.getContext('2d');
     }
     const w = this.layer.clientWidth || 300; const h = this.layer.clientHeight || 300;
-    const pad = Math.round(Math.max(w, h) * 0.16);
+    // Themes whose choreography travels far off the board ask for a deeper margin.
+    const ch = this.choreo();
+    const pad = Math.round(Math.max(w, h) * ((ch && ch.pad) || 0.16));
     // Glows are soft, so 1.5x is plenty and saves ~45% of the fill work on 3x phones.
     const dpr = Math.min(1.5, (typeof window !== 'undefined' && window.devicePixelRatio) || 1);
-    const key = w + 'x' + h + '@' + dpr;
+    const key = w + 'x' + h + '@' + dpr + '+' + pad;
     if (key !== this.sizeKey) {
       this.sizeKey = key; this.pad = pad; this.dpr = dpr; this.w = w; this.h = h;
       Object.assign(this.canvas.style, { left: -pad + 'px', top: -pad + 'px', width: w + pad * 2 + 'px', height: h + pad * 2 + 'px' });

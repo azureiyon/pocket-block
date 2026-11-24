@@ -98,7 +98,7 @@ Themes are being moved, five at a time, from the shared recipe effects to hand-d
 
 **Batch 1, Soft & Dreamy:**
 - **Classic Pastel:** satin ribbons that unfurl along cleared lines while the blocks flatten into strips, plus braids around the board and bow-knots.
-- **Jelly Pop:** glossy fruit-jelly candy. Each block squashes, stretches and swells in a staggered popping rhythm, then bursts into a few translucent jelly beads (inner gradient, rim light, specular highlight) on buoyant arcs, with white diamond glints. Streaks pop a cascade of candy over the board with a pearlescent afterglow, and a board clear rains candy in a diagonal sweep.
+- **Jelly Pop:** the Candy Ballet (designed in the VFX Studio). The blocks themselves dance: crouch, canon hop, pirouette and a follow-the-leader exit with ribbon trails. Placement gets greeting hops, multi-line clears get twin troupes led by a prima, streaks paint a ribbon heart, and a board clear becomes a carousel that spins out into a heart. No milestone effect.
 - **Cloud Palace:** a sunbeam along the line, blocks turning into lit vapour that curls up, and a golden arch with ornament stars as the clouds part.
 - **Cream Soda Pop:** lines turn into a band of liquid that fizzes, with bubbles that rise, wobble and pop into droplets, a foam wave, and soda filling the board.
 - **Strawberry Patisserie:** frosting piped by a moving nozzle in scallops, cake crumbling into layered slices and crumbs, rosettes and strawberries.
@@ -106,6 +106,10 @@ Themes are being moved, five at a time, from the shared recipe effects to hand-d
 **Settings → Themes → Effect intensity** (25–100%) scales counts and brightness. Switching themes tears down every timer, emitter and idle loop.
 
 **VFX lab:** open the game with `?vfxlab` for replay buttons for every feedback type, at 1×, ½× or ¼× speed, seeded so each replay is identical. It uses a fixture board and leaves your real game untouched.
+
+## VFX Studio
+
+`/studio/` (development only, never loaded by the game) is where theme effects are designed before they ship: side-by-side variants, looping, pause, frame stepping, scrubbing, speed, fixture boards per event, phone widths, per-concept parameters and presets, and storyboard capture. The workflow and lessons learned are in the project skill `.claude/skills/pocket-blocks-vfx/SKILL.md`.
 
 ## Running locally
 

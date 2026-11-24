@@ -315,8 +315,9 @@
 
 
 /* Idle: the inner highlight slowly drifts, offset per cell. */
-:root.vfx-on[data-theme="jelly"] .cell .m-gel > i { animation: gel-drift 7s ease-in-out infinite; animation-delay: calc(var(--i, 0) * -0.53s); }
-@keyframes gel-drift { 0%, 100% { transform: translate(0, 0); opacity: .55; } 50% { transform: translate(-60%, -40%); opacity: .85; } }
 /* Canvas behind the board (scenery that should sit behind it). */
 .vfx.back { z-index: auto; }
 @media (prefers-reduced-motion: reduce) { .blk.jelly-nudge, .blk.jelly-idle, .cell .m-gel > i { animation: none !important; } }
+
+/* Cells whose block is being animated on the canvas (Candy Ballet). */
+.cell.vfx-hide > .blk { visibility: hidden; }
