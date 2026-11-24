@@ -17,7 +17,7 @@ export const params = [
   { key: 'trail', label: 'Trail length', unit: '× cell', min: 0, max: 5, step: 0.25, def: 2.5 },
   { key: 'trailW', label: 'Trail width', min: 0.1, max: 0.7, step: 0.02, def: 0.42 },
   { key: 'sparkles', label: 'Sparkle density', min: 0, max: 2, step: 0.1, def: 1 },
-  { key: 'faces', label: 'Little faces', min: 0, max: 1, step: 1, def: 1 },
+  { key: 'faces', label: 'Little faces', min: 0, max: 1, step: 1, def: 0 },
   { key: 'speed', label: 'Overall pace', min: 0.6, max: 1.5, step: 0.05, def: 1 },
 ];
 export const presets = {
@@ -25,7 +25,7 @@ export const presets = {
   'Original pace': { stagger: 45, speed: 1.3 },
   'Prima ballerina': { stagger: 55, hop: 1.4, turns: 1, arch: 0.8, trail: 3.2, trailW: 0.24, speed: 1.4 },
   'Chorus line': { stagger: 26, crouch: 0.28, hop: 0.85, turns: 0.5, arch: 0.2, trail: 1.8, speed: 0.9 },
-  'No faces': { faces: 0 },
+  'With faces (rejected)': { faces: 1 },
 };
 
 function timing(P) {

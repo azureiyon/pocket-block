@@ -65,7 +65,7 @@ const S = {
   event: url.get('event') || 'single',
   t: Number(url.get('t') || 0),
   playing: url.get('paused') !== '1',
-  speed: 1, loop: true, focus: 0, blocks: url.get('blocks') || 'faces',
+  speed: 1, loop: true, focus: 0, blocks: url.get('blocks') || 'matched',
   panels: [], storyboard: url.get('storyboard') || null,
 };
 const initialVariants = (url.get('variants') || '').split(',').filter(Boolean);
