@@ -36,13 +36,13 @@
 @keyframes bub-rise { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: .9; } 50% { transform: translate(14px, -55vh); } 100% { transform: translate(-6px, -110vh); opacity: 0; } }
 
 /* 4 Cloud Palace */
-.env-clouds { background: linear-gradient(180deg, #f2e9ff 0%, #fff6e2 60%, #ffeef5 100%); }
-.e-halo { left: 50%; width: 70vmin; height: 70vmin; margin-left: -35vmin; border-radius: 50%; border: 2px solid rgba(212,176,98,.35); box-shadow: 0 0 40px rgba(255,231,168,.5), inset 0 0 40px rgba(255,231,168,.4); }
+.env-clouds { background: radial-gradient(ellipse 90% 40% at 50% 104%, rgba(255,206,150,.55), transparent 70%), linear-gradient(180deg, #1c1740 0%, #2c2459 38%, #4a3b7c 68%, #8a5f93 88%, #c98d8f 100%); }
+.e-halo { left: 50%; width: 70vmin; height: 70vmin; margin-left: -35vmin; border-radius: 50%; border: 1.5px solid rgba(230,192,106,.32); box-shadow: 0 0 40px rgba(255,214,140,.16), inset 0 0 40px rgba(255,214,140,.1); }
 .e-halo.h1 { top: -20vmin; }
-.e-halo.h2 { bottom: -45vmin; width: 100vmin; height: 100vmin; margin-left: -50vmin; border-color: rgba(200,170,230,.3); }
+.e-halo.h2 { bottom: -45vmin; width: 100vmin; height: 100vmin; margin-left: -50vmin; border-color: rgba(185,160,235,.22); }
 .env-clouds.animated .e-halo { animation: halo 8s ease-in-out infinite alternate; }
 @keyframes halo { to { opacity: .5; transform: scale(1.04); } }
-.e-cloud { top: var(--y); left: 0; width: 160px; height: 46px; border-radius: 40px; background: rgba(255,255,255,.85); filter: blur(1px); transform: scale(var(--s)); animation: cloud var(--d) linear var(--dl) infinite; box-shadow: 0 6px 16px rgba(190,160,220,.2); }
+.e-cloud { top: var(--y); left: 0; width: 160px; height: 46px; border-radius: 40px; background: rgba(214,196,248,.2); filter: blur(1px); transform: scale(var(--s)); animation: cloud var(--d) linear var(--dl) infinite; box-shadow: 0 6px 16px rgba(10,6,40,.18); }
 .e-cloud::before, .e-cloud::after { content: ""; position: absolute; border-radius: 50%; background: inherit; }
 .e-cloud::before { width: 70px; height: 70px; left: 24px; top: -34px; }
 .e-cloud::after { width: 54px; height: 54px; left: 78px; top: -24px; }
@@ -431,7 +431,7 @@
 /* Cloud Palace: depth layers, golden light through the gaps, clouds parting for big moments. */
 .env-clouds .e-cloud.far { opacity: .45; filter: none; }
 .env-clouds .e-cloud.near { opacity: .7; }
-.e-goldray { top: -10%; width: 18vmin; height: 90vh; background: linear-gradient(180deg, rgba(255,231,168,.0), rgba(255,231,168,.55) 30%, rgba(255,231,168,0)); transform-origin: 50% 0; opacity: calc(.12 + var(--heat, 0) * .25); transition: opacity 1.6s ease; }
+.e-goldray { top: -10%; width: 18vmin; height: 90vh; background: linear-gradient(180deg, rgba(255,214,140,.0), rgba(255,214,140,.35) 30%, rgba(255,214,140,0)); transform-origin: 50% 0; opacity: calc(.12 + var(--heat, 0) * .25); transition: opacity 1.6s ease; }
 .e-goldray.r1 { left: 18%; transform: rotate(14deg); } .e-goldray.r2 { left: 52%; transform: rotate(8deg); width: 10vmin; } .e-goldray.r3 { left: 78%; transform: rotate(-6deg); }
 :root.vfx-on .env-clouds.gleam .e-goldray { animation: gleam 4.2s ease-in-out both; }
 @keyframes gleam { 0%, 100% { opacity: calc(.12 + var(--heat, 0) * .25); } 40% { opacity: .7; } }

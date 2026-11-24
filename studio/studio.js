@@ -22,13 +22,16 @@ import lightA from '../src/ui/vfx-classic/sweep.js';
 import lightB from './concepts/pastel-l2-stardust.js';
 import lightC from '../src/ui/vfx-classic/resonance.js';
 import lightSuite from '../src/ui/vfx-classic/suite.js';
+import cloudA from './concepts/cloud-a-ascend.js';
+import cloudB from './concepts/cloud-b-dawn.js';
+import cloudC from './concepts/cloud-c-heaven.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;
 const LOOP_GAP = 500; // ms of stillness between loops (motion-design: leave 100-200ms+ after resolution)
 
 // ---------- registry ----------
-const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC] };
+const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudA, cloudB, cloudC] };
 const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION.filter((v) => v.id !== 'prod-original' || themeId === 'jelly')];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 
