@@ -206,7 +206,8 @@ export function render(ctx, t, st, scene, P) {
 // The approved single-line clear lives above; every other event comes from the suite.
 const pick = (ev) => (ev && ev !== 'single' && SUITE[ev]) || null;
 export default {
-  id: 'jelly-c', label: 'C · Candy Ballet', kind: 'concept', supports: ['single', 'idle', 'place', 'multi', 'streak', 'milestone', 'board'], params, presets,
+  id: 'jelly-c', label: 'C · Candy Ballet', kind: 'concept', // Milestone intentionally omitted: Rui decided the animated background is enough; Jelly Pop has no milestone effect.
+  supports: ['single', 'idle', 'place', 'multi', 'streak', 'board'], params, presets,
   duration: (P, ev) => (pick(ev) ? pick(ev).duration(P) : duration(P)),
   keyframes: (P, ev) => (pick(ev) ? pick(ev).keyframes(P) : keyframes(P)),
   prepare: (scene, P, ev) => (pick(ev) ? pick(ev).prepare(scene, P) : prepare(scene, P)),
