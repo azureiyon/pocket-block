@@ -5,6 +5,7 @@
 // Soft light comes from pre-rendered sprites; nothing uses live blur.
 
 import { TAU, clamp, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, spark, glint, drawSprite, roundRectPath, frame } from '../../src/ui/vfx-classic/light-kit.js';
+import { spriteOf } from '../../src/ui/vfx-jelly/jelly-art.js';
 
 export const CHAMPAGNE = '#ffe6ad';
 export const WARM_WHITE = '#fff7e6';
@@ -26,19 +27,19 @@ export function pearlBlock(ctx, x, y, s, color, { alpha = 1, glow = 0, clear = 0
   const w = size; const r = w * 0.4;
   ctx.save(); ctx.translate(x, y - lift);
   // Drop shadow (fades as the pearl turns to light).
-  ctx.save(); ctx.translate(0, Math.max(1, s * 0.05)); roundRectPath(ctx, w, w, r);
-  ctx.globalAlpha = alpha * 0.35 * (1 - Math.max(clear, glow)); ctx.fillStyle = '#08041e'; ctx.fill(); ctx.restore();
+  ctx.save(); ctx.translate(0, Math.max(0.5, w * 0.05)); roundRectPath(ctx, w, w, r);
+  ctx.globalAlpha = alpha * 0.35 * (1 - Math.max(clear, glow)) * Math.min(1, w / s); ctx.fillStyle = '#08041e'; ctx.fill(); ctx.restore();
   roundRectPath(ctx, w, w, r);
   ctx.save(); ctx.clip();
   // Body: the block colour, thinning as it becomes translucent.
   // Translucent here means lit from within: the body thins towards warm light, never towards the dark board.
-  ctx.globalAlpha = alpha * (1 - clear * 0.3); ctx.fillStyle = mix(color, CHAMPAGNE, clear * 0.45); ctx.fillRect(-w / 2, -w / 2, w, w);
+  ctx.globalAlpha = alpha * (1 - clear * 0.25); ctx.fillStyle = mix(color, CHAMPAGNE, clear * 0.22); ctx.fillRect(-w / 2, -w / 2, w, w);
   // Iridescent sheen.
   if (ctx.createConicGradient) {
     const g = ctx.createConicGradient((210 / 180) * Math.PI + phase * TAU, w * 0.1, w * 0.1);
     const st = ['rgba(255,190,235,.55)', 'rgba(190,225,255,.55)', 'rgba(255,250,200,.55)', 'rgba(220,200,255,.55)', 'rgba(255,190,235,.55)'];
     st.forEach((c, i) => g.addColorStop(i / 4, c));
-    ctx.globalAlpha = alpha * (1 - clear * 0.45); ctx.fillStyle = g; ctx.fillRect(-w / 2, -w / 2, w, w);
+    ctx.globalAlpha = alpha * (1 - clear * 0.2); ctx.fillStyle = g; ctx.fillRect(-w / 2, -w / 2, w, w);
   }
   // Lavender underside.
   const sh = ctx.createLinearGradient(0, w * 0.1, 0, w / 2);
@@ -61,6 +62,21 @@ export function pearlBlock(ctx, x, y, s, color, { alpha = 1, glow = 0, clear = 0
   d.addColorStop(0, '#fff3c4'); d.addColorStop(1, '#c9a24b');
   ctx.globalAlpha = alpha * (1 - clear * 0.5); ctx.fillStyle = d; ctx.beginPath(); ctx.arc(0, 0, w * 0.07, 0, TAU); ctx.fill();
   ctx.restore();
+}
+
+/**
+ * A compact point of warm light for dark skies: near-white core, a short
+ * saturated gold falloff (saturated light reads as light on indigo; a wide
+ * pale falloff reads as fog). Draw it small.
+ */
+export function lightSprite(tint = GOLD) {
+  return spriteOf('cloudlight|' + tint, 96, (g) => {
+    const r = g.createRadialGradient(48, 48, 0, 48, 48, 48);
+    r.addColorStop(0, 'rgba(255,251,242,1)'); r.addColorStop(0.16, 'rgba(255,240,205,.95)');
+    const n = parseInt(tint.slice(1), 16); const c = `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+    r.addColorStop(0.36, `rgba(${c},.5)`); r.addColorStop(0.65, `rgba(${c},.12)`); r.addColorStop(1, `rgba(${c},0)`);
+    g.fillStyle = r; g.fillRect(0, 0, 96, 96);
+  });
 }
 
 /** Point on a rounded square's outline (side w, corner r), u in [0,1) clockwise from top centre. Returns {x, y, tx, ty}. */
