@@ -25,7 +25,7 @@ const CONCEPTS = { jelly: [conceptA, conceptB, conceptC] };
 const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 
-const EVENTS = [['place', 'Placement'], ['single', 'Single line'], ['multi', 'Multi line'], ['streak', 'Streak'], ['milestone', 'Milestone'], ['board', 'Board clear']];
+const EVENTS = [['idle', 'Idle'], ['place', 'Placement'], ['single', 'Single line'], ['multi', 'Multi line'], ['streak', 'Streak'], ['milestone', 'Milestone'], ['board', 'Board clear']];
 
 // ---------- deterministic fixture boards ----------
 const SCATTER = [0, 1, 9, 14, 15, 22, 31, 33, 39, 48, 54, 57, 62, 63];
@@ -38,6 +38,8 @@ function fixture(id) {
   else if (id === 'crowded') { set([...SCATTER, 16, 17, 24, 25, 26, 40, 41, 42, 46, 47, 55, 56, 58, 59, 60, 61]); rows = [6]; placed = [52, 53, 45]; }
   else if (id === 'column') { set(SCATTER); cols = [2]; placed = [26, 34, 35]; }
   else if (id === 'multi') { set(SCATTER); rows = [5]; cols = [2]; placed = [42, 43, 50]; }
+  else if (id === 'place') { set([...SCATTER, 19, 20, 26, 29, 36]); placed = [27, 28, 35]; }
+  else if (id === 'boardclear') { rows = [5]; placed = [44, 45, 46]; }
   else { set(SCATTER); rows = [5]; placed = [44, 45, 36]; }
   const lineCells = [...rows.flatMap((r) => Array.from({ length: 8 }, (_, c) => r * 8 + c)), ...cols.flatMap((c) => Array.from({ length: 8 }, (_, r) => r * 8 + c))];
   set([...lineCells, ...placed]);
@@ -45,7 +47,9 @@ function fixture(id) {
   const after = Uint8Array.from(before); for (const i of cleared) after[i] = 0;
   return { before, after, rows, cols, placed, cleared };
 }
-const FIXTURES = [['row-mid', 'Row 6, light board'], ['row-top', 'Row 2, near the top'], ['crowded', 'Row 7, crowded board'], ['column', 'Column 3'], ['multi', 'Row + column']];
+// Each event opens on the board that shows it best (you can still change it).
+const EVENT_FIXTURE = { idle: 'crowded', place: 'place', single: 'row-mid', multi: 'multi', streak: 'row-mid', milestone: 'row-mid', board: 'boardclear' };
+const FIXTURES = [['place', 'Placement board'], ['boardclear', 'Last row on the board'], ['row-mid', 'Row 6, light board'], ['row-top', 'Row 2, near the top'], ['crowded', 'Row 7, crowded board'], ['column', 'Column 3'], ['multi', 'Row + column']];
 
 function moveFor(fx, event) {
   const clearedCells = fx.cleared.map((i) => ({ i, color: fx.before[i] }));
@@ -60,7 +64,7 @@ function moveFor(fx, event) {
 const url = new URLSearchParams(location.search);
 const S = {
   theme: url.get('theme') || 'jelly',
-  fixture: url.get('fixture') || 'row-mid',
+  fixture: url.get('fixture') || null,
   device: Number(url.get('device') || 390),
   event: url.get('event') || 'single',
   t: Number(url.get('t') || 0),
@@ -69,6 +73,7 @@ const S = {
   panels: [], storyboard: url.get('storyboard') || null,
 };
 const initialVariants = (url.get('variants') || '').split(',').filter(Boolean);
+if (!S.fixture) S.fixture = EVENT_FIXTURE[S.event] || 'row-mid';
 
 // ---------- params & presets ----------
 const userPresetsKey = (vid) => 'pbStudio.presets.' + vid;
@@ -129,7 +134,7 @@ class Panel {
     return { fx, lines, cell, theme: this.theme, bounds: { x0: a.x - a.s / 2, y0: a.y - a.s / 2, x1: z.x + z.s / 2, y1: z.y + z.s / 2 } };
   }
   supports() { return this.variant.supports.includes(S.event); }
-  duration() { return this.variant.duration(this.P); }
+  duration() { return this.variant.duration(this.P, S.event); }
   localT(t) {
     if (this.fixedT !== null) return this.fixedT;
     const d = this.duration();
@@ -147,7 +152,9 @@ class Panel {
     if (na) na.remove();
     const lt = this.localT(t);
     // The logical board updates at once (as in the game); effects draw snapshots on top.
-    this.boardView.render(S.event === 'place' ? fx.after.map((v, i) => (fx.placed.includes(i) ? 3 : (fx.cleared.includes(i) ? 0 : v))) : fx.after);
+    // Cells the concept animates itself (idle, placement) are hidden on the DOM board while it plays.
+    const hide = !this.variant.simulated && this.state && this.state.hidden && lt < this.duration() ? new Set(this.state.hidden) : null;
+    this.boardView.render(hide ? fx.after.map((v, i) => (hide.has(i) ? 0 : v)) : fx.after);
     const tt = this.el.querySelector('.tt'); if (tt) tt.textContent = `${Math.round(lt)} / ${Math.round(this.duration())} ms`;
     if (this.variant.simulated) {
       this.canvas.style.display = 'none';
@@ -157,11 +164,11 @@ class Panel {
       return;
     }
     this.canvas.style.display = '';
-    if (this.dirty || !this.state) { this.sceneData = this.scene(); this.state = this.variant.prepare(this.sceneData, this.P); this.dirty = false; }
+    if (this.dirty || !this.state) { this.sceneData = this.scene(); this.state = this.variant.prepare(this.sceneData, this.P, S.event); this.dirty = false; }
     const ctx = this.ctx;
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    this.variant.render(ctx, lt, this.state, this.sceneData, this.P);
+    this.variant.render(ctx, lt, this.state, this.sceneData, this.P, S.event);
   }
   dispose() { if (this.sim) this.sim.dispose(); this.el.remove(); }
 }
@@ -200,7 +207,7 @@ function rebuild() {
   const stage = $('stage'); stage.innerHTML = '';
   if (S.storyboard) {
     const v = variantById(S.theme, S.storyboard); const P = defaults(v);
-    v.keyframes(P).forEach((kf, k) => {
+    v.keyframes(P, S.event).forEach((kf, k) => {
       const p = new Panel(k, v.id, kf.t, { label: `${k + 1}. ${kf.label} · ${Math.round(kf.t)} ms`, note: kf.note });
       stage.appendChild(p.el); panels.push(p);
     });
@@ -282,7 +289,7 @@ function init() {
   $('s-animbg').addEventListener('change', applyTheme);
   $('s-blocks').value = S.blocks;
   $('s-blocks').addEventListener('change', (e) => { S.blocks = e.target.value; applyTheme(); });
-  $('s-events').addEventListener('click', (e) => { const b = e.target.closest('[data-e]'); if (!b) return; S.event = b.dataset.e; $('s-events').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); panels.forEach((p) => { p.dirty = true; }); S.t = 0; draw(); });
+  $('s-events').addEventListener('click', (e) => { const b = e.target.closest('[data-e]'); if (!b) return; S.event = b.dataset.e; if (EVENT_FIXTURE[S.event]) { S.fixture = EVENT_FIXTURE[S.event]; $('s-fixture').value = S.fixture; } $('s-events').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); panels.forEach((p) => { p.dirty = true; }); S.t = 0; draw(); });
   $('s-count').addEventListener('change', rebuild);
   $('s-play').addEventListener('click', () => { S.playing = !S.playing; draw(); });
   $('s-replay').addEventListener('click', () => { S.t = 0; S.playing = true; panels.forEach((p) => { if (p.sim) p.sim.t = -1; }); draw(); });
@@ -311,7 +318,7 @@ function init() {
 
 /** A storyboard strip: the focused variant at each of its keyframes, tiled with labels. */
 function saveStrip(p) {
-  const kfs = p.variant.keyframes(p.P);
+  const kfs = p.variant.keyframes(p.P, S.event);
   const tiles = kfs.map((kf) => { const keep = p.fixedT; p.fixedT = kf.t; p.dirty = p.dirty || false; p.draw(kf.t); const c = composite(p); p.fixedT = keep; return { c, kf }; });
   const w = tiles[0].c.width; const h = tiles[0].c.height; const lab = 56 * p.dpr;
   const out = document.createElement('canvas'); out.width = w * tiles.length; out.height = h + lab;

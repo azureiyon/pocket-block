@@ -6,6 +6,7 @@
 // their own colour, and vanish with a wink and a little heart.
 // Motif: character and rhythm. No particles carry the story; the blocks do.
 
+import { SUITE } from './jelly-c-suite.js';
 import { TAU, mix, rgba, easeOut, easeIn, easeInOut, easeOutBack, sine, spring, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, INK } from '../art/jelly-art.js';
 
 export const params = [
@@ -19,6 +20,7 @@ export const params = [
   { key: 'sparkles', label: 'Sparkle density', min: 0, max: 2, step: 0.1, def: 1 },
   { key: 'faces', label: 'Little faces', min: 0, max: 1, step: 1, def: 0 },
   { key: 'speed', label: 'Overall pace', min: 0.6, max: 1.5, step: 0.05, def: 1 },
+  { key: 'combo', label: 'Streak level (streak only)', min: 2, max: 8, step: 1, def: 5 },
 ];
 export const presets = {
   Default: {},
@@ -201,4 +203,12 @@ export function render(ctx, t, st, scene, P) {
   ctx.globalAlpha = 1;
 }
 
-export default { id: 'jelly-c', label: 'C · Candy Ballet', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };
+// The approved single-line clear lives above; every other event comes from the suite.
+const pick = (ev) => (ev && ev !== 'single' && SUITE[ev]) || null;
+export default {
+  id: 'jelly-c', label: 'C · Candy Ballet', kind: 'concept', supports: ['single', 'idle', 'place', 'multi', 'streak', 'milestone', 'board'], params, presets,
+  duration: (P, ev) => (pick(ev) ? pick(ev).duration(P) : duration(P)),
+  keyframes: (P, ev) => (pick(ev) ? pick(ev).keyframes(P) : keyframes(P)),
+  prepare: (scene, P, ev) => (pick(ev) ? pick(ev).prepare(scene, P) : prepare(scene, P)),
+  render: (ctx, t, st, scene, P, ev) => (pick(ev) ? pick(ev).render(ctx, t, st, scene, P) : render(ctx, t, st, scene, P)),
+};
