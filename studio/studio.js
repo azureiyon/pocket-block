@@ -65,7 +65,7 @@ const S = {
   event: url.get('event') || 'single',
   t: Number(url.get('t') || 0),
   playing: url.get('paused') !== '1',
-  speed: 1, loop: true, focus: 0,
+  speed: 1, loop: true, focus: 0, blocks: url.get('blocks') || 'faces',
   panels: [], storyboard: url.get('storyboard') || null,
 };
 const initialVariants = (url.get('variants') || '').split(',').filter(Boolean);
@@ -220,6 +220,8 @@ function applyTheme() {
   for (const [k, v] of Object.entries(theme.vars)) root.style.setProperty(k, v);
   root.dataset.theme = theme.id; root.dataset.mat = theme.material; root.classList.toggle('dark', !!theme.dark);
   envMgr.set(theme.env, $('s-animbg').checked);
+  root.classList.toggle('blocks-matched', S.blocks !== 'current');
+  root.classList.toggle('blocks-faces', S.blocks === 'faces');
 }
 function maxDuration() { return Math.max(1, ...panels.filter((p) => p.supports()).map((p) => p.duration())); }
 function draw() {
@@ -278,6 +280,8 @@ function init() {
   $('s-fixture').addEventListener('change', (e) => { S.fixture = e.target.value; panels.forEach((p) => { p.dirty = true; }); draw(); });
   $('s-device').addEventListener('change', (e) => { S.device = Number(e.target.value); panels.forEach((p) => p.layout()); draw(); });
   $('s-animbg').addEventListener('change', applyTheme);
+  $('s-blocks').value = S.blocks;
+  $('s-blocks').addEventListener('change', (e) => { S.blocks = e.target.value; applyTheme(); });
   $('s-events').addEventListener('click', (e) => { const b = e.target.closest('[data-e]'); if (!b) return; S.event = b.dataset.e; $('s-events').querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b)); panels.forEach((p) => { p.dirty = true; }); S.t = 0; draw(); });
   $('s-count').addEventListener('change', rebuild);
   $('s-play').addEventListener('click', () => { S.playing = !S.playing; draw(); });

@@ -9,7 +9,7 @@
 import { TAU, mix, rgba, easeOut, easeIn, easeInOut, easeOutBack, sine, spring, seg, env, lerp, rng, jellyBlock, sparkle, spriteOf, drawSprite, INK } from '../art/jelly-art.js';
 
 export const params = [
-  { key: 'stagger', label: 'Canon stagger', unit: 'ms', min: 20, max: 90, step: 5, def: 45 },
+  { key: 'stagger', label: 'Canon stagger', unit: 'ms', min: 20, max: 90, step: 5, def: 34 },
   { key: 'crouch', label: 'Crouch depth', min: 0, max: 0.35, step: 0.01, def: 0.22 },
   { key: 'hop', label: 'Hop height', unit: '× cell', min: 0.4, max: 2.2, step: 0.05, def: 1.05 },
   { key: 'turns', label: 'Pirouette turns', min: 0, max: 2, step: 0.25, def: 1 },
@@ -22,14 +22,16 @@ export const params = [
 ];
 export const presets = {
   Default: {},
-  'Prima ballerina': { stagger: 60, hop: 1.4, turns: 1, arch: 0.8, trail: 3.2, trailW: 0.24, speed: 1.15 },
-  'Chorus line': { stagger: 30, crouch: 0.28, hop: 0.85, turns: 0.5, arch: 0.2, trail: 1.8, speed: 0.9 },
+  'Original pace': { stagger: 45, speed: 1.3 },
+  'Prima ballerina': { stagger: 55, hop: 1.4, turns: 1, arch: 0.8, trail: 3.2, trailW: 0.24, speed: 1.4 },
+  'Chorus line': { stagger: 26, crouch: 0.28, hop: 0.85, turns: 0.5, arch: 0.2, trail: 1.8, speed: 0.9 },
   'No faces': { faces: 0 },
 };
 
 function timing(P) {
   const k = P.speed;
-  const T = { crouch: 120 * k, hop: 300 * k, spinEnd: 360 * k, pose: 150 * k, gap: 80 * k, depart: 760 * k, finale: 360 * k };
+  // Quick-play pace: anticipation stays readable (~90ms) but the hop, hold and exit are tight.
+  const T = { crouch: 90 * k, hop: 240 * k, spinEnd: 290 * k, pose: 110 * k, gap: 80 * k, depart: 560 * k, finale: 300 * k };
   T.allApex = 7 * P.stagger + T.crouch + T.hop;
   T.tilt = T.allApex + 40 * k;
   T.departAt = T.tilt + T.pose;
