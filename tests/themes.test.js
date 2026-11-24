@@ -11,7 +11,7 @@ const EVENTS = ['place', 'invalid', 'clear', 'combo', 'allClear', 'gameOver', 'u
 
 test('themes: thirty complete, distinct themes in the registry', () => {
   eq(THEMES.length, 30);
-  eq(THEMES.map((t) => t.name), ['Classic Pastel', 'Neon Arcade', 'Jelly Pop', 'Cloud Palace', 'Cream Soda Pop', 'Nostalgic Steampunk', 'Moonlit Koi Pond', 'Little Witch’s Apothecary', 'Strawberry Patisserie', 'Abyssal Aquarium', 'Clockwork Toybox', 'Stained Glass Reverie', 'Dreamware 2004', 'Mahjong Parlor', 'Starflower Post', 'Moonside Mechanism', 'Pixel Crush', 'Capsule Field Notes', 'Queen’s Tea Party', 'Paper Sky Daydream', 'Prism Desk', 'Lily Reliquary', 'Starry Alchemy', 'Garden Ticket', 'End of the World', 'Garden of Doors', 'Heaven 404', 'Surveil', 'Totality', 'Room 201']);
+  eq(THEMES.map((t) => t.name), ['Classic', 'Neon Arcade', 'Jelly Pop', 'Cloud Palace', 'Cream Soda Pop', 'Nostalgic Steampunk', 'Moonlit Koi Pond', 'Little Witch’s Apothecary', 'Strawberry Patisserie', 'Abyssal Aquarium', 'Clockwork Toybox', 'Stained Glass Reverie', 'Dreamware 2004', 'Mahjong Parlor', 'Starflower Post', 'Moonside Mechanism', 'Pixel Crush', 'Capsule Field Notes', 'Queen’s Tea Party', 'Paper Sky Daydream', 'Prism Desk', 'Lily Reliquary', 'Starry Alchemy', 'Garden Ticket', 'End of the World', 'Garden of Doors', 'Heaven 404', 'Surveil', 'Totality', 'Room 201']);
   for (const key of ['id', 'material', 'env', 'sound']) eq(new Set(THEMES.map((t) => t[key])).size, 30, `unique ${key}`);
   eq(new Set(THEMES.map((t) => t.particle)).size, 30, 'unique particle kinds');
     for (const t of THEMES.filter((x) => x.marks)) {

@@ -7,8 +7,8 @@
 // threadlike trails and four-point glints.
 // Motif: unfurling fabric. The ribbon is a single continuous actor.
 
-import { TAU, mix, seg, env, lerp, easeOut, easeIn, easeInOut, sine, rng, sparkle, enamelBlock, frame, colorAt, INK } from '../art/pastel-art.js';
-import { PLUM } from '../art/pastel-art.js';
+import { TAU, mix, seg, env, lerp, easeOut, easeIn, easeInOut, sine, rng, sparkle, enamelBlock, frame, colorAt, INK } from '../../src/ui/vfx-classic/pastel-art.js';
+import { PLUM } from '../../src/ui/vfx-classic/pastel-art.js';
 
 export const params = [
   { key: 'stagger', label: 'Fold stagger', unit: 'ms', min: 15, max: 60, step: 5, def: 28 },

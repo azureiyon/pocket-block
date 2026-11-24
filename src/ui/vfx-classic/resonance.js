@@ -6,7 +6,7 @@
 // across the neighbouring rows of the grid. Primary: the outlines' release.
 // Secondary: the line contour and second wave. Ambient: the grid cascade.
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, vivid, glowSprite, spark, glint, drawSprite, roundRectPath, enamelBlock, frame } from '../art/light-kit.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, vivid, glowSprite, spark, glint, drawSprite, roundRectPath, enamelBlock, frame } from './light-kit.js';
 
 export const params = [
   { key: 'inhale', label: 'Inhale (anticipation)', unit: 'ms', min: 60, max: 180, step: 10, def: 110 },

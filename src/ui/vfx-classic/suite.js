@@ -1,4 +1,4 @@
-// Classic Pastel — Light suite (Studio). Approved: single = Luminous Sweep (A),
+// Classic — Light suite (shipped). Approved: single = Luminous Sweep (A),
 // multi-line = Resonance (C). The rest extend the same abstract-light
 // language, each with its own choreography rather than more particles:
 //   place   a crisp coloured rim flashes outward from the placed piece
@@ -8,9 +8,9 @@
 //           centre while two lights circle the frame and meet with a flare
 // Milestones are opt-in (not designed unless asked).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, vivid, glowSprite, spark, glint, drawSprite, roundRectPath, enamelBlock } from '../art/light-kit.js';
-import sweep, * as S1 from './pastel-l1-sweep.js';
-import reso, * as S3 from './pastel-l3-resonance.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, vivid, glowSprite, spark, glint, drawSprite, roundRectPath, enamelBlock } from './light-kit.js';
+import sweep, * as S1 from './sweep.js';
+import reso, * as S3 from './resonance.js';
 
 const defaults = (params) => Object.fromEntries(params.map((p) => [p.key, p.def]));
 const P1 = (P) => ({ ...defaults(S1.params), speed: P.speed });

@@ -8,7 +8,7 @@
 // edge-on and vanishes as it passes.
 // Motif: craft and precision. Light sweeps sideways; pieces rotate in place.
 
-import { TAU, mix, seg, env, lerp, easeOut, easeIn, easeInOut, easeOutBack, sine, rng, sparkle, enamelBlock, frame, nacre, roundRectPath, INK, PEARL } from '../art/pastel-art.js';
+import { TAU, mix, seg, env, lerp, easeOut, easeIn, easeInOut, easeOutBack, sine, rng, sparkle, enamelBlock, frame, nacre, roundRectPath, INK, PEARL } from '../../src/ui/vfx-classic/pastel-art.js';
 
 export const params = [
   { key: 'sweep', label: 'Reveal sweep time', unit: 'ms', min: 180, max: 600, step: 20, def: 320 },

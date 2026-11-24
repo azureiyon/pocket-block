@@ -8,8 +8,8 @@
 @media (prefers-reduced-motion: reduce) { .env *, .env *::before, .env *::after { animation: none !important; } }
 
 /* 1 Paper */
-.env-paper { background: radial-gradient(ellipse at 50% 0, #fff8ec, transparent 60%), linear-gradient(rgba(200,170,130,.13) 1px, transparent 1px) 0 0 / 22px 22px, linear-gradient(90deg, rgba(200,170,130,.13) 1px, transparent 1px) 0 0 / 22px 22px, var(--bg); }
-.e-paper { left: var(--x); top: var(--y); width: 18px; height: 18px; opacity: .45; animation: paper-drift var(--d) ease-in-out var(--dl) infinite alternate; background: hsl(calc(var(--h) * 50 + 340), 80%, 78%); border-radius: 4px; }
+.env-paper { background: radial-gradient(ellipse at 50% 0, #15132e, transparent 60%), linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 22px 22px, linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 22px 22px, var(--bg); }
+.e-paper { left: var(--x); top: var(--y); width: 18px; height: 18px; opacity: .22; animation: paper-drift var(--d) ease-in-out var(--dl) infinite alternate; background: hsl(calc(var(--h) * 50 + 340), 85%, 66%); border-radius: 4px; }
 .e-paper.s0 { border-radius: 50%; }
 .e-paper.s1 { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 @keyframes paper-drift { from { transform: translate(0, 0) rotate(0); } to { transform: translate(24px, -40px) rotate(160deg); } }

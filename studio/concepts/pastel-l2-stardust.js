@@ -7,7 +7,7 @@
 // depth: most are small coloured motes, a few are crisp glints, and a soft
 // coloured haze carries the atmosphere. Short trails fade behind the brightest.
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, vivid, glowSprite, spark, glint, drawSprite, roundRectPath, enamelBlock, frame } from '../art/light-kit.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, vivid, glowSprite, spark, glint, drawSprite, roundRectPath, enamelBlock, frame } from '../../src/ui/vfx-classic/light-kit.js';
 
 const G = 6; // grains per side
 

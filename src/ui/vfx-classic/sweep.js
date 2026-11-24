@@ -5,7 +5,7 @@
 // trail band behind it. Ambient: a thin afterglow that lingers on the line.
 // Pace: a short gather, an accelerating pass, a soft flare at the far end.
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, vivid, glowSprite, spark, glint, drawSprite, enamelBlock, frame, colorAt } from '../art/light-kit.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, vivid, glowSprite, spark, glint, drawSprite, enamelBlock, frame, colorAt } from './light-kit.js';
 
 export const params = [
   { key: 'pass', label: 'Pass time', unit: 'ms', min: 180, max: 520, step: 20, def: 300 },

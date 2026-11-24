@@ -72,6 +72,12 @@ Dev only; never imported or cached by the game. URL options:
 - Long-travelling choreography sets `pad` on the adapter (Jelly: 0.34) so the
   canvas margin is deep enough; the engine reads it.
 - Intensity (`v.level`) scales sparkle density; never silently simplify the art.
+- On dark themes the engine draws items with additive `'lighter'` blending.
+  Studio art is drawn `source-over`, so the adapter sets `blend: 'source-over'`
+  on its items (Classic does) or the shipped look drifts from the approved one.
+- Second shipped example: `src/ui/vfx-choreo/pastel.js` (Classic) adapts the
+  light suite in `src/ui/vfx-classic/suite.js`; theme id stays `pastel` so
+  saved settings survive the rename.
 
 ## Rui's preferences (learned in review)
 
@@ -102,6 +108,18 @@ Rejected:
 - Flat geometry, cheap gradients, heavy blur; gradients fading to transparent
   *black* (turns glows grey on light themes; use `clearOf(color)`).
 
+Classic (formerly Classic Pastel), second review:
+- Rejected **decorative** directions outright (satin ribbon waltz, porcelain
+  petals, opalescent inlay): "unnecessarily decorative and elaborate".
+- Loved **abstract, premium light**: a crisp sweep edge (single), a resonance
+  pulse on both lines with a flare at the crossing (multi), and especially a
+  band of coloured light running round the **board frame** (streak, board clear).
+- Readability comes from saturated coloured light with thin white filaments,
+  not white blooms. Grid tick marks and too many sparks clutter multi-line
+  clears: one spark per block, and only lift *empty* neighbouring cells.
+- Asked for a **dark board** (midnight navy-black, saturated blocks) so colour
+  pops; a strong backdrop change can be the best VFX upgrade.
+
 Concepts not chosen (kept in the Studio for reference): Gummy Jewel Cascade
 (safe, least distinctive) and Sugar Crystal Transformation (elegant, but read
 as gemstones rather than edible candy).
@@ -110,10 +128,10 @@ as gemstones rather than edible candy).
 
 - Decide the theme's **motif** first, in one sentence (Jelly: "character and
   rhythm, the blocks are the dancers"). Every event must express it.
-- Check new concepts against existing themes' motifs: Pastel = satin ribbons,
+- Check new concepts against existing themes' motifs: Classic = abstract coloured light and frame circuits,
   Jelly = candy ballet, Cloud = sunbeam and vapour, Soda = rising bubbles,
   Patisserie = piped frosting. Do not reuse another theme's silhouette.
-- Contrast directions: soda rises; jelly hops and loops; pastel unfurls;
+- Contrast directions: soda rises; jelly hops and loops; classic sweeps and circles the frame;
   patisserie pipes along paths. Pick a direction of travel nobody owns yet.
 - Bigger achievements get new choreography (twin troupes, a painted heart, a
   carousel), never just more particles.

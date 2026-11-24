@@ -1,10 +1,10 @@
-// Classic Pastel art kit (Studio only until a concept is approved).
+// Classic art kit (shared by the studio and the Classic theme).
 // Matches the production .m-enamel material: 22% corners, a top-down sheen,
 // a darker bottom bevel and a soft top highlight bar. Pastel effects use
 // richer pastel shading and defined ink-tinted outlines instead of white glow,
 // so they stay readable on the cream paper background.
 
-import { TAU, mix, rgba, clamp, seg, env, lerp, easeOut, easeIn, easeInOut, easeOutBack, sine, rng, sparkle, roundRectPath } from '../../src/ui/vfx-jelly/jelly-art.js';
+import { TAU, mix, rgba, clamp, seg, env, lerp, easeOut, easeIn, easeInOut, easeOutBack, sine, rng, sparkle, roundRectPath } from '../vfx-jelly/jelly-art.js';
 
 export const INK = '#5a4636';
 export const PEARL = ['#f9d3df', '#e3d6fb', '#d3eef0', '#e2f4d8', '#fbe7cc'];

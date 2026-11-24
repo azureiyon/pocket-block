@@ -5,14 +5,14 @@
 
 export const THEMES = [
   {
-    id: 'pastel', name: 'Classic Pastel', blurb: 'Enamel blocks on cream paper',
-    material: 'enamel', env: 'paper', particle: 'confetti', sound: 'pastel', dark: false,
-    palette: ['#ff8fa3', '#ffb86b', '#ffd966', '#8fd694', '#6ec6e8', '#a78bfa', '#f49ac1'],
+    id: 'pastel', name: 'Classic', blurb: 'Enamel blocks on a midnight board',
+    material: 'enamel', env: 'paper', particle: 'confetti', sound: 'pastel', dark: true,
+    palette: ['#eb778c', '#eeab43', '#f2ce3c', '#82da76', '#22c3ef', '#7436f9', '#ec82b8'],
     vars: {
-      '--bg': '#fbf3e4', '--bg2': '#f6e7cf', '--ink': '#5a4636', '--ink-soft': '#9a8572',
-      '--panel': '#fffaf1', '--panel-edge': '#ead8bd', '--accent': '#ff8fa3', '--accent-ink': '#ffffff',
-      '--board': '#f3e3c8', '--board-edge': '#e3cba6', '--cell': '#fbf1df', '--cell-edge': '#ead6b6',
-      '--ok': '#7cc98a', '--bad': '#ef6b6b', '--sweep': 'rgba(255,255,255,.95)', '--glow': '#ffd966',
+      '--bg': '#06050f', '--bg2': '#0c0b1c', '--ink': '#eeeefa', '--ink-soft': '#8e8cb0',
+      '--panel': '#12112a', '--panel-edge': '#26244a', '--accent': '#eb778c', '--accent-ink': '#06050f',
+      '--board': '#0a0917', '--board-edge': '#1b1a33', '--cell': '#100f21', '--cell-edge': '#05040e',
+      '--ok': '#7cc98a', '--bad': '#ef6b6b', '--sweep': 'rgba(255,255,255,.95)', '--glow': '#f2ce3c',
       '--font': 'ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif', '--radius': '22%',
     },
   },

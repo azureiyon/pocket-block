@@ -7,7 +7,7 @@
 // turning slowly, with a fine pearlescent dust.
 // Motif: opening outward in place (a bloom), then a slow downward drift.
 
-import { TAU, mix, seg, env, lerp, easeOut, easeIn, easeInOut, easeOutBack, rng, sparkle, enamelBlock, frame, INK, PEARL } from '../art/pastel-art.js';
+import { TAU, mix, seg, env, lerp, easeOut, easeIn, easeInOut, easeOutBack, rng, sparkle, enamelBlock, frame, INK, PEARL } from '../../src/ui/vfx-classic/pastel-art.js';
 
 export const params = [
   { key: 'stagger', label: 'Bloom stagger', unit: 'ms', min: 20, max: 80, step: 5, def: 42 },

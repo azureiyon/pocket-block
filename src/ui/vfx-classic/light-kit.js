@@ -1,9 +1,9 @@
-// Abstract light kit for premium puzzle-game VFX (Studio only until approved).
+// Abstract light kit for premium puzzle-game VFX (shared by the studio and the Classic theme).
 // Readability on cream comes from *coloured* light: each pastel is pushed to a
 // vivid, slightly deeper hue for cores and sparks, with only thin white
 // filaments as highlights. Soft glows are pre-rendered sprites (no live blur).
 
-import { TAU, clamp, mix, seg, env, lerp, rng, spriteOf, drawSprite, roundRectPath } from '../../src/ui/vfx-jelly/jelly-art.js';
+import { TAU, clamp, mix, seg, env, lerp, rng, spriteOf, drawSprite, roundRectPath } from '../vfx-jelly/jelly-art.js';
 import { enamelBlock, frame, colorAt } from './pastel-art.js';
 
 /** Premium signature curve, cubic-bezier(0.4, 0, 0.2, 1), solved numerically. */
