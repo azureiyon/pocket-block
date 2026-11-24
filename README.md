@@ -98,7 +98,7 @@ Themes are being moved, five at a time, from the shared recipe effects to hand-d
 
 **Batch 1, Soft & Dreamy:**
 - **Classic Pastel:** satin ribbons that unfurl along cleared lines while the blocks flatten into strips, plus braids around the board and bow-knots.
-- **Jelly Pop:** gelatin masses that fuse, neck and release wobbling droplets; droplets merge on contact, and jelly waves meet across the board.
+- **Jelly Pop:** glossy fruit-jelly candy. Each block squashes, stretches and swells in a staggered popping rhythm, then bursts into a few translucent jelly beads (inner gradient, rim light, specular highlight) on buoyant arcs, with white diamond glints. Streaks pop a cascade of candy over the board with a pearlescent afterglow, and a board clear rains candy in a diagonal sweep.
 - **Cloud Palace:** a sunbeam along the line, blocks turning into lit vapour that curls up, and a golden arch with ornament stars as the clouds part.
 - **Cream Soda Pop:** lines turn into a band of liquid that fizzes, with bubbles that rise, wobble and pop into droplets, a foam wave, and soda filling the board.
 - **Strawberry Patisserie:** frosting piped by a moving nozzle in scallops, cake crumbling into layered slices and crumbs, rosettes and strawberries.
