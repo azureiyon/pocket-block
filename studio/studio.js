@@ -22,6 +22,7 @@ import lightA from './concepts/pastel-l1-sweep.js';
 import lightB from './concepts/pastel-l2-stardust.js';
 import lightC from './concepts/pastel-l3-resonance.js';
 import lightSuite from './concepts/pastel-suite.js';
+import './proposals/classic.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;
@@ -29,6 +30,7 @@ const LOOP_GAP = 500; // ms of stillness between loops (motion-design: leave 100
 
 // ---------- registry ----------
 const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC] };
+CONCEPTS['classic-dark'] = CONCEPTS['classic-light'] = [lightSuite];
 const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION.filter((v) => v.id !== 'prod-original' || themeId === 'jelly')];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 
