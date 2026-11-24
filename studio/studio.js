@@ -25,13 +25,14 @@ import lightSuite from '../src/ui/vfx-classic/suite.js';
 import cloudA from './concepts/cloud-a-ascend.js';
 import cloudB from './concepts/cloud-b-dawn.js';
 import cloudC from './concepts/cloud-c-heaven.js';
+import cloudSuite from './concepts/cloud-suite.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;
 const LOOP_GAP = 500; // ms of stillness between loops (motion-design: leave 100-200ms+ after resolution)
 
 // ---------- registry ----------
-const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudA, cloudB, cloudC] };
+const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudSuite, cloudB, cloudA, cloudC] };
 const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION.filter((v) => v.id !== 'prod-original' || themeId === 'jelly')];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 

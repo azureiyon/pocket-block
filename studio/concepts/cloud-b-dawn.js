@@ -23,7 +23,7 @@ export const params = [
   { key: 'feather', label: 'Edge feather', min: 0, max: 1, step: 0.05, def: 0.5 },
   { key: 'point', label: 'Point of light', min: 0, max: 1, step: 0.05, def: 0.75 },
   { key: 'motes', label: 'Gold motes', min: 0, max: 6, step: 1, def: 3 },
-  { key: 'speed', label: 'Overall pace', min: 0.6, max: 1.5, step: 0.05, def: 1 },
+  { key: 'speed', label: 'Overall pace', min: 0.6, max: 1.5, step: 0.05, def: 1.12 },
 ];
 export const presets = { Default: {}, 'Quick dawn': { stagger: 22, dissolve: 300, motes: 2, speed: 0.85 }, 'Slow pearl': { stagger: 48, dissolve: 600, glints: 3, speed: 1.2 } };
 
