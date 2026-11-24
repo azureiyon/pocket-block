@@ -1,0 +1,47 @@
+/* VFX Studio chrome: deliberately neutral so the theme on stage is the only colour story. */
+body.studio { overflow: auto; height: auto; min-height: 100%; display: grid; grid-template-columns: 228px 1fr 260px; gap: 0; font: 13px/1.4 system-ui, -apple-system, sans-serif; color: #24242c; }
+.studio .side, .studio .params { position: sticky; top: 0; height: 100vh; overflow: auto; padding: 14px 14px 24px; background: rgba(250,250,252,.94); border-right: 1px solid #dedee6; z-index: 2; }
+.studio .params { border-right: 0; border-left: 1px solid #dedee6; }
+.studio h1 { font-size: 15px; margin: 0 0 2px; }
+.studio h2 { font-size: 12px; margin: 16px 0 6px; color: #55556a; font-weight: 650; }
+.studio .hint { color: #77778a; margin: 0 0 10px; font-size: 12px; }
+.studio label { display: block; margin: 6px 0; color: #44445a; }
+.studio label.row { display: flex; gap: 6px; align-items: center; }
+.studio select, .studio button { font: inherit; color: #24242c; background: #fff; border: 1px solid #cfcfda; border-radius: 6px; padding: 4px 8px; }
+.studio select { width: 100%; margin-top: 2px; }
+.studio button { cursor: pointer; }
+.studio button:hover { border-color: #9a9ab4; }
+.studio button.on, .studio .seg button.on { background: #2f2f45; color: #fff; border-color: #2f2f45; }
+.studio button:disabled { opacity: .4; cursor: default; }
+.studio button:focus-visible, .studio select:focus-visible, .studio input:focus-visible { outline: 2px solid #6b6bd6; outline-offset: 1px; }
+.studio .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.studio .transport { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.studio .stack { display: grid; gap: 4px; }
+.studio .row2 { grid-template-columns: 1fr 1fr; margin: 6px 0 10px; }
+.studio input[type="range"] { width: 100%; }
+.studio .readout { display: flex; justify-content: space-between; font-variant-numeric: tabular-nums; color: #55556a; }
+.studio .param { margin: 10px 0; }
+.studio .param .top { display: flex; justify-content: space-between; color: #44445a; }
+.studio .param output { font-variant-numeric: tabular-nums; color: #24242c; }
+
+.stage { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 18px; align-content: flex-start; padding: 18px; }
+.panel { display: flex; flex-direction: column; gap: 6px; }
+.panel > header { display: flex; gap: 6px; align-items: center; }
+.panel > header select { width: auto; flex: 1; margin: 0; }
+/* A phone screen: space above for the HUD, below for the tray, clipped at the screen edge like a real device. */
+.panel .phone { position: relative; overflow: hidden; padding: 104px 12px 150px; border-radius: 26px; background: rgba(255,255,255,.18); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); cursor: pointer; }
+.panel.focus .phone { box-shadow: inset 0 0 0 2px #2f2f45; }
+.panel .board-wrap { margin: 0 auto; }
+.panel .fx { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 5; }
+.panel canvas.concept { position: absolute; pointer-events: none; z-index: 6; }
+.panel .na { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 20px; color: #fff; background: rgba(36,36,44,.55); border-radius: 26px; font-size: 13px; }
+.panel footer { display: flex; justify-content: space-between; color: #55556a; font-size: 12px; }
+.panel.frame { width: auto; }
+.panel .caption { max-width: 100%; }
+.panel .caption b { display: block; color: #24242c; font-size: 13px; }
+.panel .caption span { color: #55556a; font-size: 12px; }
+
+@media (max-width: 900px) {
+  body.studio { grid-template-columns: 1fr; }
+  .studio .side, .studio .params { position: static; height: auto; border: 0; }
+}
