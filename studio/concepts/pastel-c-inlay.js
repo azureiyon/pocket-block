@@ -141,4 +141,4 @@ export function render(ctx, t, st, scene, P) {
 
 function sx_dotAlpha(flip) { return 1 - seg(flip, 0, 0.5); }
 
-export default { id: 'pastel-c', label: 'C · Opalescent Inlay', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };
+export default { id: 'pastel-c', label: 'Rejected · C · Opalescent Inlay', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };

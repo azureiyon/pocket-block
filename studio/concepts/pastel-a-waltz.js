@@ -137,4 +137,4 @@ export function render(ctx, t, st, scene, P) {
   ctx.globalAlpha = 1;
 }
 
-export default { id: 'pastel-a', label: 'A · Satin Ribbon Waltz', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };
+export default { id: 'pastel-a', label: 'Rejected · A · Satin Ribbon Waltz', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };

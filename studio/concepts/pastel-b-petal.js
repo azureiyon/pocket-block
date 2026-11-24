@@ -139,4 +139,4 @@ export function render(ctx, t, st, scene, P) {
   ctx.globalAlpha = 1;
 }
 
-export default { id: 'pastel-b', label: 'B · Porcelain Petalwork', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };
+export default { id: 'pastel-b', label: 'Rejected · B · Porcelain Petalwork', kind: 'concept', supports: ['single'], params, presets, duration, keyframes, prepare, render };
