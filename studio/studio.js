@@ -15,14 +15,17 @@ import conceptA from './concepts/jelly-a-jewel.js';
 import conceptB from './concepts/jelly-b-crystal.js';
 import conceptC from '../src/ui/vfx-jelly/ballet.js';
 import { PRODUCTION } from './variants/production.js';
+import pastelA from './concepts/pastel-a-waltz.js';
+import pastelB from './concepts/pastel-b-petal.js';
+import pastelC from './concepts/pastel-c-inlay.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;
 const LOOP_GAP = 500; // ms of stillness between loops (motion-design: leave 100-200ms+ after resolution)
 
 // ---------- registry ----------
-const CONCEPTS = { jelly: [conceptA, conceptB, conceptC] };
-const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION];
+const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [pastelA, pastelB, pastelC] };
+const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION.filter((v) => v.id !== 'prod-original' || themeId === 'jelly')];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 
 const EVENTS = [['idle', 'Idle'], ['place', 'Placement'], ['single', 'Single line'], ['multi', 'Multi line'], ['streak', 'Streak'], ['milestone', 'Milestone'], ['board', 'Board clear']];
