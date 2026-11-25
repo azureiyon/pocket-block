@@ -4,8 +4,8 @@
 // its own choreography rather than more particles:
 //   place   the placed pearls' gold rims light in quick succession, one glint
 //   idle    a single gold glint makes one lap of one pearl's contour
-//   multi   both lines dissolve in a wave from the crossing; the crossing's
-//           point of light is brighter and sends fine gold light along both lines
+//   multi   both lines dissolve in a wave from the crossing; each pearl's gold
+//           contour ripples outward as it melts, so ripples travel along the cross
 //   streak  the points of light gather to the line's centre into one pearl of
 //           light, which releases a thin gold halo ring (two for big streaks)
 //   board   the last line dissolves, two glints race round the gilt board
@@ -67,7 +67,7 @@ EV.single = { duration: (P) => dawn.duration(PB(P)), keyframes: (P) => dawn.keyf
 // Multi-line: one wave spreading from the crossing along both lines.
 EV.multi = {
   duration: (P) => { const Q = PB(P); return dawn.duration(Q) + 4 * Q.stagger * Q.speed * 0.8 + 120; },
-  keyframes: (P) => { const Q = PB(P); const k = Q.speed; return [[90 * k, 'Kindle', 'Light wakes at the crossing and spreads along both lines.'], [300 * k, 'Dissolve', 'Pearls draw inward, gold glints running round each.'], [470 * k, 'Crossing', 'The crossing melts first into a bright point; fine gold light runs out along both lines.'], [650 * k, 'Climax', 'Points of light spread outward along the cross.'], [850 * k, 'Last lights', 'The far ends wink out.'], [EV.multi.duration(P) - 30, 'Settle', 'Two clear lines.']].map(([t, label, note]) => ({ t, label, note })); },
+  keyframes: (P) => { const Q = PB(P); const k = Q.speed; return [[90 * k, 'Kindle', 'Light wakes at the crossing and spreads along both lines.'], [300 * k, 'Dissolve', 'Pearls draw inward, gold glints running round each.'], [470 * k, 'Crossing', 'The crossing melts first into a bright point; its gold contour ripples outward twice.'], [650 * k, 'Climax', 'Pearl-shaped ripples travel out along both arms of the cross.'], [850 * k, 'Last lights', 'The far ends wink out.'], [EV.multi.duration(P) - 30, 'Settle', 'Two clear lines.']].map(([t, label, note]) => ({ t, label, note })); },
   prepare(scene, P) {
     const Q = PB(P); const k = Q.speed;
     const row = scene.lines.find((l) => l.axis === 'h'); const col = scene.lines.find((l) => l.axis === 'v');
@@ -90,21 +90,21 @@ EV.multi = {
     // A brighter point at the crossing.
     const pt = env(t, at - 60 * k, at, at + 40 * k, at + 260 * k);
     if (pt > 0) { drawSprite(ctx, lightSprite(GOLD), c.x, c.y, c.s * 0.95 * pt, { alpha: pt }); glint(ctx, c.x, c.y, c.s * 0.42 * pt, WARM_WHITE, pt); }
-    // Fine gold light running out along both lines from the crossing.
-    const u = seg(t, at, at + 380 * k);
-    if (u > 0 && u < 1) {
-      const e = expoOut(u); const a = (1 - u) * 0.9;
-      ctx.lineCap = 'round';
-      // Each run stops at its line's end, never past the board.
-      const ends = [[1, 0, c.row.b.x - c.x], [-1, 0, c.x - c.row.a.x], [0, 1, c.col.b.y - c.y], [0, -1, c.y - c.col.a.y]];
-      for (const [dx, dy, ext] of ends) {
-        if (ext < 1) continue;
-        const head = ext * e; const tail = head * 0.35;
-        const g = ctx.createLinearGradient(c.x + dx * tail, c.y + dy * tail, c.x + dx * head, c.y + dy * head);
-        g.addColorStop(0, 'rgba(232,187,88,0)'); g.addColorStop(1, GOLD);
-        ctx.globalAlpha = a; ctx.strokeStyle = g; ctx.lineWidth = 1.4;
-        ctx.beginPath(); ctx.moveTo(c.x + dx * tail, c.y + dy * tail); ctx.lineTo(c.x + dx * head, c.y + dy * head); ctx.stroke();
-        ctx.globalAlpha = a; ctx.fillStyle = WARM_WHITE; ctx.beginPath(); ctx.arc(c.x + dx * head, c.y + dy * head, 1.4, 0, TAU); ctx.fill();
+    // Pearl-shaped ripples: as each pearl melts into its point of light, its gold contour lifts
+    // off and expands outward. The wave starts at the crossing, so the ripples travel out along
+    // both arms of the cross. (No light runs along paths here: that gesture belongs to the board clear.)
+    for (const p of st.per) for (const b of p.st.blocks) {
+      const isCross = b.x === c.x && b.y === c.y;
+      const at0 = T.disEnd + b.o - 30 * k;
+      for (let n = 0; n < (isCross ? 2 : 1); n++) {
+        const u = seg(t, at0 + n * 90 * k, at0 + n * 90 * k + (isCross ? 520 : 320) * k); if (u <= 0 || u >= 1) continue;
+        const grow = isCross ? 1.3 - n * 0.35 : 0.42; const sz = c.s * (0.9 + grow * expoOut(u)); const r = sz * 0.4;
+        const a = (1 - premium(u)) * (isCross ? 1 : 0.8);
+        ctx.save(); ctx.translate(b.x, b.y);
+        roundRectPath(ctx, sz, sz, r);
+        ctx.globalAlpha = a * 0.3; ctx.strokeStyle = CHAMPAGNE; ctx.lineWidth = 4 * (1 - u) + 1; ctx.stroke();
+        ctx.globalAlpha = a; ctx.strokeStyle = GOLD; ctx.lineWidth = 1.6 * (1 - u) + 0.5; ctx.stroke();
+        ctx.restore();
       }
     }
   },
