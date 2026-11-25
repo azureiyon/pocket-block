@@ -11,7 +11,7 @@
 // Direction: across the line, then opening outward from the centre, light
 // falling downward (no other theme brings light down from above).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, glint, drawSprite, frame, pearlBlock, cloudShape, drawCloud, easeOutCubic, CHAMPAGNE, WARM_WHITE, GOLD, LAVENDER } from '../art/cloud-art.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, glint, drawSprite, frame, pearlBlock, cloudShape, drawCloud, easeOutCubic, CHAMPAGNE, WARM_WHITE, GOLD, LAVENDER } from '../../src/ui/vfx-cloud/cloud-art.js';
 
 export const params = [
   { key: 'drift', label: 'Cloud glide in', unit: 'ms', min: 160, max: 520, step: 20, def: 280 },

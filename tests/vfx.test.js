@@ -134,6 +134,6 @@ test('vfx batch 1: switching theme tears down timers, idle life and everything o
 });
 
 test('vfx batch 1: intensity scales particle counts', () => {
-  const count = (level) => { const { v } = setup('cloud'); v.levelFn = () => level; v.place(LAB_MOVES.place()); return v.particles.length; };
+  const count = (level) => { const { v } = setup('soda'); v.levelFn = () => level; v.place(LAB_MOVES.place()); return v.particles.length; };
   assert(count(0.25) < count(1), `${count(0.25)} < ${count(1)}`);
 });

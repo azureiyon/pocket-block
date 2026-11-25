@@ -1,11 +1,11 @@
-// Cloud Palace art kit (Studio only until a concept is approved).
+// Cloud Palace art kit (shared by the studio and the Cloud Palace theme).
 // Twilight palette: warm champagne light against lavender shadow, on the
 // dusk board. pearlBlock() matches the production .m-pearl material (40%
 // corners, iridescent sheen, top-left specular, gold rim, gold centre dot).
 // Soft light comes from pre-rendered sprites; nothing uses live blur.
 
-import { TAU, clamp, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, spark, glint, drawSprite, roundRectPath, frame } from '../../src/ui/vfx-classic/light-kit.js';
-import { spriteOf } from '../../src/ui/vfx-jelly/jelly-art.js';
+import { TAU, clamp, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, spark, glint, drawSprite, roundRectPath, frame, vivid } from '../vfx-classic/light-kit.js';
+import { spriteOf } from '../vfx-jelly/jelly-art.js';
 
 export const CHAMPAGNE = '#ffe6ad';
 export const WARM_WHITE = '#fff7e6';
@@ -29,39 +29,77 @@ export function pearlBlock(ctx, x, y, s, color, { alpha = 1, glow = 0, clear = 0
   // Drop shadow (fades as the pearl turns to light).
   ctx.save(); ctx.translate(0, Math.max(0.5, w * 0.05)); roundRectPath(ctx, w, w, r);
   ctx.globalAlpha = alpha * 0.35 * (1 - Math.max(clear, glow)) * Math.min(1, w / s); ctx.fillStyle = '#08041e'; ctx.fill(); ctx.restore();
-  roundRectPath(ctx, w, w, r);
-  ctx.save(); ctx.clip();
-  // Body: the block colour, thinning as it becomes translucent.
-  // Translucent here means lit from within: the body thins towards warm light, never towards the dark board.
-  ctx.globalAlpha = alpha * (1 - clear * 0.25); ctx.fillStyle = mix(color, CHAMPAGNE, clear * 0.22); ctx.fillRect(-w / 2, -w / 2, w, w);
-  // Iridescent sheen.
-  if (ctx.createConicGradient) {
-    const g = ctx.createConicGradient((210 / 180) * Math.PI + phase * TAU, w * 0.1, w * 0.1);
-    const st = ['rgba(255,190,235,.55)', 'rgba(190,225,255,.55)', 'rgba(255,250,200,.55)', 'rgba(220,200,255,.55)', 'rgba(255,190,235,.55)'];
-    st.forEach((c, i) => g.addColorStop(i / 4, c));
-    ctx.globalAlpha = alpha * (1 - clear * 0.2); ctx.fillStyle = g; ctx.fillRect(-w / 2, -w / 2, w, w);
-  }
-  // Lavender underside.
-  const sh = ctx.createLinearGradient(0, w * 0.1, 0, w / 2);
-  sh.addColorStop(0, 'rgba(120,90,170,0)'); sh.addColorStop(1, 'rgba(120,90,170,.28)');
-  ctx.globalAlpha = alpha * (1 - clear * 0.8); ctx.fillStyle = sh; ctx.fillRect(-w / 2, -w / 2, w, w);
-  // Inner champagne light.
+  // Body, sheen, underside, specular and centre dot come from cached images (one regular, one lit
+  // from within), so a frame stamps a few images instead of building a dozen gradients per pearl.
+  // The lit face is laid over the regular one, so the pearl never lets the dark sky through.
+  if (clear < 0.99) stampFace(ctx, color, phase, 0, w, alpha);
+  if (clear > 0.01) stampFace(ctx, color, phase, 1, w, alpha * clear);
+  // Inner champagne light, kept inside the pearl.
   const lit = Math.min(1, glow + clear * 0.5);
-  if (lit > 0) drawSprite(ctx, glowSprite(mix(WARM_WHITE, color, 0.3), 0.3), 0, 0, w * 1.2, { alpha: alpha * lit * 0.8 });
-  // Specular.
-  const sp = ctx.createRadialGradient(-w * 0.16, -w * 0.22, 0, -w * 0.16, -w * 0.22, w * 0.44);
-  sp.addColorStop(0, 'rgba(255,255,255,1)'); sp.addColorStop(0.2, 'rgba(255,255,255,.85)'); sp.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.globalAlpha = alpha * (0.9 - clear * 0.3); ctx.fillStyle = sp; ctx.fillRect(-w / 2, -w / 2, w, w);
-  ctx.restore();
-  // Gold rim and centre dot.
+  if (lit > 0) {
+    ctx.save(); roundRectPath(ctx, w, w, r); ctx.clip();
+    drawSprite(ctx, glowSprite(mix(WARM_WHITE, color, 0.3), 0.3), 0, 0, w * 1.2, { alpha: alpha * lit * 0.8 });
+    ctx.restore();
+  }
+  // Gold rim.
   if (rim > 0 && w > 4) {
     roundRectPath(ctx, w - 1.5, w - 1.5, Math.max(0, r - 0.75));
     ctx.globalAlpha = alpha * rim; ctx.lineWidth = 1.5; ctx.strokeStyle = mix('#d4b062', CHAMPAGNE, glow * 0.6); ctx.stroke();
   }
-  const d = ctx.createRadialGradient(0, 0, 0, 0, 0, w * 0.07);
-  d.addColorStop(0, '#fff3c4'); d.addColorStop(1, '#c9a24b');
-  ctx.globalAlpha = alpha * (1 - clear * 0.5); ctx.fillStyle = d; ctx.beginPath(); ctx.arc(0, 0, w * 0.07, 0, TAU); ctx.fill();
   ctx.restore();
+}
+
+/** A faint outer ring of a dissolving pearl: one stamp of the lit face, no shadow, glow or rim. */
+export function pearlFeather(ctx, x, y, size, color, phase, alpha) {
+  if (alpha <= 0.005 || size < 1) return;
+  const ph = Math.round((((phase % 1) + 1) % 1) * PHASES) % PHASES;
+  drawSprite(ctx, pearlSprite(color, ph, 1), x, y, size, { alpha });
+}
+
+/** Tint of a pearl's point of light: gold leaning towards the pearl's own hue. */
+export const pointTint = (color) => mix(GOLD, vivid(color), 0.35);
+
+/** Jobs that pre-build every cached pearl face for a palette (run a few at a time in idle moments). */
+export function pearlWarmJobs(palette) {
+  const jobs = [];
+  for (const color of palette) jobs.push(() => lightSprite(pointTint(color)));
+  for (const color of palette) for (let ph = 0; ph < PHASES; ph++) for (const lit of [0, 1]) jobs.push(() => pearlSprite(color, ph, lit));
+  return jobs;
+}
+
+const PHASES = 8; // sheen angles cached per colour (neighbours are crossfaded, so the turn stays smooth)
+
+function stampFace(ctx, color, phase, lit, w, alpha) {
+  const f = (((phase % 1) + 1) % 1) * PHASES; const p0 = Math.floor(f) % PHASES; const t = f - Math.floor(f);
+  drawSprite(ctx, pearlSprite(color, p0, lit), 0, 0, w, { alpha });
+  if (t > 0.02) drawSprite(ctx, pearlSprite(color, (p0 + 1) % PHASES, lit), 0, 0, w, { alpha: alpha * t });
+}
+const PEARL_PX = 128; // cached pearl resolution (a cell is ~45 CSS px, ~90-135 device px)
+
+/** One cached pearl face. lit 0: as on the board; lit 1: translucent, lit from within. */
+function pearlSprite(color, ph, lit) {
+  return spriteOf(`pearl|${color}|${ph}|${lit}`, PEARL_PX, (g) => {
+    const w = PEARL_PX; const c = lit ? 1 : 0;
+    g.save(); g.translate(w / 2, w / 2);
+    roundRectPath(g, w, w, w * 0.4); g.clip();
+    // Translucent here means lit from within: the body thins towards warm light, never towards the dark board.
+    g.globalAlpha = 1; g.fillStyle = mix(color, CHAMPAGNE, c * 0.3); g.fillRect(-w / 2, -w / 2, w, w);
+    const cg = g.createConicGradient && g.createConicGradient((210 / 180) * Math.PI + (ph / PHASES) * TAU, w * 0.1, w * 0.1);
+    if (cg) { // older browsers skip the sheen
+      ['rgba(255,190,235,.55)', 'rgba(190,225,255,.55)', 'rgba(255,250,200,.55)', 'rgba(220,200,255,.55)', 'rgba(255,190,235,.55)'].forEach((x, i) => cg.addColorStop(i / 4, x));
+      g.globalAlpha = 1 - c * 0.2; g.fillStyle = cg; g.fillRect(-w / 2, -w / 2, w, w);
+    }
+    const sh = g.createLinearGradient(0, w * 0.1, 0, w / 2);
+    sh.addColorStop(0, 'rgba(120,90,170,0)'); sh.addColorStop(1, 'rgba(120,90,170,.28)');
+    g.globalAlpha = 1 - c * 0.8; g.fillStyle = sh; g.fillRect(-w / 2, -w / 2, w, w);
+    const sp = g.createRadialGradient(-w * 0.16, -w * 0.22, 0, -w * 0.16, -w * 0.22, w * 0.44);
+    sp.addColorStop(0, 'rgba(255,255,255,1)'); sp.addColorStop(0.2, 'rgba(255,255,255,.85)'); sp.addColorStop(1, 'rgba(255,255,255,0)');
+    g.globalAlpha = 0.9 - c * 0.3; g.fillStyle = sp; g.fillRect(-w / 2, -w / 2, w, w);
+    const d = g.createRadialGradient(0, 0, 0, 0, 0, w * 0.07);
+    d.addColorStop(0, '#fff3c4'); d.addColorStop(1, '#c9a24b');
+    g.globalAlpha = 1 - c * 0.5; g.fillStyle = d; g.beginPath(); g.arc(0, 0, w * 0.07, 0, TAU); g.fill();
+    g.restore();
+  });
 }
 
 /**

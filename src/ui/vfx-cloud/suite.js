@@ -1,4 +1,4 @@
-// Cloud Palace — Pearl of Dawn suite (Studio). Approved single clear: Pearl
+// Cloud Palace — Pearl of Dawn suite (shipped). Approved single clear: Pearl
 // of Dawn. The other events speak the same language (inner light, gold
 // contour glints, compact points of light, thin gold halo rings), each with
 // its own choreography rather than more particles:
@@ -13,8 +13,8 @@
 //           empty cells' contours, edge to middle
 // Milestones are opt-in (not designed unless asked).
 
-import dawn, * as B from './cloud-b-dawn.js';
-import { TAU, mix, seg, env, lerp, premium, expoOut, glint, drawSprite, roundRectPath, contourPoint, lightSprite, easeOutCubic, CHAMPAGNE, WARM_WHITE, GOLD, LAVENDER } from '../art/cloud-art.js';
+import dawn, * as B from './dawn.js';
+import { TAU, mix, seg, env, lerp, premium, expoOut, glint, drawSprite, roundRectPath, contourPoint, lightSprite, easeOutCubic, CHAMPAGNE, WARM_WHITE, GOLD, LAVENDER } from './cloud-art.js';
 
 const defaults = (params) => Object.fromEntries(params.map((p) => [p.key, p.def]));
 const PB = (P) => ({ ...defaults(B.params), speed: P.speed });
@@ -241,3 +241,5 @@ export default {
   id: 'cloud-dawn', label: 'Pearl of Dawn suite', kind: 'concept', supports: ['single', 'multi', 'place', 'idle', 'streak', 'board'], params, presets,
   duration: (P, ev) => pick(ev).duration(P), keyframes: (P, ev) => pick(ev).keyframes(P), prepare: (sc, P, ev) => pick(ev).prepare(sc, P), render: (ctx, t, st, sc, P, ev) => pick(ev).render(ctx, t, st, sc, P),
 };
+
+export { pearlWarmJobs } from './cloud-art.js';

@@ -23,9 +23,9 @@ import lightB from './concepts/pastel-l2-stardust.js';
 import lightC from '../src/ui/vfx-classic/resonance.js';
 import lightSuite from '../src/ui/vfx-classic/suite.js';
 import cloudA from './concepts/cloud-a-ascend.js';
-import cloudB from './concepts/cloud-b-dawn.js';
+import cloudB from '../src/ui/vfx-cloud/dawn.js';
 import cloudC from './concepts/cloud-c-heaven.js';
-import cloudSuite from './concepts/cloud-suite.js';
+import cloudSuite from '../src/ui/vfx-cloud/suite.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;

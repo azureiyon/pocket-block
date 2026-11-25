@@ -107,6 +107,13 @@ Rejected:
   "I don't know if we Need them". Make milestones opt-in per theme.
 - Flat geometry, cheap gradients, heavy blur; gradients fading to transparent
   *black* (turns glows grey on light themes; use `clearOf(color)`).
+- **Light on dark skies:** a wide, pale glow reads as beige fog. Use a compact
+  point (near-white core, short *saturated* falloff: `lightSprite` in
+  `vfx-cloud/cloud-art.js`). Additive blending does not help: the effect canvas
+  is transparent over the DOM board, so 'lighter' has nothing to add to.
+- **"Translucent" on a dark board** means lit from within (blend towards warm
+  light, lay a lit face over the base), never alpha towards the dark board,
+  which turns pearls grey-olive.
 
 Classic (formerly Classic Pastel), second review:
 - Rejected **decorative** directions outright (satin ribbon waltz, porcelain
@@ -120,6 +127,18 @@ Classic (formerly Classic Pastel), second review:
 - Asked for a **dark board** (midnight navy-black, saturated blocks) so colour
   pops; a strong backdrop change can be the best VFX upgrade.
 
+Cloud Palace, third review (Pearl of Dawn shipped, `src/ui/vfx-cloud/`):
+- Restyled to a **twilight sky** (dusk indigo board, warm horizon) so champagne
+  light and gold glints read; pale lilac washed every warm light out.
+- Picked the **in-place, inward** concept (pearl kindles, dissolves from its
+  edges with gold glints on the contour, melts to a point of light) over
+  rising motes and parting clouds.
+- Pace for a calm theme: "a little too fast" at ~1.0 s; shipped single ~1.1 s.
+- **Every event needs its own ending gesture.** Streak (gather, then halo) and
+  board clear (frame race, then a centre halo) "look really similar"; the board
+  clear now washes light inward over the cell contours instead. Audit the set
+  side by side for shared endings before presenting.
+
 Concepts not chosen (kept in the Studio for reference): Gummy Jewel Cascade
 (safe, least distinctive) and Sugar Crystal Transformation (elegant, but read
 as gemstones rather than edible candy).
@@ -129,7 +148,7 @@ as gemstones rather than edible candy).
 - Decide the theme's **motif** first, in one sentence (Jelly: "character and
   rhythm, the blocks are the dancers"). Every event must express it.
 - Check new concepts against existing themes' motifs: Classic = abstract coloured light and frame circuits,
-  Jelly = candy ballet, Cloud = sunbeam and vapour, Soda = rising bubbles,
+  Jelly = candy ballet, Cloud = pearls dissolving inward into points of light with gold contour glints, Soda = rising bubbles,
   Patisserie = piped frosting. Do not reuse another theme's silhouette.
 - Contrast directions: soda rises; jelly hops and loops; classic sweeps and circles the frame;
   patisserie pipes along paths. Pick a direction of travel nobody owns yet.
@@ -141,6 +160,13 @@ as gemstones rather than edible candy).
 - Draw everything on one canvas over the board; pre-render sprites once per
   colour (`spriteOf`); no live `filter: blur` or `shadowBlur`.
 - Canvas at ≤ 1.5x device pixels for glows; crisp shapes look fine there.
+- Frame cost on throttled phones is mostly **rasterising area**, not JS (the
+  engine's draw timer can read 0.5 ms while frames take 70 ms). Benchmark each
+  layer in-page (render, then `getImageData(0,0,1,1)` to flush) with layers
+  switched off to find the heavy one. Cloud's fix: cache each pearl face as a
+  sprite (per colour, 8 sheen angles crossfaded, regular + lit), stamp faint
+  rings instead of redrawing whole blocks, and pre-build sprites a few at a
+  time in idle (`pearlWarmJobs`). Result ~27 ms p95 at 4x (Classic 21, Jelly 36).
 - Jelly ballet: ~3 ms draw per frame (≤ 10 ms worst) at 4x CPU throttle;
   0 blocked moves in rapid play. Rendering cost is in the dancers and
   ribbon segments, so keep ribbons ≤ ~18 segments per dancer.

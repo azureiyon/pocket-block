@@ -11,8 +11,7 @@
 // few gold motes that settle upward. No travel across the board: this is the
 // one concept that stays in place (inward, not up or along).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, glowSprite, glint, drawSprite, roundRectPath, pearlBlock, contourPoint, lightSprite, CHAMPAGNE, WARM_WHITE, GOLD, GOLD_DEEP, LAVENDER } from '../art/cloud-art.js';
-import { vivid as vividOf } from '../../src/ui/vfx-classic/light-kit.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, glowSprite, glint, drawSprite, roundRectPath, pearlBlock, pearlFeather, contourPoint, lightSprite, pointTint, CHAMPAGNE, WARM_WHITE, GOLD, GOLD_DEEP, LAVENDER } from './cloud-art.js';
 
 export const params = [
   { key: 'stagger', label: 'Centre-out wave', unit: 'ms', min: 0, max: 70, step: 2, def: 30 },
@@ -51,7 +50,7 @@ export const keyframes = (P) => {
 export function prepare(scene, P) {
   const line = scene.lines[0]; const r = rng(47); const s = line.s; const k = P.speed;
   const blocks = line.cells.map((c, i) => ({
-    ...c, o: Math.abs(i - 3.5) * P.stagger * k, ph: r(), tint: mix(GOLD, vividOf(c.color), 0.35),
+    ...c, o: Math.abs(i - 3.5) * P.stagger * k, ph: r(), tint: pointTint(c.color),
     glints: Array.from({ length: P.glints }, (_, j) => ({ u0: j / Math.max(1, P.glints) + r() * 0.2, dir: j % 2 ? -1 : 1, spd: 0.9 + r() * 0.5 })),
     motes: Array.from({ length: P.motes }, () => ({ dx: (r() - 0.5) * s * 0.6, h: s * (0.45 + r() * 0.6), lag: r() * 60 * k, size: 0.8 + r() * 0.9 })),
   }));
@@ -72,9 +71,10 @@ export function render(ctx, t, st, scene, P) {
     if (d < 1) {
       const size = s * (1 - 0.78 * d);
       // Feathered edge: thin outer rings of the pearl, fainter the further out.
-      if (P.feather > 0 && d > 0) for (let i = 3; i >= 1; i--) {
-        const fs = Math.min(s, size + s * 0.07 * i);
-        pearlBlock(ctx, b.x, b.y, s, b.color, { size: fs, glow: 1, clear: Math.min(1, clear + 0.15 * i), phase, alpha: P.feather * (1 - d) * (0.26 - i * 0.07), rim: 0 });
+      // (Each ring is one stamp of the cached lit pearl face: cheap enough for phones.)
+      if (P.feather > 0 && d > 0) for (let i = 2; i >= 1; i--) {
+        const fs = Math.min(s, size + s * 0.09 * i);
+        pearlFeather(ctx, b.x, b.y, fs, b.color, phase, P.feather * (1 - d) * (0.3 - i * 0.1));
       }
       pearlBlock(ctx, b.x, b.y, s, b.color, { size, glow: Math.min(1, glow + d * 0.8), clear: clear * (1 - d * 0.5), phase, rim: 1 - seg(d, 0.62, 0.85), alpha: 1 - premium(seg(d, 0.8, 1)) });
       // Primary: gold contour light riding the shrinking edge, with glints running round it.

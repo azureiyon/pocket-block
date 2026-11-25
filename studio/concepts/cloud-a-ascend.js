@@ -9,7 +9,7 @@
 // Direction: straight up in screen space, slow and decelerating (Soda's
 // bubbles wobble and pop; these are fine streaks of light that dissolve).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, glowSprite, glint, drawSprite, pearlBlock, easeOutCubic, CHAMPAGNE, WARM_WHITE, LAVENDER, LAV_DEEP } from '../art/cloud-art.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, glowSprite, glint, drawSprite, pearlBlock, easeOutCubic, CHAMPAGNE, WARM_WHITE, LAVENDER, LAV_DEEP } from '../../src/ui/vfx-cloud/cloud-art.js';
 
 export const params = [
   { key: 'stagger', label: 'Centre-out stagger', unit: 'ms', min: 0, max: 60, step: 2, def: 26 },
