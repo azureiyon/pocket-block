@@ -30,13 +30,16 @@ import neonA from './concepts/neon-a-trace.js';
 import neonB from '../src/ui/vfx-neon/crt.js';
 import neonC from '../src/ui/vfx-neon/derez.js';
 import neonSuite from '../src/ui/vfx-neon/suite.js';
+import sodaA from './concepts/soda-a-fizz.js';
+import sodaB from './concepts/soda-b-ice.js';
+import sodaC from './concepts/soda-c-fountain.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;
 const LOOP_GAP = 500; // ms of stillness between loops (motion-design: leave 100-200ms+ after resolution)
 
 // ---------- registry ----------
-const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudSuite, cloudB, cloudA, cloudC], neon: [neonSuite, neonB, neonA, neonC] };
+const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudSuite, cloudB, cloudA, cloudC], neon: [neonSuite, neonB, neonA, neonC], soda: [sodaA, sodaB, sodaC] };
 const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION.filter((v) => v.id !== 'prod-original' || themeId === 'jelly')];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 
