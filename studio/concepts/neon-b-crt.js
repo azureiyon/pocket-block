@@ -8,10 +8,10 @@
 // split and white-hot shift. Ambient: scanline banding and the phosphor ghost.
 // Direction: inward on both axes, to the centre (no travel, no particles).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, CYAN, MAGENTA } from '../art/neon-art.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, CYAN, MAGENTA, ciOf } from '../art/neon-art.js';
 
 export const params = [
-  { key: 'split', label: 'Colour split', unit: 'px', min: 0, max: 6, step: 0.5, def: 3 },
+  { key: 'split', label: 'Colour split', unit: 'px', min: 0, max: 8, step: 0.5, def: 4.5 },
   { key: 'squash', label: 'Squash time', unit: 'ms', min: 120, max: 400, step: 10, def: 220 },
   { key: 'collapse', label: 'Collapse time', unit: 'ms', min: 120, max: 400, step: 10, def: 200 },
   { key: 'scan', label: 'Scanlines', min: 0, max: 1, step: 0.05, def: 0.6 },
@@ -24,7 +24,7 @@ function timing(P) {
   const k = P.speed;
   const T = { flick: 100 * k };
   T.sqEnd = T.flick + P.squash * k; T.colEnd = T.sqEnd + P.collapse * k;
-  T.dotEnd = T.colEnd + 130 * k; T.end = T.dotEnd + 320 * k;
+  T.dotEnd = T.colEnd + 130 * k; T.end = T.dotEnd + 210 * k;
   return T;
 }
 export const duration = (P) => timing(P).end;
@@ -43,7 +43,7 @@ export const keyframes = (P) => {
 
 export function prepare(scene, P) {
   const line = scene.lines[0]; const F = frame(line);
-  return { line, F, T: timing(P), blocks: line.cells.map((c, k) => ({ ...c, lx: F.xOf(k), ci: c.ci || 1, o: Math.abs(k - 3.5) * 10 * P.speed })), half: line.len / 2 + line.s / 2 };
+  return { line, F, T: timing(P), blocks: line.cells.map((c, k) => ({ ...c, lx: F.xOf(k), ci: ciOf(c, scene.theme.palette), o: Math.abs(k - 3.5) * 10 * P.speed })), half: line.len / 2 + line.s / 2 };
 }
 
 /** The colours of the line as a horizontal gradient across [-half, half]. */
@@ -65,14 +65,16 @@ export function render(ctx, t, st, scene, P) {
   for (const b of blocks) {
     const q = premium(seg(t, T.flick + b.o, T.sqEnd)); if (q >= 0.98) continue;
     const thin = 1 - q * 0.94; const hot = Math.max(flick * 0.5, q);
-    const fl = t < T.flick && Math.floor(t / (30 * k)) % 2 ? 0.8 : 1; // two-frame flicker
+    // Hard flicker: bright, dim, bright over the first ~100 ms (stepped, like a failing tube).
+    const fstep = Math.floor(t / (33 * k)); const fl = t < T.flick ? [1, 0.55, 1, 0.8][fstep % 4] : 1;
+    const surge = t < T.flick ? [0.9, 0.2, 0.7, 0.4][fstep % 4] : 0;
     const dims = F.vert ? { sx: thin } : { sy: thin };
     ctx.save(); ctx.translate(b.lx, 0);
     if (split > 0.2) { // colour fringes, offset along the line
-      ctx.save(); ctx.translate(-split, 0); F.upright(ctx); circuitBlock(ctx, 0, 0, s, b.color, b.ci, { ...dims, tint: CYAN, face: 0.3, alpha: 0.45 * fl, glyphA: 0 }); ctx.restore();
-      ctx.save(); ctx.translate(split, 0); F.upright(ctx); circuitBlock(ctx, 0, 0, s, b.color, b.ci, { ...dims, tint: MAGENTA, face: 0.3, alpha: 0.45 * fl, glyphA: 0 }); ctx.restore();
+      ctx.save(); ctx.translate(-split, 0); F.upright(ctx); circuitBlock(ctx, 0, 0, s, b.color, b.ci, { ...dims, tint: CYAN, face: 0.35, alpha: 0.65 * fl, glyphA: 0 }); ctx.restore();
+      ctx.save(); ctx.translate(split, 0); F.upright(ctx); circuitBlock(ctx, 0, 0, s, b.color, b.ci, { ...dims, tint: MAGENTA, face: 0.35, alpha: 0.65 * fl, glyphA: 0 }); ctx.restore();
     }
-    F.upright(ctx); circuitBlock(ctx, 0, 0, s, b.color, b.ci, { ...dims, power: hot, alpha: fl * (1 - seg(q, 0.75, 0.98)) });
+    F.upright(ctx); circuitBlock(ctx, 0, 0, s, b.color, b.ci, { ...dims, power: Math.max(hot, surge), alpha: fl * (1 - seg(q, 0.75, 0.98)) });
     ctx.restore();
   }
   // Primary 2: the white-hot bar, then its collapse along the line to a dot.

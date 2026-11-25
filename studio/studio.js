@@ -29,13 +29,14 @@ import cloudSuite from '../src/ui/vfx-cloud/suite.js';
 import neonA from './concepts/neon-a-trace.js';
 import neonB from './concepts/neon-b-crt.js';
 import neonC from './concepts/neon-c-derez.js';
+import neonSuite from './concepts/neon-suite.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;
 const LOOP_GAP = 500; // ms of stillness between loops (motion-design: leave 100-200ms+ after resolution)
 
 // ---------- registry ----------
-const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudSuite, cloudB, cloudA, cloudC], neon: [neonA, neonB, neonC] };
+const CONCEPTS = { jelly: [conceptA, conceptB, conceptC], pastel: [lightSuite, lightA, lightB, lightC, pastelA, pastelB, pastelC], cloud: [cloudSuite, cloudB, cloudA, cloudC], neon: [neonSuite, neonB, neonA, neonC] };
 const variantsFor = (themeId) => [...(CONCEPTS[themeId] || []), ...PRODUCTION.filter((v) => v.id !== 'prod-original' || themeId === 'jelly')];
 const variantById = (themeId, id) => variantsFor(themeId).find((v) => v.id === id) || variantsFor(themeId)[0];
 

@@ -11,7 +11,7 @@
 // each lattice and the plus-sparks. The stepped timing is the signature:
 // every other theme moves smoothly.
 
-import { TAU, mix, seg, env, lerp, rng, drawSprite, circuitBlock, haloSprite, WHITE } from '../art/neon-art.js';
+import { TAU, mix, seg, env, lerp, rng, drawSprite, circuitBlock, haloSprite, WHITE, ciOf } from '../art/neon-art.js';
 
 export const params = [
   { key: 'step', label: 'Frame step', unit: 'ms', min: 33, max: 100, step: 1, def: 55 },
@@ -41,7 +41,7 @@ export const keyframes = (P) => {
 
 export function prepare(scene, P) {
   const line = scene.lines[0]; const pal = scene.theme.palette;
-  return { line, T: timing(P), pal, blocks: line.cells.map((c, k) => ({ ...c, ci: c.ci || 1, o: k * timing(P).o,
+  return { line, T: timing(P), pal, blocks: line.cells.map((c, k) => ({ ...c, ci: ciOf(c, pal), o: k * timing(P).o,
     // Rows climb up; on a column, lattices step out sideways (alternating) so each keeps its own lane.
     dir: line.axis === 'v' ? [k % 2 ? 1 : -1, 0] : [0, -1] })) };
 }

@@ -15,6 +15,9 @@ export const MAGENTA = '#ff4fd8';
 const rgbOf = (hex) => { const n = parseInt(hex.slice(1, 7), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; };
 export const rgbaOf = (hex, a) => { const [r, g, b] = rgbOf(hex); return `rgba(${r},${g},${b},${a})`; };
 
+/** A cell's colour index (1-based): the game's lines carry `ci`; otherwise derive it from the palette. */
+export const ciOf = (c, palette) => c.ci || (palette.indexOf(c.color) + 1) || 1;
+
 /** Square neon halo (rounded), the CSS `0 0 7px` outer glow, pre-rendered per colour. */
 export function haloSprite(color) {
   return spriteOf('neonhalo|' + color, 96, (g) => {

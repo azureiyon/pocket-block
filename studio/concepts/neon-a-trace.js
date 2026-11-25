@@ -11,7 +11,7 @@
 // Direction: along the line in hard right-angle steps (Classic's sweep is a
 // smooth soft edge; this is digital routing with flicker).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE } from '../art/neon-art.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, ciOf } from '../art/neon-art.js';
 
 export const params = [
   { key: 'run', label: 'Current run time', unit: 'ms', min: 200, max: 700, step: 20, def: 420 },
@@ -63,7 +63,7 @@ export function prepare(scene, P) {
   const blocks = line.cells.map((c, k) => {
     const dCentre = cum[1 + k * 4 + 1]; // where the trace dips into this block
     let lo = T.charge; let hi = T.runEnd; for (let n = 0; n < 16; n++) { const m = (lo + hi) / 2; if (distAt(m) < dCentre) lo = m; else hi = m; }
-    return { ...c, lx: F.xOf(k), hit: lo, ci: c.ci || 1 };
+    return { ...c, lx: F.xOf(k), hit: lo, ci: ciOf(c, scene.theme.palette) };
   });
   const sparks = [];
   for (const b of blocks) for (let j = 0; j < P.sparks; j++) {
