@@ -1,7 +1,7 @@
 // Cream Soda Pop — effervescent liquid. Recognisable bubble physics: lines
-// turn into a translucent liquid band, carbonation nucleates inside, then
+// fade out as carbonation nucleates where the blocks were, then
 // bubbles detach, accelerate upward with a wobble and pop into droplets.
-// Nothing here stretches or merges like jelly; liquid drains and fizzes.
+// Nothing here stretches or merges like jelly; it simply fizzes away.
 
 import { TAU, seg, easeOut, easeIn, easeInOut, envelope, mix, rgba, linesOf, contour, paintBlock, pathSampler, perimeter } from '../vfx-kit.js';
 
@@ -60,25 +60,9 @@ function lineFizz(v, line, delay) {
     life: T * 1000, delay,
     draw(ctx, it, p, vv, age) {
       const t = age / 1000;
-      const liquefy = easeOut(seg(p, 0, 0.12));
-      const drain = easeIn(seg(p, 0.24, 0.44));
-      // Blocks melt into the liquid band.
-      for (const c of line.cells) paintBlock(ctx, 'soda', c.x, c.y, s, c.color, { alpha: 1 - liquefy * 0.85 - drain * 0.15, glow: liquefy * 0.25 });
-      // The band: translucent soda with a gently moving meniscus, draining toward its centre line.
-      const th = s * 0.98 * (1 - drain);
-      if (th > 0.5) {
-        const N = 30; const top = []; const bot = [];
-        for (let i = 0; i <= N; i++) {
-          const u = i / N; const w1 = Math.sin(u * 14 + t * 7) * s * 0.05; const w2 = Math.sin(u * 11 - t * 6) * s * 0.04;
-          if (line.axis === 'h') { const x = line.a.x - s / 2 + (line.len + s) * u; top.push([x, line.cy - th / 2 + w1]); bot.push([x, line.cy + th / 2 + w2]); }
-          else { const y = line.a.y - s / 2 + (line.len + s) * u; top.push([line.cx - th / 2 + w1, y]); bot.push([line.cx + th / 2 + w2, y]); }
-        }
-        ctx.beginPath(); ctx.moveTo(top[0][0], top[0][1]); for (const q of top) ctx.lineTo(q[0], q[1]); for (let i = bot.length - 1; i >= 0; i--) ctx.lineTo(bot[i][0], bot[i][1]); ctx.closePath();
-        const g = line.axis === 'h' ? ctx.createLinearGradient(line.a.x, 0, line.b.x, 0) : ctx.createLinearGradient(0, line.a.y, 0, line.b.y);
-        for (let k = 0; k < 8; k++) g.addColorStop(k / 7, rgba(line.cells[k].color, 0.5));
-        ctx.globalAlpha = liquefy; ctx.fillStyle = g; ctx.fill();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,.85)'; ctx.stroke();
-      }
+      // Blocks fade out as their carbonation rises (no liquid band: Rui asked for it to go).
+      const fade = easeOut(seg(p, 0, 0.24));
+      for (const c of line.cells) paintBlock(ctx, 'soda', c.x, c.y, s, c.color, { alpha: 1 - fade, glow: fade * 0.25 });
       for (const b of bubbles) {
         const q = bubbleAt(b, t); if (!q) continue;
         const fade = 1 - seg(p, 0.85, 1);
@@ -166,7 +150,7 @@ export default {
     lines.forEach((line, n) => lineFizz(v, line, n * 90));
     const h = lines.find((l) => l.axis === 'h'); const w = lines.find((l) => l.axis === 'v');
     if (lines.length >= 2) {
-      // Where liquid bands meet, the carbonation pools into one larger bubble that rises slowly.
+      // Where cleared lines meet, the carbonation pools into one larger bubble that rises slowly.
       const x = w ? w.cx : lines[0].cx; const y = h ? h.cy : lines[0].cy;
       const b = { x, y, r: lines[0].s * 0.42, t0: 0.3, hold: 0.35, v0: 15, wa: 6, wf: 6, ph: 0, pop: 1.0, color: lines[0].cells[3].color };
       v.add({ life: 2400, draw(ctx, it, p, vv, age) { const q = bubbleAt(b, age / 1000); if (!q) return; if (q.popped) { if (q.pt < 0.3) drawPop(ctx, { ...q, r: q.r * 1.3 }, b.color, 1); } else drawBubble(ctx, q, b.color, Math.min(1, (age / 1000 - b.t0) * 4)); } });

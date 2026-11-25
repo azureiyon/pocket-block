@@ -152,6 +152,12 @@ Neon Arcade, fourth review (Power Down shipped, `src/ui/vfx-neon/`):
 - Stepped (frame-quantised) motion is welcome as a contrast if formations
   stay structured: each pixel lattice keeps its own lane and colour.
 
+Cream Soda Pop, fifth review: after seeing three new concepts (Champagne
+Fizz, Ice and Refraction, Soda Fountain; kept in the Studio), Rui chose to
+keep the existing batch-1 soda choreography and only remove its translucent
+liquid band. Before redesigning, ask whether the current effect just needs a
+part taken out.
+
 Concepts not chosen (kept in the Studio for reference): Gummy Jewel Cascade
 (safe, least distinctive) and Sugar Crystal Transformation (elegant, but read
 as gemstones rather than edible candy).
