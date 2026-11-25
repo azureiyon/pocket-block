@@ -1,4 +1,4 @@
-// Neon Arcade — Power Down suite (Studio). Approved single clear: Power
+// Neon Arcade — Power Down suite (shipped). Approved single clear: Power
 // Down (CRT switch-off). The other events speak the same screen language
 // (flicker, RGB split, squash and collapse, phosphor afterglow, scanlines),
 // each with its own ending gesture:
@@ -13,9 +13,9 @@
 //           (bar, dot) and powers back on from the centre with scanlines
 // Milestones are opt-in (not designed unless asked).
 
-import crt, * as B from './neon-b-crt.js';
-import derez, * as C from './neon-c-derez.js';
-import { TAU, mix, seg, env, lerp, premium, expoOut, quadIn, glint, drawSprite, roundRectPath, circuitBlock, haloSprite, rgbaOf, WHITE, CYAN, MAGENTA, ciOf } from '../art/neon-art.js';
+import crt, * as B from './crt.js';
+import derez, * as C from './derez.js';
+import { TAU, mix, seg, env, lerp, premium, expoOut, quadIn, glint, drawSprite, roundRectPath, circuitBlock, haloSprite, rgbaOf, WHITE, CYAN, MAGENTA, ciOf } from './neon-art.js';
 
 const defaults = (params) => Object.fromEntries(params.map((p) => [p.key, p.def]));
 const PB = (P) => ({ ...defaults(B.params), speed: P.speed });
@@ -238,3 +238,5 @@ export default {
   id: 'neon-crt', label: 'Power Down suite', kind: 'concept', supports: ['single', 'multi', 'place', 'idle', 'streak', 'board'], params, presets,
   duration: (P, ev) => pick(ev).duration(P), keyframes: (P, ev) => pick(ev).keyframes(P), prepare: (sc, P, ev) => pick(ev).prepare(sc, P), render: (ctx, t, st, sc, P, ev) => pick(ev).render(ctx, t, st, sc, P),
 };
+
+export { neonWarmJobs } from './neon-art.js';

@@ -139,6 +139,19 @@ Cloud Palace, third review (Pearl of Dawn shipped, `src/ui/vfx-cloud/`):
   clear now washes light inward over the cell contours instead. Audit the set
   side by side for shared endings before presenting.
 
+Neon Arcade, fourth review (Power Down shipped, `src/ui/vfx-neon/`):
+- Rui had no concepts this time and asked Claude to propose three. Picked the
+  CRT switch-off for "gameplay" readability, but loved the stepped 8-bit
+  Derez too.
+- **Direction can matter:** "vertical line clearing doesn't give the same
+  effect of a CRT turning off". Rows power down; columns derez (sideways
+  zig-zag lanes). The suite dispatches by `line.axis` (`lineFx`), and the
+  multi-line mixes both: the row bar implodes into the crossing while the
+  column derezzes outward from it. Offer a per-axis split whenever a motif
+  has a natural orientation.
+- Stepped (frame-quantised) motion is welcome as a contrast if formations
+  stay structured: each pixel lattice keeps its own lane and colour.
+
 Concepts not chosen (kept in the Studio for reference): Gummy Jewel Cascade
 (safe, least distinctive) and Sugar Crystal Transformation (elegant, but read
 as gemstones rather than edible candy).
@@ -176,6 +189,12 @@ as gemstones rather than edible candy).
 - Switching theme must tear down every timer, item and `.vfx-hide` class.
 
 ## Gotchas
+
+- Studio line objects carry no `pitch` or colour index `ci` (the game's
+  `linesOf` lines do): derive pitch from `line.len / 7` and the index from the
+  palette (`ciOf` in `vfx-neon/neon-art.js`), or maths silently goes NaN.
+- A theme shipped outside its batch must be added to `CHOREO` in
+  `src/ui/vfx-choreo/index.js` and to the registry test in `tests/vfx.test.js`.
 
 - The dev server (`node tools/serve.js 8080`) dies between turns; restart it.
 - Mobile Safari caches hard; bump `VERSION` in `sw.js` and list new files.

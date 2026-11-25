@@ -103,6 +103,9 @@ Themes are being moved, five at a time, from the shared recipe effects to hand-d
 - **Cream Soda Pop:** lines turn into a band of liquid that fizzes, with bubbles that rise, wobble and pop into droplets, a foam wave, and soda filling the board.
 - **Strawberry Patisserie:** frosting piped by a moving nozzle in scallops, cake crumbling into layered slices and crumbs, rosettes and strawberries.
 
+**Shipped ahead of its batch:**
+- **Neon Arcade:** Power Down. Rows switch off like an old CRT (flicker, colour split, a white-hot bar that collapses to a dot, a phosphor afterglow); columns derez into stepped 8-bit pixel lattices that zig-zag out sideways. Multi-line clears implode the row into the crossing while the column derezzes and end in one horizontal scan flash; streaks roll a bright band down the board; board clears switch the whole board off like a TV and power it back on. Placement scans in over the piece and idle blocks glitch now and then.
+
 **Settings → Themes → Effect intensity** (25–100%) scales counts and brightness. Switching themes tears down every timer, emitter and idle loop.
 
 **VFX lab:** open the game with `?vfxlab` for replay buttons for every feedback type, at 1×, ½× or ¼× speed, seeded so each replay is identical. It uses a fixture board and leaves your real game untouched.

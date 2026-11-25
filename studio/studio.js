@@ -27,9 +27,9 @@ import cloudB from '../src/ui/vfx-cloud/dawn.js';
 import cloudC from './concepts/cloud-c-heaven.js';
 import cloudSuite from '../src/ui/vfx-cloud/suite.js';
 import neonA from './concepts/neon-a-trace.js';
-import neonB from './concepts/neon-b-crt.js';
-import neonC from './concepts/neon-c-derez.js';
-import neonSuite from './concepts/neon-suite.js';
+import neonB from '../src/ui/vfx-neon/crt.js';
+import neonC from '../src/ui/vfx-neon/derez.js';
+import neonSuite from '../src/ui/vfx-neon/suite.js';
 
 const $ = (id) => document.getElementById(id);
 const FRAME = 1000 / 60;

@@ -6,7 +6,9 @@ import jelly from './jelly.js';
 import cloud from './cloud.js';
 import soda from './soda.js';
 import patisserie from './patisserie.js';
+// Neon Arcade (shipped ahead of its batch).
+import neon from './neon.js';
 
-export const CHOREO = { pastel, jelly, cloud, soda, patisserie };
+export const CHOREO = { pastel, jelly, cloud, soda, patisserie, neon };
 
 export function getChoreo(id) { return (id && CHOREO[id]) || null; }

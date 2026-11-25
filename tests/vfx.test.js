@@ -88,8 +88,8 @@ import { CHOREO } from '../src/ui/vfx-choreo/index.js';
 import { seedVfx } from '../src/ui/vfx.js';
 import { LAB_MOVES } from '../src/ui/vfx-lab.js';
 
-test('vfx batch 1: only the five Soft & Dreamy themes have custom choreography', () => {
-  eq(Object.keys(CHOREO).sort(), ['cloud', 'jelly', 'pastel', 'patisserie', 'soda']);
+test('vfx batch 1: the five Soft & Dreamy themes and Neon Arcade have custom choreography', () => {
+  eq(Object.keys(CHOREO).sort(), ['cloud', 'jelly', 'neon', 'pastel', 'patisserie', 'soda']);
   for (const [id, ch] of Object.entries(CHOREO)) for (const k of ['place', 'clear', 'streak', 'milestone', 'boardClear', 'idle', 'idleBeat']) assert(typeof ch[k] === 'function', `${id}.${k}`);
 });
 

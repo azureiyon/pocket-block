@@ -1,12 +1,12 @@
-// Neon Arcade art kit (Studio only until a concept is approved).
+// Neon Arcade art kit (shared by the studio and the Neon Arcade theme).
 // circuitBlock() matches the production .m-circuit material: 14% corners, a
 // dark tinted face, a 2 px neon rim with inner and outer glow, and the inner
 // circuit glyph (two traces and a white node) whose orientation follows the
 // colour index exactly like the CSS (2,5 mirrored; 3,6 rotated). Glows are
 // pre-rendered sprites; nothing uses live blur.
 
-import { TAU, clamp, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, spark, glint, drawSprite, roundRectPath, frame } from '../../src/ui/vfx-classic/light-kit.js';
-import { spriteOf } from '../../src/ui/vfx-jelly/jelly-art.js';
+import { TAU, clamp, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glowSprite, spark, glint, drawSprite, roundRectPath, frame } from '../vfx-classic/light-kit.js';
+import { spriteOf } from '../vfx-jelly/jelly-art.js';
 
 export const WHITE = '#ffffff';
 export const CYAN = '#28e1ff';
@@ -25,6 +25,12 @@ export function haloSprite(color) {
     r.addColorStop(0, rgbaOf(color, 0.55)); r.addColorStop(0.55, rgbaOf(color, 0.18)); r.addColorStop(1, rgbaOf(color, 0));
     g.fillStyle = r; g.fillRect(0, 0, 96, 96);
   });
+}
+
+/** Jobs that pre-build the glow sprites a palette needs (run a few at a time in idle moments). */
+export function neonWarmJobs(palette) {
+  const cols = [...palette, CYAN, MAGENTA, ...palette.map((c) => mix(c, WHITE, 0.7))];
+  return cols.map((c) => () => haloSprite(c));
 }
 
 /** The inner circuit glyph, in a box of side s centred at the origin. */

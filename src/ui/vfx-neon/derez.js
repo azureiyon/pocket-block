@@ -11,7 +11,7 @@
 // each lattice and the plus-sparks. The stepped timing is the signature:
 // every other theme moves smoothly.
 
-import { TAU, mix, seg, env, lerp, rng, drawSprite, circuitBlock, haloSprite, WHITE, ciOf } from '../art/neon-art.js';
+import { TAU, mix, seg, env, lerp, rng, drawSprite, circuitBlock, haloSprite, WHITE, ciOf } from './neon-art.js';
 
 export const params = [
   { key: 'step', label: 'Frame step', unit: 'ms', min: 33, max: 100, step: 1, def: 55 },

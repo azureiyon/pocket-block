@@ -11,7 +11,7 @@
 // Direction: along the line in hard right-angle steps (Classic's sweep is a
 // smooth soft edge; this is digital routing with flicker).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, ciOf } from '../art/neon-art.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, ciOf } from '../../src/ui/vfx-neon/neon-art.js';
 
 export const params = [
   { key: 'run', label: 'Current run time', unit: 'ms', min: 200, max: 700, step: 20, def: 420 },

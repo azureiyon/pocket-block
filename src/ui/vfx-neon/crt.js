@@ -8,7 +8,7 @@
 // split and white-hot shift. Ambient: scanline banding and the phosphor ghost.
 // Direction: inward on both axes, to the centre (no travel, no particles).
 
-import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, CYAN, MAGENTA, ciOf } from '../art/neon-art.js';
+import { TAU, mix, seg, env, lerp, rng, premium, expoOut, quadIn, glint, drawSprite, frame, circuitBlock, haloSprite, rgbaOf, WHITE, CYAN, MAGENTA, ciOf } from './neon-art.js';
 
 export const params = [
   { key: 'split', label: 'Colour split', unit: 'px', min: 0, max: 8, step: 0.5, def: 4.5 },
