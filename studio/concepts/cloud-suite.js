@@ -9,7 +9,8 @@
 //   streak  the points of light gather to the line's centre into one pearl of
 //           light, which releases a thin gold halo ring (two for big streaks)
 //   board   the last line dissolves, two glints race round the gilt board
-//           frame and meet; the frame glows once and a halo opens from the centre
+//           frame and meet; the frame glows and light washes inward over the
+//           empty cells' contours, edge to middle
 // Milestones are opt-in (not designed unless asked).
 
 import dawn, * as B from './cloud-b-dawn.js';
@@ -188,12 +189,13 @@ EV.streak = {
 // Board clear: glints race round the gilt frame, meet, the frame glows, a halo opens from the centre.
 EV.board = {
   duration: (P) => { const Q = PB(P); return dawn.duration(Q) * 0.85 + 1150 * Q.speed; },
-  keyframes: (P) => { const Q = PB(P); const k = Q.speed; const t0 = dawn.duration(Q) * 0.62; return [[260 * k, 'Last line', 'The final line dissolves into points of light.'], [t0 + 120 * k, 'Frame', 'Two gold glints set off round the gilt frame in opposite directions.'], [t0 + 420 * k, 'Race', 'They trace the frame, lighting it as they go.'], [t0 + 640 * k, 'Meet', 'They meet at the bottom; the whole frame glows once.'], [t0 + 820 * k, 'Halo', 'A point of light at the centre opens into a wide halo ring.'], [EV.board.duration(P) - 30, 'Settle', 'A clear board at dawn.']].map(([t, label, note]) => ({ t, label, note })); },
+  keyframes: (P) => { const Q = PB(P); const k = Q.speed; const t0 = dawn.duration(Q) * 0.62; return [[260 * k, 'Last line', 'The final line dissolves into points of light.'], [t0 + 120 * k, 'Frame', 'Two gold glints set off round the gilt frame in opposite directions.'], [t0 + 420 * k, 'Race', 'They trace the frame, lighting it as they go.'], [t0 + 640 * k, 'Meet', 'They meet at the bottom; the whole frame glows once.'], [t0 + 900 * k, 'Wash', 'Light washes inward from the frame, lighting each cell\u2019s gold contour ring by ring.'], [EV.board.duration(P) - 30, 'Settle', 'A clear board at dawn.']].map(([t, label, note]) => ({ t, label, note })); },
   prepare(scene, P) {
     const Q = PB(P); const st = dawn.prepare(scene, Q); const B0 = scene.bounds; const s = scene.lines[0].s;
     // On the gilt ring: the board's padding is 0.026 x board size (= 0.24 cell), its corners 0.045 x board size (= 0.41 cell).
     const pad = s * 0.24 + 1; const w = Math.max(B0.x1 - B0.x0, B0.y1 - B0.y0) + pad * 2;
-    return { st, fx: (B0.x0 + B0.x1) / 2, fy: (B0.y0 + B0.y1) / 2, w, r: s * 0.41 + 1, s };
+    const cells = Array.from({ length: 64 }, (_, i) => { const rr = Math.floor(i / 8); const cc = i % 8; return { ...scene.cell(i), ring: Math.min(rr, cc, 7 - rr, 7 - cc) }; });
+    return { st, fx: (B0.x0 + B0.x1) / 2, fy: (B0.y0 + B0.y1) / 2, w, r: s * 0.41 + 1, s, cells };
   },
   render(ctx, t, S, scene, P) {
     const Q = PB(P); const k = Q.speed; const { st, fx, fy, w, r, s } = S;
@@ -220,12 +222,17 @@ EV.board = {
     // The meeting flare at the bottom centre.
     const fl = env(t, meet - 20 * k, meet + 10 * k, meet + 40 * k, meet + 260 * k);
     if (fl > 0) { const p = contourPoint(w, r, 0.5); drawSprite(ctx, lightSprite(GOLD), fx + p.x, fy + p.y, s * 1.1 * fl, { alpha: fl }); glint(ctx, fx + p.x, fy + p.y, s * 0.6 * fl, WARM_WHITE, fl); }
-    // A point of light at the centre opens into a wide halo ring.
-    const c0 = meet + 60 * k;
-    const pt = env(t, c0, c0 + 90 * k, c0 + 130 * k, c0 + 380 * k);
-    if (pt > 0) { drawSprite(ctx, lightSprite(GOLD), fx, fy, s * 1.1 * pt, { alpha: pt }); glint(ctx, fx, fy, s * 0.55 * pt, WARM_WHITE, pt); }
-    const hu = seg(t, c0 + 60 * k, c0 + 620 * k);
-    if (hu > 0 && hu < 1) { haloRing(ctx, fx, fy, s * 0.5 + w * 0.62 * expoOut(hu), (1 - hu) * P.halo, 1.8); haloRing(ctx, fx, fy, s * 0.3 + w * 0.42 * expoOut(seg(hu, 0.12, 1)), (1 - hu) * P.halo * 0.6, 1.1); }
+    // The light washes inward from the frame: every empty cell's gold contour lights, ring by ring
+    // from the edge to the middle. (No point or halo: that ending belongs to the streak.)
+    for (const c of S.cells) {
+      const at = meet + 40 * k + c.ring * 95 * k;
+      const a = env(t, at, at + 70 * k, at + 120 * k, at + 420 * k); if (a <= 0.01) continue;
+      const w0 = c.s * 0.94; const r0 = w0 * 0.4;
+      ctx.save(); ctx.translate(c.x, c.y); roundRectPath(ctx, w0, w0, r0);
+      ctx.globalAlpha = a * 0.25; ctx.strokeStyle = CHAMPAGNE; ctx.lineWidth = 3.5; ctx.stroke();
+      ctx.globalAlpha = a * 0.85; ctx.strokeStyle = GOLD; ctx.lineWidth = 1.3; ctx.stroke();
+      ctx.restore();
+    }
   },
 };
 
