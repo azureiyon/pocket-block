@@ -46,3 +46,10 @@ Later, after the effects ship: some themes will need a sound update to fit their
   random toppings (strawberries, sprinkles or chocolate drizzle).
 - Still to design per theme: placement, streak, board clear (shared recipe effects for now), then sound.
 - Dreamware 2004: theme overhaul first.
+
+## Round three (board clear, placement, idle)
+
+https://claude.ai/artifact/ScJQdFCiDCvZAYGf5LCJPP: three board-clear concepts per theme (each plays the
+theme's picked line clear, then its finale) plus one placement and one idle concept to keep or send
+back, for the 23 themes above. Strawberry Patisserie keeps its batch-1 board clear, placement and idle.
+Picks pending.
