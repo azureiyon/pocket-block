@@ -3,10 +3,11 @@
 // The cleared cells come back as ghost block elements (the real material, so they look
 // identical) in a layer under the effect canvas; the concept moves them and draws over them.
 // Multi-line clears play the row concept on rows and the column concept on columns together.
-// Only line clears are themed here: placement, streak, milestone and board clear keep the
-// shared effects for now (each will get its own design pass).
+// Board clears play the theme's finale once the last line is mostly gone; placement and idle
+// animate ghosts over the real blocks (which hide meanwhile) and stop if those cells change.
+// Streaks and milestones keep the shared effects for now.
 
-import { REEL, setCtx, setRot } from '../vfx-reel/reel-fx.js';
+import { REEL, FINALE, setCtx, setRot } from '../vfx-reel/reel-fx.js';
 import { linesOf } from '../vfx-kit.js';
 import { makeBlock } from '../render.js';
 
@@ -40,6 +41,53 @@ function ghostsFor(v, line, theme) {
   });
 }
 
+/** Ghost blocks for board cells (placement, idle), hiding the real ones until `restore` runs. */
+function ghostCells(v, theme, indices) {
+  const layer = ghostLayer(v); const state = v.board.state || EMPTY; const real = v.board.cells || [];
+  const out = indices.map((i) => {
+    const c = v.cell(i); const ci = Math.max(1, state[i] || 1);
+    let el;
+    if (layer && typeof document !== 'undefined') {
+      el = makeBlock(theme, ci); el.classList.add('vfx-ghost');
+      Object.assign(el.style, { position: 'absolute', left: (c.x - c.s / 2) + 'px', top: (c.y - c.s / 2) + 'px', width: c.s + 'px', height: c.s + 'px' });
+      layer.appendChild(el);
+    } else el = { style: {}, querySelector: () => null, remove() {} };
+    if (real[i] && real[i].classList) real[i].classList.add('vfx-hide');
+    return { el, x: c.x, y: c.y, s: c.s, c: theme.palette[(ci - 1) % theme.palette.length], i };
+  });
+  const restore = () => { for (const g of out) { if (g.el.remove) g.el.remove(); const r = real[g.i]; if (r && r.classList) r.classList.remove('vfx-hide'); } };
+  return { blocks: out, restore };
+}
+
+/** The whole-board scene shape used by finales, placement and idle. */
+function boardScene(v, theme) {
+  const a = v.cell(0); const z = v.cell(63);
+  const cells = Array.from({ length: 64 }, (_, i) => { const c = v.cell(i); const r = Math.floor(i / 8); const cc = i % 8; return { x: c.x, y: c.y, s: c.s, r, c: cc, ring: Math.max(Math.abs(r - 3.5), Math.abs(cc - 3.5)) - 0.5 }; });
+  const board = { x0: a.x - a.s / 2, y0: a.y - a.s / 2, x1: z.x + z.s / 2, y1: z.y + z.s / 2 };
+  const cx = (board.x0 + board.x1) / 2; const cy = (board.y0 + board.y1) / 2;
+  return { theme, cells, board, cx, cy, y: cy, s: a.s, bw: board.x1 - board.x0, W: v.w + v.pad * 2, H: v.h + v.pad * 2, b: [], p: [], blocks: [] };
+}
+
+/** Play a board-wide concept (finale, placement or idle) as one engine item. */
+function playBoard(v, fx, S, { delay = 0, guard = null, restore = null } = {}) {
+  const P = fx.init ? fx.init(S) : null;
+  const state = (vv) => vv.board.state || EMPTY;
+  const snap = guard ? guard.map((i) => state(v)[i]) : null;
+  let ended = false;
+  const end = () => { if (ended) return; ended = true; if (restore) restore(); off(); };
+  const off = v.onCleanup(end);
+  v.later(end, delay + fx.dur);
+  v.add({
+    life: fx.dur, delay, blend: 'source-over',
+    draw(ctx, it, p, vv, age) {
+      if (it.dead) return;
+      if (snap && guard.some((i, k) => state(vv)[i] !== snap[k])) { it.dead = true; end(); return; }
+      setCtx(ctx); setRot(false); ctx.save();
+      try { fx.draw(S, Math.min(age, fx.dur), P); } finally { ctx.restore(); ctx.globalAlpha = 1; }
+    },
+  });
+}
+
 /** Play one concept on one line as a single engine item. */
 function playLine(v, theme, line, fx, extra) {
   const vert = line.axis === 'v'; const rot = vert && fx.rot;
@@ -57,7 +105,7 @@ function playLine(v, theme, line, fx, extra) {
   const P = fx.init ? fx.init(S) : null;
   const done = () => { for (const g of b) if (g.el.remove) g.el.remove(); off(); };
   const off = v.onCleanup(done);
-  v.later(done, fx.dur + 40);
+  v.later(done, fx.dur);
   v.add({
     life: fx.dur, blend: 'source-over',
     draw(ctx, it, p, vv, age) {
@@ -104,20 +152,56 @@ const EXTRA = { patisserie: (S, t) => toppings(S, t) };
 
 /** Build the choreography for one theme. */
 export function reelChoreo(id) {
-  const pair = REEL[id];
-  return {
+  const pair = REEL[id]; const fin = FINALE[id];
+  const ch = {
     pad: 0.24,
     clear(v, move, theme) {
       const lines = linesOf(v, move, theme);
       if (!lines.length) return;
+      let longest = 0;
       for (const line of lines) {
-        const fx = line.axis === 'v' ? pair.col : pair.row;
+        const fx = line.axis === 'v' ? pair.col : pair.row; longest = Math.max(longest, fx.dur);
         const ex = EXTRA[id];
         playLine(v, theme, line, fx, ex ? (S, age) => { S._ctx = v.ctx; ex(S, age); } : null);
       }
+      // The board-clear finale starts once the last line is mostly gone.
+      if (move.allClear && fin) playBoard(v, fin.board, boardScene(v, theme), { delay: Math.round(longest * 0.55) });
     },
-    // Placement, streak, milestone and board clear are left undefined, so the shared effects run.
   };
+  if (fin) {
+    ch.boardClear = () => {}; // played inside clear()
+    if (fin.place) ch.place = (v, move, theme) => {
+      if (move.lines) return; // the clear carries this move
+      const state = v.board.state || EMPTY;
+      if (!move.placed || !move.placed.length || !move.placed.every((i) => state[i] > 0)) return;
+      const S = boardScene(v, theme); const g = ghostCells(v, theme, move.placed);
+      S.p = g.blocks; S.pc = { x: S.p.reduce((a, b) => a + b.x, 0) / S.p.length, y: S.p.reduce((a, b) => a + b.y, 0) / S.p.length, s: S.s };
+      playBoard(v, fin.place, S, { guard: move.placed, restore: g.restore });
+    };
+    if (fin.idle) {
+      const idleFx = fin.idle; const many = /S\.blocks/.test(idleFx.draw.toString());
+      ch.idle = function idle(v) {
+        const loop = () => { ch.idleBeat(v, null, v.getTheme()); v.later(loop, v.r(6000, 11000)); };
+        v.later(loop, v.r(3000, 5000));
+        return () => { for (const c of v.board.cells || []) if (c.classList) c.classList.remove('vfx-hide'); };
+      };
+      ch.idleBeat = (v, _x, theme) => {
+        if (v.running && v.items.length) return; // never during another effect
+        const state = v.board.state || EMPTY; const filled = []; const empty = [];
+        for (let i = 0; i < 64; i++) (state[i] > 0 ? filled : empty).push(i);
+        if (!filled.length) return;
+        v.ensureCanvas();
+        const th = theme || v.getTheme(); const S = boardScene(v, th);
+        const k = filled[Math.floor(filled.length * 0.6)];
+        const pick = many ? filled.filter((_, n) => n % 2 === 0) : [k];
+        const g = ghostCells(v, th, pick);
+        S.blocks = g.blocks; S.k = g.blocks.find((b) => b.i === k) || g.blocks[0];
+        S.e = S.cells[empty.length ? empty[Math.floor(empty.length / 2)] : 35];
+        playBoard(v, idleFx, S, { guard: pick, restore: g.restore });
+      };
+    }
+  }
+  return ch;
 }
 
 export const REEL_IDS = Object.keys(REEL);

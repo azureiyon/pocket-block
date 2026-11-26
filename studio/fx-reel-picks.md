@@ -52,4 +52,32 @@ Later, after the effects ship: some themes will need a sound update to fit their
 https://claude.ai/artifact/ScJQdFCiDCvZAYGf5LCJPP: three board-clear concepts per theme (each plays the
 theme's picked line clear, then its finale) plus one placement and one idle concept to keep or send
 back, for the 23 themes above. Strawberry Patisserie keeps its batch-1 board clear, placement and idle.
-Picks pending.
+Picks (board finale / placement / idle):
+
+| Theme | Board | Placement | Idle |
+|---|---|---|---|
+| Steampunk | B Great Gear | Rivet Set | Seam Wisp |
+| Moonlit Koi | B Koi Circle | Settle Ripple | Nibble |
+| Witch's Apothecary | A Grand Circle | Sparkle Pop | Rune Wink (new: vapour read like Steampunk) |
+| Abyssal Aquarium | C The Lure | Glow Settle | Bobbing (new, per note) |
+| Clockwork Toybox | B Toy Parade | Wooden Bounce | Wind Wiggle |
+| Stained Glass | B Morning Light | Pane Glint | Pane Glint (per note) |
+| Mahjong Parlor | B Shuffle | Clack | none |
+| Starflower Post | C Star Fireworks | Sticker Press | none |
+| Moonside Mechanism | B Orrery Rings | Bezel Glint | Phase Shift |
+| Pixel Crush | C Screen Wipe | Two-Frame Flash | none |
+| Capsule Field Notes | B Capsule Shower | Pencil Tick | Capsule Wobble |
+| Queen's Tea Party | A Card Shower | Card Snap | Suit Pulse |
+| Paper Sky | A Paper Flock | Crease Flash | Passing Plane |
+| Prism Desk | C All Clear Widget | Frosted Lift | Refraction Spark |
+| Lily Reliquary | B Sanctum Doors | Foil Gleam | Drifting Ember |
+| Starry Alchemy | C Shooting Stars | Swirl Brushed In (new, per note) | Twinkle |
+| Garden Ticket | B Garden Sprouts | Perforation Stitch | Ticket Flutter |
+| End of the World | C Last Moon | Dot Pop | Passing Bird |
+| Garden of Doors | A Grand Doors | Latch Click | Door Ajar |
+| Heaven 404 | B Goldfish Bowl | Window Pop | Blinking Cursor |
+| Surveil | A Area Secured | Bracket Snap | Hunting Box |
+| Totality | C Monoliths Rise | Stone Thud | Mark Glow |
+| Room 201 | C Tape Rewind | Needle Tick | Star Twinkle |
+
+All shipped in src/ui/vfx-reel/reel-fx.js (FINALE). Streaks and milestones still use the shared effects.

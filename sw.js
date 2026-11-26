@@ -1,7 +1,7 @@
 // Offline support: precache every local asset on install, serve
 // network-first (refreshing the cache) and fall back to the cache offline.
 // Bump VERSION when the asset list changes.
-const VERSION = 'pocket-blocks-v15';
+const VERSION = 'pocket-blocks-v16';
 const ASSETS = [
   './',
   'index.html',
