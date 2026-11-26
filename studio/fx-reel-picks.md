@@ -37,3 +37,12 @@ Post, Lily Reliquary). Mockup source for both reels lives outside the repo; rebu
 properly in the Studio.
 
 Later, after the effects ship: some themes will need a sound update to fit their new effects.
+
+## Status
+
+- Line clears (rows, columns, multi-line) for all 23 picked themes plus Strawberry Patisserie are in
+  the game (src/ui/vfx-reel/reel-fx.js, generated from the reel mockups; adapter src/ui/vfx-choreo/reel.js).
+  Patisserie keeps its batch-1 placement, streak and board clear and gains the piped ribbon with
+  random toppings (strawberries, sprinkles or chocolate drizzle).
+- Still to design per theme: placement, streak, board clear (shared recipe effects for now), then sound.
+- Dreamware 2004: theme overhaul first.

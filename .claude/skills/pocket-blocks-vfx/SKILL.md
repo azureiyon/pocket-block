@@ -174,6 +174,17 @@ as gemstones rather than edible candy).
 - Bigger achievements get new choreography (twin troupes, a painted heart, a
   carousel), never just more particles.
 
+## Fast path: reel mockups to production (themes 06–30)
+
+- The FX Reel (a live artifact) mocks each concept with real DOM blocks plus a canvas. Picked
+  concepts ship nearly verbatim: `src/ui/vfx-reel/reel-fx.js` is generated from the mockup source,
+  and `src/ui/vfx-choreo/reel.js` recreates cleared cells as ghost `.blk` elements (real material
+  CSS) in a layer under the effect canvas, so X() can move them.
+- Rows and columns: concepts that travel along the line run in a rotated frame on columns
+  (canvas rotated a quarter turn; X() turns offsets, scales, clips and origins). Always review
+  every concept on a column before presenting it (Rui caught horizontal-only concepts twice).
+- A theme with full choreography keeps it and only swaps `clear` (see index.js merge).
+
 ## Rendering and mobile performance
 
 - Draw everything on one canvas over the board; pre-render sprites once per

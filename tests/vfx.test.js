@@ -88,9 +88,12 @@ import { CHOREO } from '../src/ui/vfx-choreo/index.js';
 import { seedVfx } from '../src/ui/vfx.js';
 import { LAB_MOVES } from '../src/ui/vfx-lab.js';
 
-test('vfx batch 1: the five Soft & Dreamy themes and Neon Arcade have custom choreography', () => {
-  eq(Object.keys(CHOREO).sort(), ['cloud', 'jelly', 'neon', 'pastel', 'patisserie', 'soda']);
-  for (const [id, ch] of Object.entries(CHOREO)) for (const k of ['place', 'clear', 'streak', 'milestone', 'boardClear', 'idle', 'idleBeat']) assert(typeof ch[k] === 'function', `${id}.${k}`);
+test('vfx: every theme except Dreamware 2004 has custom line clears', () => {
+  const ids = THEMES.map((t) => t.id).filter((id) => id !== 'aero').sort();
+  eq(Object.keys(CHOREO).sort(), ids);
+  for (const [id, ch] of Object.entries(CHOREO)) assert(typeof ch.clear === 'function', `${id}.clear`);
+  // The fully choreographed themes define every event.
+  for (const id of ['pastel', 'jelly', 'cloud', 'soda', 'patisserie', 'neon']) for (const k of ['place', 'clear', 'streak', 'milestone', 'boardClear', 'idle', 'idleBeat']) assert(typeof CHOREO[id][k] === 'function', `${id}.${k}`);
 });
 
 test('vfx batch 1: every feedback type runs, draws and goes idle', () => {

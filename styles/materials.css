@@ -216,7 +216,7 @@
   font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif; font-weight: 700; line-height: 1;
   font-size: 9px; text-shadow: 0 1px 0 rgba(255,255,255,.7);
 }
-.cell .m-mahjong > i, .clear-ghost.m-mahjong > i { font-size: calc(var(--bsize) * 0.058); }
+.cell .m-mahjong > i, .clear-ghost.m-mahjong > i, .vfx-ghost.m-mahjong > i { font-size: calc(var(--bsize) * 0.058); }
 .piece .m-mahjong > i { font-size: calc(var(--tcs) * 0.6); }
 .m-mahjong[data-mark="dots"] > i {
   background:
@@ -360,7 +360,7 @@
   inset: 0; display: grid; place-items: center; color: var(--c); line-height: 1;
   font-family: "Apple Symbols", "Segoe UI Symbol", "Baskerville", serif; font-weight: 700; font-size: 10px;
 }
-.cell .m-card > i, .clear-ghost.m-card > i { font-size: calc(var(--bsize) * 0.072); }
+.cell .m-card > i, .clear-ghost.m-card > i, .vfx-ghost.m-card > i { font-size: calc(var(--bsize) * 0.072); }
 .piece .m-card > i { font-size: calc(var(--tcs) * 0.72); }
 .m-card::after {
   content: ""; inset: 0; border-radius: inherit;
@@ -413,7 +413,7 @@
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 1px 0 rgba(0,0,0,.8));
 }
-.cell .m-foil > i, .clear-ghost.m-foil > i { font-size: calc(var(--bsize) * 0.07); }
+.cell .m-foil > i, .clear-ghost.m-foil > i, .vfx-ghost.m-foil > i { font-size: calc(var(--bsize) * 0.07); }
 .piece .m-foil > i { font-size: calc(var(--tcs) * 0.7); }
 .m-foil[data-c="3"] {
   border-radius: 42% 46% 40% 48%;
@@ -559,7 +559,7 @@
     linear-gradient(var(--b), var(--b)) 100% 100% / 32% 1.5px no-repeat, linear-gradient(var(--b), var(--b)) 100% 100% / 1.5px 32% no-repeat;
 }
 .m-scan > i { inset: 0; display: grid; place-items: center; line-height: 1; color: #e0241f; font: 700 9px "Helvetica Neue", Arial, sans-serif; }
-.cell .m-scan > i, .clear-ghost.m-scan > i { font-size: calc(var(--bsize) * 0.05); }
+.cell .m-scan > i, .clear-ghost.m-scan > i, .vfx-ghost.m-scan > i { font-size: calc(var(--bsize) * 0.05); }
 .piece .m-scan > i { font-size: calc(var(--tcs) * 0.55); }
 .m-scan[data-c="1"]::before { --b: #111; }
 .m-scan[data-c="1"] > i { color: #fff; }
@@ -578,7 +578,7 @@
   color: #f4f4f6; text-shadow: 0 0 6px rgba(255,255,255,.55);
   font: 400 10px "Apple Symbols", "Segoe UI Symbol", "Optima", serif;
 }
-.cell .m-monolith > i, .clear-ghost.m-monolith > i { font-size: calc(var(--bsize) * 0.06); }
+.cell .m-monolith > i, .clear-ghost.m-monolith > i, .vfx-ghost.m-monolith > i { font-size: calc(var(--bsize) * 0.06); }
 .piece .m-monolith > i { font-size: calc(var(--tcs) * 0.62); }
 .m-monolith:is([data-c="1"], [data-c="5"], [data-c="7"]) > i { color: #22232a; text-shadow: none; }
 .m-monolith::after { content: ""; left: 50%; top: 6%; bottom: 6%; width: 1px; background: linear-gradient(transparent, rgba(255,255,255,.45), transparent); }
