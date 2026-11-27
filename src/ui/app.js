@@ -32,8 +32,9 @@ export class App {
     this.boardView = new BoardView(this.boardEl);
     this.trayView = new TrayView(this.trayEl);
     const vfxOn = () => this.settings.get('vfx') && !this.reducedMotion();
-    this.effects = new Effects({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion, canvasParticles: vfxOn });
-    this.vfx = new Vfx({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion, enabled: () => this.settings.get('vfx') });
+    this.effects = new Effects({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion, canvasParticles: vfxOn, canvasGhosts: () => vfxOn() && this.vfx.hasChoreo() });
+    this.vfx = new Vfx({ layer: $('fx'), board: this.boardView, getTheme: () => this.theme, reducedMotion: this.reducedMotion, enabled: () => this.settings.get('vfx'), level: () => this.settings.get('vfxLevel') });
+    this.heat = 0;
     this.env = new EnvironmentManager($('env'), { reducedMotion: this.reducedMotion });
     this.audio = new AudioEngine({ settings: this.settings });
     this.audio.attach(window);
@@ -48,13 +49,16 @@ export class App {
     this.bindGame();
     this.bindUi();
     this.layout();
-    const ro = window.ResizeObserver ? new ResizeObserver(() => this.layout()) : null;
+    // Deferred a frame: a theme's board scale can resize the board area, which would re-trigger the observer in the same frame.
+    let raf = 0; const relayout = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; this.layout(); }); };
+    const ro = window.ResizeObserver ? new ResizeObserver(relayout) : null;
     if (ro) ro.observe($('board-area')); else window.addEventListener('resize', () => this.layout());
     if (window.visualViewport) window.visualViewport.addEventListener('resize', () => this.layout());
-    if (this.reduceMQ.addEventListener) this.reduceMQ.addEventListener('change', () => this.env.build());
+    if (this.reduceMQ.addEventListener) this.reduceMQ.addEventListener('change', () => { this.env.build(); this.vfx.setTheme(this.theme); this.syncVfxFlag(); });
     const params = new URLSearchParams(location.search);
     const seed = params.has('seed') ? Number(params.get('seed')) : undefined;
     this.newGame(seed);
+    if (params.has('vfxlab')) import('./vfx-lab.js').then((m) => m.openVfxLab(this)).catch(() => {});
   }
 
   later(fn, ms) { const id = setTimeout(() => { this.timers.delete(id); fn(); }, ms); this.timers.add(id); return id; }
@@ -71,21 +75,24 @@ export class App {
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme.vars['--bg']);
     this.boardView.setTheme(theme);
-    if (this.vfx) this.vfx.warm(theme);
+    if (this.vfx) { this.vfx.warm(theme); this.vfx.setTheme(theme); this.syncVfxFlag(); }
     this.boardView.render(this.game.cells);
     this.renderTray(true);
     this.env.set(theme.env, this.settings.get('animBg'));
     this.audio.setKit(theme.sound);
     if (this.demo) this.demo.setTheme(theme);
     if (this.input) this.input.refreshAim();
+    this.layout();
   }
 
   // ---------- layout ----------
   layout() {
     const area = $('board-area');
     const w = area.clientWidth; const h = area.clientHeight;
-    const size = Math.max(200, Math.floor(Math.min(w, h, 560)));
-    document.documentElement.style.setProperty('--bsize', size + 'px');
+    // A theme can frame its board (Dreamware's media player) and ask for a smaller board to leave room.
+    const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--board-scale')) || 1;
+    const size = Math.max(200, Math.floor(Math.min(w * scale, h * scale, 560)));
+    if (size !== this.lastBoardSize) document.documentElement.style.setProperty('--bsize', size + 'px');
     const trayW = this.trayEl.clientWidth || size;
     const boardCell = size / 8.4;
     const tcs = Math.min(boardCell * 0.62, (trayW / 3 - 16) / 5.2);
@@ -161,9 +168,30 @@ export class App {
       this.effects.streakEnd(move.prevCombo);
     }
     this.renderStreak(move);
+    // Score milestones: every 1,000 in Classic, every 2,500 in Blast and Flow.
+    const every = move.arcade ? 2500 : 1000;
+    if (Math.floor(move.score / every) > Math.floor((move.score - move.points) / every)) this.vfx.milestone({ n: Math.floor(move.score / every), every });
+    // The environment warms with clears and relaxes slowly; it never drops below its normal look.
+    if (move.lines) this.warmEnv(0.1 * move.lines + 0.04 * Math.min(move.combo, 6));
     if (this.themes.handleMove(move)) {
       this.later(() => this.toast('Theme: ' + this.theme.name), 600);
       this.refreshThemeList();
+    }
+  }
+
+  syncVfxFlag() {
+    document.documentElement.classList.toggle('vfx-on', !!(this.settings.get('vfx') && !this.reducedMotion()));
+  }
+
+  warmEnv(add) {
+    this.heat = Math.min(1, this.heat + add);
+    const apply = () => { const env = $('env'); if (env) env.style.setProperty('--heat', this.heat.toFixed(3)); };
+    apply();
+    if (!this.heatTimer) {
+      this.heatTimer = setInterval(() => {
+        this.heat *= 0.96; apply();
+        if (this.heat < 0.01) { this.heat = 0; apply(); clearInterval(this.heatTimer); this.heatTimer = null; }
+      }, 1000);
     }
   }
 
@@ -311,7 +339,8 @@ export class App {
 
     $('opt-auto').addEventListener('change', (e) => this.settings.set('autoSwitch', e.target.checked));
     $('opt-bg').addEventListener('change', (e) => { this.settings.set('animBg', e.target.checked); this.env.set(this.theme.env, e.target.checked); });
-    $('opt-vfx').addEventListener('change', (e) => { this.settings.set('vfx', e.target.checked); if (!e.target.checked) { this.vfx.reset(); if (this.demo) this.demo.vfx.reset(); } });
+    $('opt-vfx').addEventListener('change', (e) => { this.settings.set('vfx', e.target.checked); this.vfx.setTheme(this.theme); this.syncVfxFlag(); $('opt-vfx-level').disabled = !e.target.checked; if (!e.target.checked && this.demo) this.demo.vfx.reset(); });
+    $('opt-vfx-level').addEventListener('input', (e) => { this.settings.set('vfxLevel', e.target.value / 100); $('vfx-level-out').textContent = e.target.value + '%'; });
 
     // Sound
     $('opt-sound').addEventListener('change', (e) => { this.audio.setEnabled(e.target.checked); if (e.target.checked) this.audio.play('ui'); });
@@ -351,6 +380,9 @@ export class App {
     $('opt-auto').checked = this.settings.get('autoSwitch');
     $('opt-bg').checked = this.settings.get('animBg');
     $('opt-vfx').checked = this.settings.get('vfx');
+    $('opt-vfx-level').value = String(Math.round(this.settings.get('vfxLevel') * 100));
+    $('vfx-level-out').textContent = Math.round(this.settings.get('vfxLevel') * 100) + '%';
+    $('opt-vfx-level').disabled = !this.settings.get('vfx');
     const s = this.settings.get('sound');
     $('opt-sound').checked = s.enabled;
     $('opt-volume').value = String(Math.round(s.volume * 100));
@@ -400,8 +432,8 @@ class EffectsDemo {
   constructor(app) {
     this.app = app;
     this.view = new BoardView($('demo-board'));
-    this.fx = new Effects({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion, canvasParticles: () => app.settings.get('vfx') && !app.reducedMotion() });
-    this.vfx = new Vfx({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion, enabled: () => app.settings.get('vfx') });
+    this.vfx = new Vfx({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion, enabled: () => app.settings.get('vfx'), level: () => app.settings.get('vfxLevel') });
+    this.fx = new Effects({ layer: $('demo-fx'), board: this.view, getTheme: () => this.theme, reducedMotion: app.reducedMotion, canvasParticles: () => app.settings.get('vfx') && !app.reducedMotion(), canvasGhosts: () => app.settings.get('vfx') && !app.reducedMotion() && this.vfx.hasChoreo() });
     this.cells = new Uint8Array(CELLS);
     this.timers = [];
   }

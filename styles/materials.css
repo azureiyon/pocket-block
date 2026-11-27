@@ -32,17 +32,22 @@
 .m-circuit[data-c="2"] > i, .m-circuit[data-c="5"] > i { transform: scaleX(-1); }
 .m-circuit[data-c="3"] > i, .m-circuit[data-c="6"] > i { transform: rotate(90deg); }
 
-/* 3 Jelly Pop — translucent gel */
+/* 3 Jelly Pop — glossy jelly candy (matched to the Candy Ballet dancers,
+   src/ui/vfx-jelly/jelly-art.js jellyBlock): clean tone ramp, inner top light,
+   a hard tilted gloss, a small round highlight and a soft coloured shadow. */
 .m-gel {
   border-radius: 34%;
   background:
-    radial-gradient(circle at 30% 26%, rgba(255,255,255,.9) 0 10%, rgba(255,255,255,0) 26%),
-    radial-gradient(circle at 50% 115%, rgba(0,0,0,.16), transparent 62%),
-    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0)), var(--c);
-  opacity: .93;
-  box-shadow: inset 0 -4px 6px rgba(0,0,0,.12), inset 0 3px 6px rgba(255,255,255,.55), 0 3px 6px rgba(160,60,90,.12);
+    radial-gradient(circle at 75% 75%, rgba(255,255,255,.55) 0 8.5%, transparent 9.5%),
+    linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,0) 40%),
+    linear-gradient(180deg, color-mix(in srgb, var(--c) 78%, #fff), var(--c) 55%, color-mix(in srgb, var(--c) 86%, #7a3a55));
+  box-shadow: 0 calc(var(--bsize, 300px) * .008) 0 rgba(192,80,122,.18);
 }
-.m-gel > i { inset: auto 16% 14% auto; width: 18%; height: 18%; border-radius: 50%; background: rgba(255,255,255,.55); }
+.m-gel::before {
+  content: ""; left: 18%; top: 19.5%; width: 24%; height: 15%; border-radius: 50%;
+  background: rgba(255,255,255,.9); transform: rotate(-31.5deg);
+}
+.m-gel > i { display: none; }
 
 /* 4 Cloud Palace — iridescent pearl cushions with gilt piping */
 .m-pearl {
@@ -51,7 +56,7 @@
     radial-gradient(circle at 34% 28%, #fff 0 9%, rgba(255,255,255,0) 44%),
     conic-gradient(from 210deg at 60% 60%, rgba(255,190,235,.55), rgba(190,225,255,.55), rgba(255,250,200,.55), rgba(220,200,255,.55), rgba(255,190,235,.55)),
     var(--c);
-  box-shadow: inset 0 0 0 1.5px rgba(212,176,98,.95), inset 0 -3px 5px rgba(120,90,140,.2), 0 2px 5px rgba(150,120,170,.25);
+  box-shadow: inset 0 0 0 1.5px rgba(212,176,98,.95), inset 0 -3px 5px rgba(120,90,140,.25), 0 2px 5px rgba(8,4,30,.4);
 }
 .m-pearl > i { inset: 43%; border-radius: 50%; background: radial-gradient(circle, #fff3c4, #c9a24b); box-shadow: 0 0 0 1px rgba(255,255,255,.6); }
 
@@ -191,13 +196,18 @@
 
 /* 13 Dreamware 2004 — glossy aqua glass */
 .m-aero {
-  border-radius: 24%;
+  border-radius: 22%; overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.78) 0 42%, rgba(255,255,255,.12) 44%, rgba(255,255,255,0) 70%, rgba(255,255,255,.4)),
-    var(--c);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.85), inset 0 -4px 8px rgba(0,60,100,.28), 0 3px 8px rgba(0,90,140,.28);
+    radial-gradient(circle at 28% 66%, rgba(255,255,255,.95) 0 4%, rgba(255,255,255,0) 6%),
+    radial-gradient(circle at 62% 40%, rgba(255,255,255,.9) 0 3%, rgba(255,255,255,0) 5%),
+    radial-gradient(circle at 74% 72%, rgba(255,255,255,.85) 0 5%, rgba(255,255,255,.2) 6.5%, rgba(255,255,255,0) 8%),
+    radial-gradient(circle at 44% 82%, rgba(255,255,255,.8) 0 2.5%, rgba(255,255,255,0) 4%),
+    linear-gradient(160deg, rgba(255,255,255,.75) 0 22%, rgba(255,255,255,.08) 34%, rgba(255,255,255,0) 60%, rgba(255,255,255,.25) 100%),
+    linear-gradient(180deg, color-mix(in srgb, var(--c) 45%, #fff) 0%, color-mix(in srgb, var(--c) 78%, transparent) 55%, color-mix(in srgb, var(--c) 95%, #036) 100%);
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.9), inset 0 0 0 3px color-mix(in srgb, var(--c) 40%, rgba(255,140,255,.25)), inset 0 -3px 6px rgba(0,50,90,.25), 0 2px 5px rgba(0,60,110,.3);
 }
-.m-aero > i { inset: 8% 50% 70% 12%; border-radius: 50%; background: rgba(255,255,255,.95); filter: blur(.5px); }
+.m-aero > i { inset: 7% 10% 60% 10%; border-radius: 40% 40% 50% 50% / 60% 60% 40% 40%; background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,0)); }
+.m-aero::after { content: ""; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 40%, rgba(255,170,240,.28) 48%, rgba(170,255,240,.3) 54%, transparent 62%); }
 
 /* 14 Mahjong Parlor — polished ivory tiles with jade backs */
 .m-mahjong {
@@ -211,7 +221,7 @@
   font-family: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif; font-weight: 700; line-height: 1;
   font-size: 9px; text-shadow: 0 1px 0 rgba(255,255,255,.7);
 }
-.cell .m-mahjong > i, .clear-ghost.m-mahjong > i { font-size: calc(var(--bsize) * 0.058); }
+.cell .m-mahjong > i, .clear-ghost.m-mahjong > i, .vfx-ghost.m-mahjong > i { font-size: calc(var(--bsize) * 0.058); }
 .piece .m-mahjong > i { font-size: calc(var(--tcs) * 0.6); }
 .m-mahjong[data-mark="dots"] > i {
   background:
@@ -229,12 +239,12 @@
 .m-mahjong[data-mark="dragon"] > i { color: #b8322a; }
 
 /* ---------- theme board framing ---------- */
-[data-theme="pastel"] .board { background-image: linear-gradient(rgba(200,170,130,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(200,170,130,.12) 1px, transparent 1px); background-size: 12px 12px; }
+[data-theme="pastel"] .board { box-shadow: inset 0 0 0 1px #1b1a33, 0 12px 34px rgba(0,0,0,.55); }
 [data-theme="neon"] .board { box-shadow: 0 0 0 2px #7a4dff, 0 0 26px rgba(122,77,255,.55), inset 0 0 30px rgba(40,225,255,.12); }
 [data-theme="neon"] .cell { box-shadow: inset 0 0 0 1px rgba(40,225,255,.16); }
 [data-theme="jelly"] .board { border-radius: calc(var(--bsize) * 0.08); box-shadow: inset 0 0 0 3px #ffb0c8, 0 8px 0 #ffb0c8, 0 16px 30px rgba(255,110,145,.25); }
 [data-theme="jelly"] .cell { border-radius: 36%; }
-[data-theme="cloud"] .board { box-shadow: inset 0 0 0 2px #fff6dc, 0 0 0 3px #d4b062, 0 0 0 6px #fff4d6, 0 0 0 7px #c9a24b, 0 14px 34px rgba(160,130,190,.3); }
+[data-theme="cloud"] .board { box-shadow: inset 0 0 0 1px rgba(255,236,190,.14), 0 0 0 2px #d4b062, 0 0 0 5px #2f2759, 0 0 0 6px #a8873f, 0 16px 40px rgba(8,4,30,.55); }
 [data-theme="cloud"] .cell { border-radius: 40%; }
 [data-theme="soda"] .board { box-shadow: 0 0 0 4px #e8394d, 0 0 0 8px #fffaf0, 0 0 0 10px #e8394d, 0 14px 26px rgba(160,40,50,.2); }
 [data-theme="steam"] .board { background: repeating-linear-gradient(90deg, rgba(255,255,255,.03) 0 2px, transparent 2px 5px), #4a3a28; box-shadow: 0 0 0 4px #a07a3c, 0 0 0 6px #6b4e22, 0 0 0 8px #c9a14e, 0 12px 26px rgba(40,25,10,.4); }
@@ -248,7 +258,26 @@
 [data-theme="toybox"] .board { background: repeating-linear-gradient(95deg, rgba(0,0,0,0) 0 6px, rgba(90,50,10,.07) 6px 8px), #c99a62; box-shadow: 0 0 0 5px #8f6436, 0 0 0 9px #f2b134, 0 7px 0 9px #b97f20, 0 16px 28px rgba(90,60,20,.3); }
 [data-theme="glass"] .board { background: #141215; box-shadow: 0 0 0 5px #3a3a3e, 0 0 0 7px #1a1a1c, 0 14px 30px rgba(0,0,0,.6); }
 [data-theme="glass"] .cell { border-radius: 4%; box-shadow: inset 0 0 0 1px #0d0c0e; }
-[data-theme="aero"] .board { background: rgba(255,255,255,.4); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 0 0 1.5px rgba(134,205,240,.9), 0 12px 30px rgba(0,100,160,.2); }
+/* Dreamware 2004: the board is the screen of a glossy media player (title bar above, seek bar and chrome buttons below). */
+[data-theme="aero"] { --board-scale: .87; }
+[data-theme="aero"] .board-area { max-height: calc(var(--bsize) * 1.3 + 34px); }
+[data-theme="aero"] #board-wrap { transform: translateY(calc(var(--bsize) * -0.035)); }
+[data-theme="aero"] .board { background: linear-gradient(180deg, #bfe7ff, #eafbff); border-radius: calc(var(--bsize) * 0.03); box-shadow: inset 0 0 0 1.5px #6fb7ea, inset 0 2px 8px rgba(0,80,160,.25); }
+[data-theme="aero"] .cell { box-shadow: inset 0 1px 2px rgba(0,90,170,.2); }
+[data-theme="aero"] #board-wrap::before { content: ""; position: absolute; z-index: -1; inset: calc(var(--bsize) * -0.085) calc(var(--bsize) * -0.035) calc(var(--bsize) * -0.155); border-radius: calc(var(--bsize) * 0.055);
+  background:
+    radial-gradient(circle at calc(100% - var(--bsize) * 0.05) calc(var(--bsize) * 0.042), #ff9a8a 0 calc(var(--bsize) * 0.018), #e0402f calc(var(--bsize) * 0.022), transparent calc(var(--bsize) * 0.024)),
+    radial-gradient(circle at calc(100% - var(--bsize) * 0.105) calc(var(--bsize) * 0.042), #bfe6ff 0 calc(var(--bsize) * 0.018), #2f7fe0 calc(var(--bsize) * 0.022), transparent calc(var(--bsize) * 0.024)),
+    linear-gradient(90deg, #4cc85a 0 38%, transparent 38%) calc(var(--bsize) * 0.045) calc(100% - var(--bsize) * 0.095) / calc(100% - var(--bsize) * 0.09) calc(var(--bsize) * 0.016) no-repeat,
+    linear-gradient(180deg, #fff, #cfe9f7) calc(var(--bsize) * 0.045) calc(100% - var(--bsize) * 0.095) / calc(100% - var(--bsize) * 0.09) calc(var(--bsize) * 0.016) no-repeat,
+    radial-gradient(circle, #fff 0 45%, #cfe6f6 62%, #7fbde6 66%, transparent 70%) calc(var(--bsize) * 0.04) calc(100% - var(--bsize) * 0.018) / calc(var(--bsize) * 0.06) calc(var(--bsize) * 0.06) no-repeat,
+    radial-gradient(circle, #fff 0 45%, #cfe6f6 62%, #7fbde6 66%, transparent 70%) calc(var(--bsize) * 0.115) calc(100% - var(--bsize) * 0.022) / calc(var(--bsize) * 0.045) calc(var(--bsize) * 0.045) no-repeat,
+    radial-gradient(circle, #fff 0 45%, #cfe6f6 62%, #7fbde6 66%, transparent 70%) calc(var(--bsize) * 0.17) calc(100% - var(--bsize) * 0.022) / calc(var(--bsize) * 0.045) calc(var(--bsize) * 0.045) no-repeat,
+    radial-gradient(circle, #fff 0 45%, #cfe6f6 62%, #7fbde6 66%, transparent 70%) calc(var(--bsize) * 0.225) calc(100% - var(--bsize) * 0.022) / calc(var(--bsize) * 0.045) calc(var(--bsize) * 0.045) no-repeat,
+    linear-gradient(180deg, #e9f7ff 0%, #b9e2fb 40%, #8ccdf5 100%);
+  box-shadow: inset 0 0 0 2px #fff, inset 0 -6px 12px rgba(30,110,200,.35), 0 10px 26px rgba(0,60,140,.35); }
+[data-theme="aero"] #board-wrap::after { content: "Dreamware Player"; position: absolute; z-index: -1; left: calc(var(--bsize) * 0.005); top: calc(var(--bsize) * -0.072); font: 700 calc(var(--bsize) * 0.034) "Trebuchet MS", "Segoe UI", sans-serif; color: #1d5fae; text-shadow: 0 1px 0 #fff; pointer-events: none; }
+
 [data-theme="mahjong"] .board { background: radial-gradient(ellipse at 50% 40%, #2a6b4b, #1d4d36); box-shadow: inset 0 0 0 2px #c9a24b, 0 0 0 6px #7a2a1a, 0 0 0 8px #3e120c, 0 0 0 9px #c9a24b, 0 14px 30px rgba(0,0,0,.5); }
 [data-theme="mahjong"] .cell { border-radius: 10%; box-shadow: inset 0 1px 3px rgba(0,0,0,.35); }
 
@@ -258,7 +287,10 @@
 [data-theme="mahjong"] .slot, [data-theme="mahjong"] .icon-btn { background: linear-gradient(180deg, #5a1f18, #3a1410); box-shadow: inset 0 0 0 1.5px #c9a24b; }
 [data-theme="mahjong"] .icon-btn svg { fill: #e8c46a; }
 [data-theme="mahjong"] .modal, [data-theme="mahjong"] .sheet { background: #43181290; background: #3f1611; }
-[data-theme="aero"] .slot, [data-theme="aero"] .icon-btn { background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(220,245,255,.75)); }
+[data-theme="aero"] .slot, [data-theme="aero"] .icon-btn { background: linear-gradient(180deg, #fff, #cdeafb); box-shadow: inset 0 0 0 1.5px #fff, 0 0 0 1px #7fbde6, 0 3px 8px rgba(0,70,150,.3); }
+[data-theme="aero"] .scores { color: #fff; text-shadow: 0 1px 3px rgba(0,50,120,.55); }
+[data-theme="aero"] .scores .lbl { color: rgba(255,255,255,.92); }
+[data-theme="aero"] #tray-title, [data-theme="aero"] #tray-left { text-shadow: 0 1px 0 rgba(255,255,255,.8); }
 [data-theme="patisserie"] .slot { background: repeating-linear-gradient(45deg, #fff 0 6px, #fff3f6 6px 12px); }
 
 /* =====================================================================
@@ -355,7 +387,7 @@
   inset: 0; display: grid; place-items: center; color: var(--c); line-height: 1;
   font-family: "Apple Symbols", "Segoe UI Symbol", "Baskerville", serif; font-weight: 700; font-size: 10px;
 }
-.cell .m-card > i, .clear-ghost.m-card > i { font-size: calc(var(--bsize) * 0.072); }
+.cell .m-card > i, .clear-ghost.m-card > i, .vfx-ghost.m-card > i { font-size: calc(var(--bsize) * 0.072); }
 .piece .m-card > i { font-size: calc(var(--tcs) * 0.72); }
 .m-card::after {
   content: ""; inset: 0; border-radius: inherit;
@@ -408,7 +440,7 @@
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 1px 0 rgba(0,0,0,.8));
 }
-.cell .m-foil > i, .clear-ghost.m-foil > i { font-size: calc(var(--bsize) * 0.07); }
+.cell .m-foil > i, .clear-ghost.m-foil > i, .vfx-ghost.m-foil > i { font-size: calc(var(--bsize) * 0.07); }
 .piece .m-foil > i { font-size: calc(var(--tcs) * 0.7); }
 .m-foil[data-c="3"] {
   border-radius: 42% 46% 40% 48%;
@@ -554,7 +586,7 @@
     linear-gradient(var(--b), var(--b)) 100% 100% / 32% 1.5px no-repeat, linear-gradient(var(--b), var(--b)) 100% 100% / 1.5px 32% no-repeat;
 }
 .m-scan > i { inset: 0; display: grid; place-items: center; line-height: 1; color: #e0241f; font: 700 9px "Helvetica Neue", Arial, sans-serif; }
-.cell .m-scan > i, .clear-ghost.m-scan > i { font-size: calc(var(--bsize) * 0.05); }
+.cell .m-scan > i, .clear-ghost.m-scan > i, .vfx-ghost.m-scan > i { font-size: calc(var(--bsize) * 0.05); }
 .piece .m-scan > i { font-size: calc(var(--tcs) * 0.55); }
 .m-scan[data-c="1"]::before { --b: #111; }
 .m-scan[data-c="1"] > i { color: #fff; }
@@ -573,7 +605,7 @@
   color: #f4f4f6; text-shadow: 0 0 6px rgba(255,255,255,.55);
   font: 400 10px "Apple Symbols", "Segoe UI Symbol", "Optima", serif;
 }
-.cell .m-monolith > i, .clear-ghost.m-monolith > i { font-size: calc(var(--bsize) * 0.06); }
+.cell .m-monolith > i, .clear-ghost.m-monolith > i, .vfx-ghost.m-monolith > i { font-size: calc(var(--bsize) * 0.06); }
 .piece .m-monolith > i { font-size: calc(var(--tcs) * 0.62); }
 .m-monolith:is([data-c="1"], [data-c="5"], [data-c="7"]) > i { color: #22232a; text-shadow: none; }
 .m-monolith::after { content: ""; left: 50%; top: 6%; bottom: 6%; width: 1px; background: linear-gradient(transparent, rgba(255,255,255,.45), transparent); }

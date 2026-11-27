@@ -1,7 +1,7 @@
 // Offline support: precache every local asset on install, serve
 // network-first (refreshing the cache) and fall back to the cache offline.
 // Bump VERSION when the asset list changes.
-const VERSION = 'pocket-blocks-v8';
+const VERSION = 'pocket-blocks-v18';
 const ASSETS = [
   './',
   'index.html',
@@ -36,6 +36,33 @@ const ASSETS = [
   'src/ui/effects.js',
   'src/ui/vfx.js',
   'src/ui/vfx-recipes.js',
+  'src/ui/vfx-kit.js',
+  'src/ui/vfx-lab.js',
+  'src/ui/vfx-choreo/index.js',
+  'src/ui/vfx-choreo/pastel.js',
+  'src/ui/vfx-choreo/jelly.js',
+  'src/ui/vfx-jelly/jelly-art.js',
+  'src/ui/vfx-jelly/ballet-kit.js',
+  'src/ui/vfx-jelly/ballet.js',
+  'src/ui/vfx-jelly/ballet-suite.js',
+  'src/ui/vfx-classic/light-kit.js',
+  'src/ui/vfx-classic/pastel-art.js',
+  'src/ui/vfx-classic/sweep.js',
+  'src/ui/vfx-classic/resonance.js',
+  'src/ui/vfx-classic/suite.js',
+  'src/ui/vfx-cloud/cloud-art.js',
+  'src/ui/vfx-cloud/dawn.js',
+  'src/ui/vfx-cloud/suite.js',
+  'src/ui/vfx-neon/neon-art.js',
+  'src/ui/vfx-neon/crt.js',
+  'src/ui/vfx-neon/derez.js',
+  'src/ui/vfx-neon/suite.js',
+  'src/ui/vfx-choreo/neon.js',
+  'src/ui/vfx-choreo/reel.js',
+  'src/ui/vfx-reel/reel-fx.js',
+  'src/ui/vfx-choreo/cloud.js',
+  'src/ui/vfx-choreo/soda.js',
+  'src/ui/vfx-choreo/patisserie.js',
   'src/ui/environments.js',
   'icons/icon.svg',
   'icons/icon-180.png',

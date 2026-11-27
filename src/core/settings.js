@@ -13,6 +13,7 @@ export const DEFAULTS = {
   autoSwitch: false,
   animBg: true,
   vfx: true,
+  vfxLevel: 1,
   sound: { enabled: true, volume: 0.7 },
   opening: { mode: 'random', variant: 'any' },
 };
@@ -26,6 +27,7 @@ const VALIDATORS = {
   autoSwitch: (v) => (typeof v === 'boolean' ? v : undefined),
   animBg: (v) => (typeof v === 'boolean' ? v : undefined),
   vfx: (v) => (typeof v === 'boolean' ? v : undefined),
+  vfxLevel: (v) => (Number.isFinite(v) ? Math.min(1, Math.max(0.25, v)) : undefined),
   sound: (v) => (v && typeof v === 'object' && typeof v.enabled === 'boolean' && Number.isFinite(v.volume)
     ? { enabled: v.enabled, volume: Math.min(1, Math.max(0, v.volume)) } : undefined),
   opening: (v) => (v && ['off', 'random', 'always'].includes(v.mode) && typeof v.variant === 'string'

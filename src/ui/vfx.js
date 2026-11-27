@@ -20,13 +20,22 @@
 // and a full board clear brings everything.
 
 import { getRecipe } from './vfx-recipes.js';
+import { getChoreo } from './vfx-choreo/index.js';
 
 export const MAX_VFX_PARTICLES = 520;
 const SPRITE = 64;
 const TAU = Math.PI * 2;
-const R = (a, b) => a + Math.random() * (b - a);
+// Seedable randomness so the VFX lab can replay an effect identically.
+let rnd = Math.random;
+export function seedVfx(seed) {
+  if (seed === null || seed === undefined) { rnd = Math.random; return; }
+  let a = seed >>> 0;
+  rnd = () => { a = (a + 0x6d2b79f5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+export const random = () => rnd();
+const R = (a, b) => a + rnd() * (b - a);
 const ease = (t) => 1 - Math.pow(1 - t, 3);
-const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const pick = (arr) => arr[Math.floor(rnd() * arr.length)];
 
 // ---------- sprites ----------
 
@@ -39,14 +48,24 @@ function star(ctx, cx, cy, points, r0, r1, rot = -Math.PI / 2) {
   ctx.closePath();
 }
 
+/** The same colour at zero alpha. Fading to transparent *black* turns glows grey on light backgrounds. */
+export function clearOf(color) {
+  if (color[0] !== '#') return 'rgba(255,255,255,0)';
+  const h = color.length === 4 ? color.slice(1).split('').map((c) => c + c).join('') : color.slice(1, 7);
+  const n = parseInt(h, 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},0)`;
+}
+
 function glowDisc(ctx, color, r = 30, core = 0.15) {
   const g = ctx.createRadialGradient(32, 32, 0, 32, 32, r);
-  g.addColorStop(0, '#ffffff'); g.addColorStop(core, color); g.addColorStop(1, 'rgba(0,0,0,0)');
+  g.addColorStop(0, '#ffffff'); g.addColorStop(core, color); g.addColorStop(1, clearOf(color));
   ctx.fillStyle = g; ctx.fillRect(0, 0, SPRITE, SPRITE);
 }
 
 const SPRITES = {
   glow(ctx, c) { glowDisc(ctx, c, 30, 0.12); },
+  // Soft cloud puff: a dense body that only feathers at the edge.
+  puff(ctx, c) { const g = ctx.createRadialGradient(32, 32, 0, 32, 32, 30); g.addColorStop(0, '#ffffff'); g.addColorStop(0.45, c); g.addColorStop(0.7, c.length === 7 ? c + '99' : c); g.addColorStop(1, clearOf(c)); ctx.fillStyle = g; ctx.fillRect(0, 0, SPRITE, SPRITE); },
   ember(ctx, c) { glowDisc(ctx, c, 18, 0.3); },
   star4(ctx, c) { glowDisc(ctx, c, 22, 0.05); ctx.globalAlpha = 1; star(ctx, 32, 32, 4, 30, 3.5); ctx.fillStyle = '#ffffff'; ctx.fill(); },
   star5(ctx, c) { glowDisc(ctx, c, 26, 0.2); star(ctx, 32, 32, 5, 20, 9); ctx.fillStyle = c; ctx.fill(); star(ctx, 32, 32, 5, 10, 4.5); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fill(); },
@@ -67,14 +86,45 @@ export const SPRITE_KINDS = Object.keys(SPRITES);
 // ---------- engine ----------
 
 export class Vfx {
-  constructor({ layer, board, getTheme, reducedMotion = () => false, enabled = () => true, doc = typeof document !== 'undefined' ? document : null, raf, now } = {}) {
+  constructor({ layer, board, getTheme, reducedMotion = () => false, enabled = () => true, doc = typeof document !== 'undefined' ? document : null, raf, now, level } = {}) {
     this.layer = layer; this.board = board; this.getTheme = getTheme;
     this.reducedMotion = reducedMotion; this.enabledFn = enabled; this.doc = doc;
     this.raf = raf || ((fn) => requestAnimationFrame(fn));
     this.now = now || (() => performance.now());
     this.items = []; this.particles = []; this.sprites = new Map();
     this.running = false; this.canvas = null; this.ctx = null; this.pad = 0; this.dpr = 1;
+    this.time = 0; this.lastReal = 0; this.timeScale = 1;
+    this.levelFn = level || (() => 1);
+    this.back = null; this.backCtx = null;
+    this.timers = new Set(); this.cleanups = new Set(); this.idleStop = null; this.state = {};
   }
+
+  /** Effect intensity 0.25..1 (Settings), scales counts and brightness. */
+  get level() { return Math.min(1, Math.max(0.25, this.levelFn())); }
+  choreo() { return getChoreo(this.getTheme() && this.getTheme().id); }
+  hasChoreo() { return !!this.choreo(); }
+  r(a, b) { return R(a, b); }
+
+  /** Theme switch: tear down every emitter, timer and DOM class, then start the new theme's idle life. */
+  setTheme() {
+    this.teardown();
+    if (!this.active) return;
+    const ch = this.choreo();
+    if (ch && ch.idle) this.idleStop = ch.idle(this) || null;
+  }
+  teardown() {
+    if (this.idleStop) { try { this.idleStop(); } catch (e) { /* ignore */ } this.idleStop = null; }
+    for (const id of this.timers) clearTimeout(id);
+    this.timers.clear();
+    for (const fn of this.cleanups) { try { fn(); } catch (e) { /* ignore */ } }
+    this.cleanups.clear();
+    this.state = {};
+    this.reset();
+  }
+  /** setTimeout that is cancelled on theme switch or reset. */
+  later(fn, ms) { const id = setTimeout(() => { this.timers.delete(id); fn(); }, ms); this.timers.add(id); return id; }
+  /** Register DOM cleanup (removing classes) for theme switches. */
+  onCleanup(fn) { this.cleanups.add(fn); return () => this.cleanups.delete(fn); }
 
   get active() { return !!(this.enabledFn() && !this.reducedMotion() && this.doc); }
 
@@ -86,16 +136,37 @@ export class Vfx {
       this.ctx = this.canvas.getContext('2d');
     }
     const w = this.layer.clientWidth || 300; const h = this.layer.clientHeight || 300;
-    const pad = Math.round(Math.max(w, h) * 0.16);
+    // Themes whose choreography travels far off the board ask for a deeper margin.
+    const ch = this.choreo();
+    const pad = Math.round(Math.max(w, h) * ((ch && ch.pad) || 0.16));
     // Glows are soft, so 1.5x is plenty and saves ~45% of the fill work on 3x phones.
     const dpr = Math.min(1.5, (typeof window !== 'undefined' && window.devicePixelRatio) || 1);
-    const key = w + 'x' + h + '@' + dpr;
+    const key = w + 'x' + h + '@' + dpr + '+' + pad;
     if (key !== this.sizeKey) {
       this.sizeKey = key; this.pad = pad; this.dpr = dpr; this.w = w; this.h = h;
       Object.assign(this.canvas.style, { left: -pad + 'px', top: -pad + 'px', width: w + pad * 2 + 'px', height: h + pad * 2 + 'px' });
       this.canvas.width = Math.round((w + pad * 2) * dpr); this.canvas.height = Math.round((h + pad * 2) * dpr);
     }
     return this.ctx;
+  }
+
+  /** Second canvas behind the board, for scenery that should sit behind it. */
+  ensureBack() {
+    this.ensureCanvas();
+    if (!this.back) {
+      this.back = this.doc.createElement('canvas');
+      this.back.className = 'vfx back';
+      const host = this.layer.parentNode || this.layer;
+      if (host.insertBefore) host.insertBefore(this.back, host.firstChild); else if (host.prepend) host.prepend(this.back);
+      this.backCtx = this.back.getContext('2d');
+      this.backKey = null;
+    }
+    if (this.backKey !== this.sizeKey) {
+      this.backKey = this.sizeKey;
+      Object.assign(this.back.style, { left: -this.pad + 'px', top: -this.pad + 'px', width: this.w + this.pad * 2 + 'px', height: this.h + this.pad * 2 + 'px' });
+      this.back.width = this.canvas.width; this.back.height = this.canvas.height;
+    }
+    return this.backCtx;
   }
 
   sprite(kind, color) {
@@ -118,7 +189,7 @@ export class Vfx {
       s = this.doc.createElement('canvas'); s.width = 32; s.height = 256;
       const c = s.getContext('2d');
       const gx = c.createLinearGradient(0, 0, 32, 0);
-      gx.addColorStop(0, 'rgba(0,0,0,0)'); gx.addColorStop(0.32, color); gx.addColorStop(0.5, '#ffffff'); gx.addColorStop(0.68, color); gx.addColorStop(1, 'rgba(0,0,0,0)');
+      gx.addColorStop(0, clearOf(color)); gx.addColorStop(0.32, color); gx.addColorStop(0.5, '#ffffff'); gx.addColorStop(0.68, color); gx.addColorStop(1, clearOf(color));
       c.fillStyle = gx; c.fillRect(0, 0, 32, 256);
       c.globalCompositeOperation = 'destination-in';
       const gy = c.createLinearGradient(0, 0, 0, 256);
@@ -135,7 +206,8 @@ export class Vfx {
   boardCenter() { const a = this.cell(0); const z = this.cell(63); return { x: (a.x + z.x) / 2, y: (a.y + z.y) / 2, s: a.s, size: z.x - a.x + a.s }; }
 
   add(item) {
-    item.t0 = this.now() + (item.delay || 0);
+    if (item.back) this.ensureBack();
+    item.t0 = this.time + (item.delay || 0);
     const th = this.getTheme(); item.lw = th && th.dark ? 1 : 1.7;
     this.items.push(item);
     this.start();
@@ -143,25 +215,32 @@ export class Vfx {
 
   start() {
     if (this.running) return;
-    this.running = true; this.last = this.now();
+    this.running = true; this.lastReal = this.now();
     this.raf((t) => this.frame(t));
   }
 
   /** Remove everything on screen (restart, setting turned off). */
   reset() {
     this.items = []; this.particles = [];
-    if (this.ctx && this.canvas) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    if (this.ctx && this.canvas) { this.ctx.setTransform(1, 0, 0, 1, 0, 0); this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); }
+    if (this.backCtx && this.back) { this.backCtx.setTransform(1, 0, 0, 1, 0, 0); this.backCtx.clearRect(0, 0, this.back.width, this.back.height); }
   }
 
   frame() {
-    const now = this.now();
+    const real = this.now();
+    const step = Math.min(50, real - this.lastReal) * this.timeScale; this.lastReal = real;
+    this.time += step;
+    const now = this.time;
     const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
-    const dt = Math.min(0.05, (now - this.last) / 1000); this.last = now;
+    const dt = step / 1000;
     const ctx = this.ctx;
     if (!ctx) { this.running = false; return; }
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    const bctx = this.backCtx;
+    if (bctx) { bctx.setTransform(1, 0, 0, 1, 0, 0); bctx.clearRect(0, 0, this.back.width, this.back.height); bctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0); }
+    this.dt = dt; this.now_ = now;
     const theme = this.getTheme();
     const blend = theme && theme.dark ? 'lighter' : 'source-over';
     // Light backgrounds swallow thin glows: heavier lines there.
@@ -173,9 +252,10 @@ export class Vfx {
       if (age < 0) { keep.push(it); continue; }
       const p = age / it.life;
       if (p >= 1) continue;
-      ctx.save(); ctx.globalCompositeOperation = it.blend || blend;
-      DRAW[it.type](ctx, it, p, this);
-      ctx.restore();
+      const c = it.back && bctx ? bctx : ctx;
+      c.save(); c.globalCompositeOperation = it.blend || blend;
+      (it.draw || DRAW[it.type])(c, it, p, this, age);
+      c.restore();
       keep.push(it);
     }
     this.items = keep;
@@ -187,6 +267,7 @@ export class Vfx {
       q.age += dt;
       const p = q.age / q.life;
       if (p >= 1) continue;
+      if (q.curl) { const ca = q.curl * dt; const cx = q.vx; q.vx = cx * Math.cos(ca) - q.vy * Math.sin(ca); q.vy = cx * Math.sin(ca) + q.vy * Math.cos(ca); }
       q.vx *= q.drag; q.vy = q.vy * q.drag + q.g * dt;
       q.x += q.vx * dt + (q.wob ? Math.cos(q.age * 9 + q.phase) * q.wob * dt : 0); q.y += q.vy * dt;
       q.rot += q.vr * dt;
@@ -213,13 +294,13 @@ export class Vfx {
     ctx.globalAlpha = 1;
     if (typeof performance !== 'undefined') this.cost = performance.now() - t0; // draw time of the last frame (ms)
     if (this.items.length || this.particles.length) this.raf((t) => this.frame(t));
-    else { this.running = false; ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, this.canvas.width, this.canvas.height); }
+    else { this.running = false; this.reset(); }
   }
 
   // ----- primitives -----
   burst(x, y, o) {
-    const n = Math.min(o.n || 12, MAX_VFX_PARTICLES - this.particles.length);
-    const t = this.now() + (o.delay || 0);
+    const n = Math.min(Math.round((o.n || 12) * (o.exact ? 1 : this.level)), MAX_VFX_PARTICLES - this.particles.length);
+    const t = this.time + (o.delay || 0);
     for (let k = 0; k < n; k++) {
       const a = o.angle !== undefined ? o.angle + R(-(o.spread || 0.5), o.spread || 0.5) : R(0, TAU);
       const sp = R(o.speed[0], o.speed[1]);
@@ -228,9 +309,9 @@ export class Vfx {
         x: x + R(-(o.jitter || 0), o.jitter || 0), y: y + R(-(o.jitter || 0), o.jitter || 0),
         vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, g: o.g || 0, drag: o.drag || 0.94,
         life: R(o.life[0], o.life[1]), age: 0, born: t + R(0, o.stagger || 0),
-        size: R(o.size[0], o.size[1]), size1: o.shrink === false ? R(o.size[0], o.size[1]) : R(o.size[0], o.size[1]) * 0.3,
+        size: R(o.size[0], o.size[1]), size1: o.grow ? R(o.size[0], o.size[1]) * o.grow : o.shrink === false ? R(o.size[0], o.size[1]) : R(o.size[0], o.size[1]) * 0.3,
         rot: o.spin ? R(0, TAU) : 0, vr: o.spin ? R(-o.spin, o.spin) : 0, wob: o.wob || 0, phase: R(0, TAU),
-        img: this.sprite(o.sprite, color), color, alpha: o.alpha || 1, trail: o.trail ? [] : null,
+        img: this.sprite(o.sprite, color), color, alpha: o.alpha || 1, trail: o.trail ? [] : null, curl: o.curl ? R(o.curl * 0.6, o.curl) * (rnd() < 0.5 ? -1 : 1) : 0,
       });
     }
   }
@@ -254,8 +335,18 @@ export class Vfx {
     for (const c of r.colors) { this.sprite(r.sprite, c); this.sprite(r.sprite2 || r.sprite, c); this.sprite('star4', c); this.pillarSprite(c); }
   }
 
+  /** Run a theme's own routine for an event when it has one. */
+  delegate(name, ...args) {
+    const ch = this.choreo();
+    if (!ch || !ch[name]) return false;
+    this.ensureCanvas();
+    ch[name](this, ...args, this.getTheme());
+    return true;
+  }
+
   place(move) {
     if (!this.active || !move.placed || !move.placed.length) return;
+    if (this.delegate('place', move)) return;
     this.ensureCanvas();
     const r = this.recipe(); const c = this.centerOf(move.placed);
     this.ring(c.x, c.y, { r0: c.s * 0.4, r1: c.s * 1.6, color: r.colors[0], width: 2, life: 420 });
@@ -264,6 +355,7 @@ export class Vfx {
 
   clear(move) {
     if (!this.active || !move.lines) return;
+    if (this.delegate('clear', move)) return;
     this.ensureCanvas();
     const r = this.recipe(); const origin = this.centerOf(move.placed);
     const lines = [...move.rows.map((k) => [k * 8, k * 8 + 7]), ...move.cols.map((k) => [k, 56 + k])];
@@ -285,14 +377,32 @@ export class Vfx {
 
   combo(move) {
     if (!this.active || move.combo < 2) return;
+    if (this.delegate('streak', move)) return;
     this.ensureCanvas();
     const r = this.recipe(); const c = this.centerOf(move.placed); const k = Math.min(move.combo, 8);
     signature(this, r, r.sig, c, k, move);
     if (k >= 5) this.circle(c.x, c.y, { kind: r.circle, r: c.s * 2.6, color: r.colors[1] || r.colors[0], color2: '#ffffff', life: 900, spin: -1.2, delay: 120 });
   }
 
+  /** A score milestone (every 1,000 in Classic, 2,500 in Blast and Flow). */
+  milestone(info) {
+    if (!this.active) return;
+    if (this.delegate('milestone', info)) return;
+    this.ensureCanvas();
+    const r = this.recipe(); const b = this.boardCenter();
+    this.circle(b.x, b.y, { kind: r.circle, r: b.size * 0.4, color: r.colors[0], color2: r.colors[1] || '#fff', life: 1200, spin: 0.6 });
+    this.burst(b.x, b.y, { n: 24, sprite: r.sprite, colors: r.colors, speed: [60, 200], life: [0.7, 1.1], size: [b.s * 0.3, b.s * 0.6], g: r.gravity, trail: r.trail });
+  }
+
+  /** One beat of a theme's idle life (also used by the VFX lab). */
+  idleBeat() {
+    if (!this.active) return;
+    this.delegate('idleBeat', null);
+  }
+
   allClear() {
     if (!this.active) return;
+    if (this.delegate('boardClear', null)) return;
     this.ensureCanvas();
     const r = this.recipe(); const b = this.boardCenter();
     // The theme's signature leads at full-board scale; the shared parts stay supporting.
@@ -467,7 +577,7 @@ const DRAW = {
   flash(ctx, it, p, v) {
     const cx = v.w / 2 + v.pad; const cy = v.h / 2 + v.pad; const r = Math.max(v.w, v.h) * (0.5 + p * 0.4);
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    g.addColorStop(0, it.color); g.addColorStop(1, 'rgba(0,0,0,0)');
+    g.addColorStop(0, it.color); g.addColorStop(1, clearOf(it.color));
     ctx.globalAlpha = (1 - p) * (it.blend === 'source-over' || ctx.globalCompositeOperation === 'source-over' ? 0.18 : 0.45); ctx.fillStyle = g;
     ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
   },

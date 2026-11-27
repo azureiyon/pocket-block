@@ -65,7 +65,8 @@ function keyframes(m) {
 }
 
 export class Effects {
-  constructor({ layer, board, getTheme, reducedMotion = () => false, canvasParticles = () => false }) {
+  constructor({ layer, board, getTheme, reducedMotion = () => false, canvasParticles = () => false, canvasGhosts = () => false }) {
+    this.canvasGhosts = canvasGhosts;
     this.canvasParticles = canvasParticles; // the canvas spell layer draws particles instead
     this.layer = layer;
     this.board = board; // BoardView
@@ -160,33 +161,36 @@ export class Effects {
     const theme = this.getTheme();
     const origin = this.centerOf(move.placed);
     const multi = move.lines > 1;
-    // Ghost copies of cleared blocks animate out over the live board.
-    for (const { i, color } of move.clearedCells) {
-      const b = this.board.cellBox(i, this.layer);
-      const g = makeBlock(theme, color);
-      g.classList.add('clear-ghost');
-      if (multi) g.classList.add('multi');
-      const dist = Math.hypot(b.x + b.w / 2 - origin.x, b.y + b.h / 2 - origin.y);
-      g.style.cssText += `;left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px;--delay:${Math.round(dist * 0.9)}ms`;
-      this.track(g, 900 + dist * 0.9);
+    // Themes with canvas choreography redraw cleared blocks as snapshots themselves.
+    if (!this.canvasGhosts()) {
+      // Ghost copies of cleared blocks animate out over the live board.
+      for (const { i, color } of move.clearedCells) {
+        const b = this.board.cellBox(i, this.layer);
+        const g = makeBlock(theme, color);
+        g.classList.add('clear-ghost');
+        if (multi) g.classList.add('multi');
+        const dist = Math.hypot(b.x + b.w / 2 - origin.x, b.y + b.h / 2 - origin.y);
+        g.style.cssText += `;left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px;--delay:${Math.round(dist * 0.9)}ms`;
+        this.track(g, 900 + dist * 0.9);
+      }
+      // Line sweeps.
+      const sweep = (k, vertical) => {
+        const first = vertical ? k : k * 8;
+        const last = vertical ? 56 + k : k * 8 + 7;
+        const a = this.board.cellBox(first, this.layer); const z = this.board.cellBox(last, this.layer);
+        const el = document.createElement('div');
+        el.className = 'sweep ' + (vertical ? 'v' : 'h');
+        el.style.cssText = `left:${a.x}px;top:${a.y}px;width:${z.x + z.w - a.x}px;height:${z.y + z.h - a.y}px`;
+        this.track(el, 700);
+      };
+      move.rows.forEach((r) => sweep(r, false));
+      move.cols.forEach((c) => sweep(c, true));
+      // Particles along cleared lines (bounded).
+      const colors = [...new Set(move.clearedCells.map((x) => theme.palette[(x.color - 1) % 7]))];
+      const perLine = multi ? 9 : 7;
+      const pts = [...move.rows.map((r) => r * 8 + 3), ...move.cols.map((c) => 24 + c)];
+      for (const i of pts) { const b = this.board.cellBox(i, this.layer); this.later(() => this.spawn(b.x + b.w, b.y + b.h / 2, perLine, colors), 60); }
     }
-    // Line sweeps.
-    const sweep = (k, vertical) => {
-      const first = vertical ? k : k * 8;
-      const last = vertical ? 56 + k : k * 8 + 7;
-      const a = this.board.cellBox(first, this.layer); const z = this.board.cellBox(last, this.layer);
-      const el = document.createElement('div');
-      el.className = 'sweep ' + (vertical ? 'v' : 'h');
-      el.style.cssText = `left:${a.x}px;top:${a.y}px;width:${z.x + z.w - a.x}px;height:${z.y + z.h - a.y}px`;
-      this.track(el, 700);
-    };
-    move.rows.forEach((r) => sweep(r, false));
-    move.cols.forEach((c) => sweep(c, true));
-    // Particles along cleared lines (bounded).
-    const colors = [...new Set(move.clearedCells.map((x) => theme.palette[(x.color - 1) % 7]))];
-    const perLine = multi ? 9 : 7;
-    const pts = [...move.rows.map((r) => r * 8 + 3), ...move.cols.map((c) => 24 + c)];
-    for (const i of pts) { const b = this.board.cellBox(i, this.layer); this.later(() => this.spawn(b.x + b.w, b.y + b.h / 2, perLine, colors), 60); }
     if (multi) {
       if (!move.arcade) this.label(move.lines + ' Lines!', 'multi');
       this.board.el.classList.remove('shake'); void this.board.el.offsetWidth;
@@ -237,9 +241,11 @@ export class Effects {
     const ring = document.createElement('div');
     ring.className = 'celebrate-ring';
     this.track(ring, 1400);
-    this.board.el.classList.add('celebrate');
+    // Choreographed themes stage their own finale; skip the brightness wash that would cover it.
+    if (!this.canvasGhosts()) this.board.el.classList.add('celebrate');
     this.later(() => this.board.el.classList.remove('celebrate'), 1400);
-    this.label('Board Clear!', 'allclear', null, 1700);
+    // The text would sit on top of a theme's own finale, so it only shows when canvas effects are off.
+    if (!this.canvasGhosts()) this.label('Board Clear!', 'allclear', null, 1700);
     for (let w = 0; w < 3; w++) this.later(() => this.spawn(cx + R(-60, 60), cy + R(-60, 60), 14, theme.palette), w * 160);
   }
 

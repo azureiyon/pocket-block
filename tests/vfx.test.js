@@ -64,8 +64,8 @@ test('vfx: place, clear, combo and board clear draw, then the loop stops by itse
 test('vfx: every signature runs for every theme without errors', () => {
   for (const t of THEMES) {
     const { v, run } = setup(t.id);
-    v.place(move()); v.clear(move()); v.combo(move({ combo: 8 })); v.allClear();
-    run(3000);
+    v.place(move()); v.clear(move()); v.combo(move({ combo: 8 })); v.allClear(); v.milestone({ n: 1 }); v.idleBeat();
+    run(6000);
     eq(v.running, false, t.id);
   }
 });
@@ -81,4 +81,62 @@ test('vfx: turned off (or reduced motion) means no canvas and no work', () => {
   const { v, stats, queue } = setup('witch', false);
   v.place(move()); v.clear(move()); v.combo(move()); v.allClear();
   eq([stats.canvases, queue.length, v.particles.length], [0, 0, 0]);
+});
+
+// ---------- batch 1 choreography ----------
+import { CHOREO } from '../src/ui/vfx-choreo/index.js';
+import { seedVfx } from '../src/ui/vfx.js';
+import { LAB_MOVES } from '../src/ui/vfx-lab.js';
+
+test('vfx: every theme has custom line clears', () => {
+  const ids = THEMES.map((t) => t.id).sort();
+  eq(Object.keys(CHOREO).sort(), ids);
+  for (const [id, ch] of Object.entries(CHOREO)) assert(typeof ch.clear === 'function', `${id}.clear`);
+  // The fully choreographed themes define every event.
+  for (const id of ['pastel', 'jelly', 'cloud', 'soda', 'patisserie', 'neon']) for (const k of ['place', 'clear', 'streak', 'milestone', 'boardClear', 'idle', 'idleBeat']) assert(typeof CHOREO[id][k] === 'function', `${id}.${k}`);
+});
+
+test('vfx batch 1: every feedback type runs, draws and goes idle', () => {
+  for (const id of Object.keys(CHOREO)) {
+    const { v, stats, run } = setup(id);
+    for (const [k, mk] of Object.entries(LAB_MOVES)) {
+      const m = mk();
+      v.place(m); if (m.lines) v.clear(m); if (m.combo >= 2) v.combo(m); if (m.allClear) v.allClear();
+      run(60);
+    }
+    v.milestone({ n: 1 }); v.idleBeat();
+    run(200);
+    assert(stats.draws > 100, `${id} drew (${stats.draws})`);
+    run(8000);
+    eq([v.items.length, v.particles.length, v.running], [0, 0, false], `${id} idle after effects`);
+  }
+});
+
+test('vfx batch 1: seeded replays produce identical drawing', () => {
+  const trace = (id) => {
+    const { v, run } = setup(id);
+    const calls = [];
+    const orig = v.add.bind(v);
+    v.add = (it) => { calls.push(it.life, it.delay || 0); orig(it); };
+    seedVfx(42); const m = LAB_MOVES.multi(); v.place(m); v.clear(m); v.combo({ ...m, combo: 4 }); seedVfx(null);
+    run(500);
+    return JSON.stringify([calls, v.particles.map((q) => [q.x.toFixed(2), q.y.toFixed(2)])]);
+  };
+  for (const id of Object.keys(CHOREO)) eq(trace(id), trace(id), id);
+});
+
+test('vfx batch 1: switching theme tears down timers, idle life and everything on screen', () => {
+  const { v, run } = setup('jelly');
+  v.board.cells = [];
+  v.setTheme();
+  const m = LAB_MOVES.multi(); v.clear(m); v.combo({ ...m, combo: 5 });
+  assert(v.items.length > 0 && v.timers.size > 0, 'busy');
+  v.teardown();
+  eq([v.items.length, v.particles.length, v.timers.size, v.idleStop], [0, 0, 0, null]);
+  run(100);
+});
+
+test('vfx batch 1: intensity scales particle counts', () => {
+  const count = (level) => { const { v } = setup('soda'); v.levelFn = () => level; v.place(LAB_MOVES.place()); return v.particles.length; };
+  assert(count(0.25) < count(1), `${count(0.25)} < ${count(1)}`);
 });

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-  <meta name="theme-color" content="#fbf3e4">
+  <meta name="theme-color" content="#06050f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -142,7 +142,7 @@
         <div class="pane" data-pane="themes">
           <div id="theme-list" class="theme-list" role="listbox" aria-label="Themes"></div>
           <div class="preview-bar">
-            <span id="theme-status" class="status">Classic Pastel is in use</span>
+            <span id="theme-status" class="status">Classic is in use</span>
             <div class="row tight">
               <button id="btn-theme-cancel" class="btn small" type="button" hidden>Cancel</button>
               <button id="btn-theme-use" class="btn small primary" type="button" disabled>Use Theme</button>
@@ -158,6 +158,7 @@
           <label class="toggle"><span>Auto-switch themes<small>Moves to the next theme after a full board clear</small></span><input id="opt-auto" type="checkbox"></label>
           <label class="toggle"><span>Animated backgrounds<small>Gentle theme scenery behind the board</small></span><input id="opt-bg" type="checkbox"></label>
           <label class="toggle"><span>Spell effects<small>Light beams, magic circles and trails when you place and clear. Turn off to save battery.</small></span><input id="opt-vfx" type="checkbox"></label>
+          <label class="slider"><span>Effect intensity <output id="vfx-level-out">100%</output></span><input id="opt-vfx-level" type="range" min="25" max="100" step="5"></label>
         </div>
         <div class="pane" data-pane="sound" hidden>
           <label class="toggle"><span>Sound</span><input id="opt-sound" type="checkbox"></label>

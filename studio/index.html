@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VFX Studio</title>
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="../styles/base.css">
+  <link rel="stylesheet" href="../styles/materials.css">
+  <link rel="stylesheet" href="../styles/effects.css">
+  <link rel="stylesheet" href="../styles/environments.css">
+  <link rel="stylesheet" href="studio.css">
+</head>
+<body class="studio">
+  <div id="env" class="env" aria-hidden="true"></div>
+  <aside class="side">
+    <h1>VFX Studio</h1>
+    <p class="hint">Development only. Nothing here changes the game.</p>
+
+    <label>Theme <select id="s-theme"></select></label>
+    <label>Board <select id="s-fixture"></select></label>
+    <label>Phone width <select id="s-device"><option value="320">320 (SE)</option><option value="390" selected>390 (iPhone 13–16)</option><option value="430">430 (Pro Max)</option></select></label>
+    <label class="row"><input id="s-animbg" type="checkbox"> Animated background</label>
+
+    <h2>Trigger</h2>
+    <div id="s-events" class="seg"></div>
+
+    <h2>Compare</h2>
+    <label>Panels <select id="s-count"><option>1</option><option>2</option><option selected>3</option></select></label>
+
+    <h2>Playback</h2>
+    <div class="transport">
+      <button id="s-replay" title="Replay (R)">⟲</button>
+      <button id="s-back" title="Back one frame (←)">◀︎│</button>
+      <button id="s-play" title="Play / pause (Space)">▶︎</button>
+      <button id="s-fwd" title="Forward one frame (→)">│▶︎</button>
+    </div>
+    <input id="s-scrub" type="range" min="0" max="2000" step="1" value="0">
+    <div class="readout"><span id="s-time">0 ms</span> <span id="s-frame">frame 0</span></div>
+    <label>Speed <select id="s-speed"><option value="0.1">0.1×</option><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option></select></label>
+    <label class="row"><input id="s-loop" type="checkbox" checked> Loop</label>
+
+    <h2>Capture</h2>
+    <div class="stack">
+      <button id="s-shot">Save frame (focused panel)</button>
+      <button id="s-strip">Save storyboard strip</button>
+      <button id="s-board">Storyboard view</button>
+    </div>
+  </aside>
+
+  <main id="stage" class="stage"></main>
+
+  <aside id="params" class="params">
+    <h2 id="p-title">Parameters</h2>
+    <p id="p-note" class="hint"></p>
+    <label>Preset <select id="p-preset"></select></label>
+    <div class="stack row2">
+      <button id="p-save">Save as…</button>
+      <button id="p-delete">Delete</button>
+      <button id="p-reset">Reset</button>
+      <button id="p-copy">Copy JSON</button>
+    </div>
+    <div id="p-list"></div>
+  </aside>
+
+  <script type="module" src="studio.js"></script>
+</body>
+</html>

@@ -8,8 +8,8 @@
 @media (prefers-reduced-motion: reduce) { .env *, .env *::before, .env *::after { animation: none !important; } }
 
 /* 1 Paper */
-.env-paper { background: radial-gradient(ellipse at 50% 0, #fff8ec, transparent 60%), linear-gradient(rgba(200,170,130,.13) 1px, transparent 1px) 0 0 / 22px 22px, linear-gradient(90deg, rgba(200,170,130,.13) 1px, transparent 1px) 0 0 / 22px 22px, var(--bg); }
-.e-paper { left: var(--x); top: var(--y); width: 18px; height: 18px; opacity: .45; animation: paper-drift var(--d) ease-in-out var(--dl) infinite alternate; background: hsl(calc(var(--h) * 50 + 340), 80%, 78%); border-radius: 4px; }
+.env-paper { background: radial-gradient(ellipse at 50% 0, #15132e, transparent 60%), linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 22px 22px, linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px) 0 0 / 22px 22px, var(--bg); }
+.e-paper { left: var(--x); top: var(--y); width: 18px; height: 18px; opacity: .22; animation: paper-drift var(--d) ease-in-out var(--dl) infinite alternate; background: hsl(calc(var(--h) * 50 + 340), 85%, 66%); border-radius: 4px; }
 .e-paper.s0 { border-radius: 50%; }
 .e-paper.s1 { clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 @keyframes paper-drift { from { transform: translate(0, 0) rotate(0); } to { transform: translate(24px, -40px) rotate(160deg); } }
@@ -36,13 +36,13 @@
 @keyframes bub-rise { 0% { transform: translate(0, 0); opacity: 0; } 10% { opacity: .9; } 50% { transform: translate(14px, -55vh); } 100% { transform: translate(-6px, -110vh); opacity: 0; } }
 
 /* 4 Cloud Palace */
-.env-clouds { background: linear-gradient(180deg, #f2e9ff 0%, #fff6e2 60%, #ffeef5 100%); }
-.e-halo { left: 50%; width: 70vmin; height: 70vmin; margin-left: -35vmin; border-radius: 50%; border: 2px solid rgba(212,176,98,.35); box-shadow: 0 0 40px rgba(255,231,168,.5), inset 0 0 40px rgba(255,231,168,.4); }
+.env-clouds { background: radial-gradient(ellipse 90% 40% at 50% 104%, rgba(255,206,150,.55), transparent 70%), linear-gradient(180deg, #1c1740 0%, #2c2459 38%, #4a3b7c 68%, #8a5f93 88%, #c98d8f 100%); }
+.e-halo { left: 50%; width: 70vmin; height: 70vmin; margin-left: -35vmin; border-radius: 50%; border: 1.5px solid rgba(230,192,106,.32); box-shadow: 0 0 40px rgba(255,214,140,.16), inset 0 0 40px rgba(255,214,140,.1); }
 .e-halo.h1 { top: -20vmin; }
-.e-halo.h2 { bottom: -45vmin; width: 100vmin; height: 100vmin; margin-left: -50vmin; border-color: rgba(200,170,230,.3); }
+.e-halo.h2 { bottom: -45vmin; width: 100vmin; height: 100vmin; margin-left: -50vmin; border-color: rgba(185,160,235,.22); }
 .env-clouds.animated .e-halo { animation: halo 8s ease-in-out infinite alternate; }
 @keyframes halo { to { opacity: .5; transform: scale(1.04); } }
-.e-cloud { top: var(--y); left: 0; width: 160px; height: 46px; border-radius: 40px; background: rgba(255,255,255,.85); filter: blur(1px); transform: scale(var(--s)); animation: cloud var(--d) linear var(--dl) infinite; box-shadow: 0 6px 16px rgba(190,160,220,.2); }
+.e-cloud { top: var(--y); left: 0; width: 160px; height: 46px; border-radius: 40px; background: rgba(214,196,248,.2); filter: blur(1px); transform: scale(var(--s)); animation: cloud var(--d) linear var(--dl) infinite; box-shadow: 0 6px 16px rgba(10,6,40,.18); }
 .e-cloud::before, .e-cloud::after { content: ""; position: absolute; border-radius: 50%; background: inherit; }
 .e-cloud::before { width: 70px; height: 70px; left: 24px; top: -34px; }
 .e-cloud::after { width: 54px; height: 54px; left: 78px; top: -24px; }
@@ -159,9 +159,9 @@
 .env-cathedral .e-mote { background: #ffe2a0; box-shadow: 0 0 6px 1px rgba(255,226,160,.5); }
 
 /* 13 Dreamware */
-.env-aero { background: radial-gradient(ellipse at 20% 0, #fff, transparent 50%), linear-gradient(180deg, #8fd6ff 0%, #c4ecff 45%, #e9fff0 100%); }
+.env-aero { background: radial-gradient(ellipse 150% 34% at 30% 104%, #49c23e 0 48%, transparent 49%), radial-gradient(ellipse 110% 26% at 92% 102%, #6fd94a 0 48%, transparent 49%), radial-gradient(ellipse at 72% 8%, #fff 0, transparent 38%), linear-gradient(180deg, #2f97f0 0%, #6cc2ff 45%, #d6f3ff 75%); }
 .e-wave { left: 0; bottom: 0; width: 200%; height: 22vh; }
-.e-wave path { fill: rgba(71,207,95,.25); }
+.e-wave path { fill: rgba(255,255,255,.0); }
 .e-wave.w0 { width: 100%; height: 16vh; }
 .e-wave.w0 path { fill: rgba(47,168,255,.18); }
 .e-wave.w1 { animation: wave 14s linear infinite; }
@@ -422,3 +422,40 @@
 .e-eye { left: var(--x); top: var(--y); width: var(--s); height: var(--s); border-radius: 50%; background: radial-gradient(circle, #111 0 16%, #f3f3ee 18% 46%, transparent 48%); box-shadow: 0 0 0 1px rgba(30,30,30,.4); outline: 1px dashed rgba(30,30,30,.35); outline-offset: 2vmin; animation: blink-eye var(--d) ease-in-out infinite; }
 @keyframes blink-eye { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
 .e-pstar { left: var(--x); top: var(--y); width: 18px; height: 18px; background: #e85a7a; clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%); animation: twinkle var(--d) ease-in-out var(--dl) infinite; }
+
+/* ---------- Batch 1 idle life (only with spell effects on; never with reduced motion) ---------- */
+/* Classic Pastel: pearlescent light passing over satin. */
+.e-satin { inset: -20%; opacity: 0; background: linear-gradient(112deg, transparent 38%, rgba(255,255,255,.0) 42%, rgba(255,240,250,.55) 47%, rgba(230,245,255,.5) 50%, rgba(255,250,235,.45) 53%, transparent 60%); transform: translateX(-60%); }
+:root.vfx-on .env-paper.sheen .e-satin { animation: satin-pass 3.1s cubic-bezier(.45,0,.25,1) both; }
+@keyframes satin-pass { 0% { transform: translateX(-60%); opacity: 0; } 15% { opacity: calc(.7 + var(--heat, 0) * .3); } 85% { opacity: calc(.7 + var(--heat, 0) * .3); } 100% { transform: translateX(60%); opacity: 0; } }
+/* Cloud Palace: depth layers, golden light through the gaps, clouds parting for big moments. */
+.env-clouds .e-cloud.far { opacity: .45; filter: none; }
+.env-clouds .e-cloud.near { opacity: .7; }
+.e-goldray { top: -10%; width: 18vmin; height: 90vh; background: linear-gradient(180deg, rgba(255,214,140,.0), rgba(255,214,140,.35) 30%, rgba(255,214,140,0)); transform-origin: 50% 0; opacity: calc(.12 + var(--heat, 0) * .25); transition: opacity 1.6s ease; }
+.e-goldray.r1 { left: 18%; transform: rotate(14deg); } .e-goldray.r2 { left: 52%; transform: rotate(8deg); width: 10vmin; } .e-goldray.r3 { left: 78%; transform: rotate(-6deg); }
+:root.vfx-on .env-clouds.gleam .e-goldray { animation: gleam 4.2s ease-in-out both; }
+@keyframes gleam { 0%, 100% { opacity: calc(.12 + var(--heat, 0) * .25); } 40% { opacity: .7; } }
+.env-clouds .e-cloud, .env-clouds .e-halo { transition: opacity 1.2s ease, translate 1.6s cubic-bezier(.3,.7,.2,1); }
+:root.vfx-on .env-clouds.parted .e-cloud { opacity: .15; translate: 0 -6vh; }
+:root.vfx-on .env-clouds.parted .e-halo { opacity: 1; }
+/* Cream Soda: bubble pairs that rise, drift together and merge. */
+.e-pair { left: var(--x); bottom: -20px; width: 30px; height: 20px; animation: pair-rise var(--d) linear var(--dl) infinite; }
+.e-pair i { position: absolute; top: 4px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,.9); background: radial-gradient(circle at 30% 30%, #fff 0 18%, rgba(255,255,255,.15) 30%); }
+.e-pair i:first-child { left: 0; animation: pair-l var(--d) ease-in-out var(--dl) infinite; }
+.e-pair i:last-child { right: 0; animation: pair-r var(--d) ease-in-out var(--dl) infinite; }
+@keyframes pair-rise { to { transform: translateY(-110vh); } }
+@keyframes pair-l { 0%, 35% { transform: translateX(0); } 55% { transform: translateX(10px) scale(1.35); } 100% { transform: translateX(10px) scale(1.35); } }
+@keyframes pair-r { 0%, 35% { transform: translateX(0); opacity: 1; } 55% { transform: translateX(-10px) scale(.6); opacity: 0; } 100% { opacity: 0; } }
+.env-soda .e-sbub { opacity: calc(.6 + var(--heat, 0) * .4); }
+/* Strawberry Patisserie: a glossy highlight travelling over the ribbons. */
+:root.vfx-on .env-patisserie .e-ribbon svg { animation: ribbon-gloss 7s ease-in-out infinite; }
+@keyframes ribbon-gloss { 0%, 80%, 100% { filter: none; } 88% { filter: brightness(1.18) saturate(1.1); } }
+@media (prefers-reduced-motion: reduce) { .e-satin, .e-pair, .e-goldray { animation: none !important; } }
+
+/* Dreamware 2004: big four-point sparkles, soap bubbles and a goldfish drifting past. */
+.e-spark { left: var(--x); top: var(--y); width: var(--s); height: var(--s); background: radial-gradient(circle, #fff 0 12%, transparent 14%), linear-gradient(90deg, transparent 46%, #fff 46% 54%, transparent 54%), linear-gradient(0deg, transparent 46%, #fff 46% 54%, transparent 54%); filter: drop-shadow(0 0 3px #fff); animation: e-twink var(--d) ease-in-out var(--dl) infinite alternate; }
+@keyframes e-twink { from { transform: scale(.4) rotate(0); opacity: .35; } to { transform: scale(1.1) rotate(45deg); opacity: 1; } }
+.env-aero .e-orb { background: radial-gradient(circle at 30% 28%, rgba(255,255,255,.95) 0 12%, rgba(255,255,255,.1) 28%, rgba(200,170,255,.15) 60%, rgba(150,255,240,.25) 100%); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.9); }
+.e-goldfish { left: 0; top: var(--y); width: 70px; height: 40px; animation: e-goldfish var(--d) linear var(--dl) infinite; }
+@keyframes e-goldfish { from { transform: translateX(110vw) translateY(0); } 50% { transform: translateX(45vw) translateY(-14px); } to { transform: translateX(-120px) translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .e-spark, .e-goldfish { animation: none !important; } }

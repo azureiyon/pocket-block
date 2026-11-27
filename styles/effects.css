@@ -306,3 +306,18 @@
 /* Canvas spell layer: sits inside the effects layer, overhanging the board so
    beams, circles and pillars can spill past its edges. */
 .vfx { position: absolute; z-index: 7; pointer-events: none; }
+
+/* ---------- Batch 1 DOM motion (jelly) ---------- */
+/* Neighbours of a placed jelly piece answer with a smaller, slightly delayed wobble. */
+.blk.jelly-nudge { animation: jelly-nudge .5s cubic-bezier(.3,1.6,.4,1) 60ms both; }
+@keyframes jelly-nudge { 0% { transform: none; } 30% { transform: scale(1.05, .95); } 60% { transform: scale(.98, 1.02); } 100% { transform: none; } }
+/* Idle: a microscopic shiver in a random block. */
+
+
+/* Idle: the inner highlight slowly drifts, offset per cell. */
+/* Canvas behind the board (scenery that should sit behind it). */
+.vfx.back { z-index: auto; }
+@media (prefers-reduced-motion: reduce) { .blk.jelly-nudge, .blk.jelly-idle, .cell .m-gel > i { animation: none !important; } }
+
+/* Cells whose block is being animated on the canvas (Candy Ballet). */
+.cell.vfx-hide > .blk { visibility: hidden; }

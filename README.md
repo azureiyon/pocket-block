@@ -92,6 +92,30 @@ Performance on iPhone Safari:
 
 **Spell effects** (Settings → Themes) turns them off, and they're always off with reduced motion. While spell effects are on, the older DOM particles are skipped, so the two don't double up.
 
+## Premium VFX batches
+
+Themes are being moved, five at a time, from the shared recipe effects to hand-directed choreography (`src/ui/vfx-choreo/<theme>.js`, built on the drawing toolkit in `src/ui/vfx-kit.js`). Each choreographed theme has its own routine for idle life, placing, single-line clears, multi-line clears, streaks, score milestones (every 1,000 in Classic, every 2,500 in Blast and Flow) and board clears. Cleared blocks are redrawn as snapshots on the canvas, so an animation keeps running after the board has moved on and never blocks the next move.
+
+**Batch 1, Soft & Dreamy:**
+- **Classic:** enamel blocks on a midnight board, with abstract coloured light: a luminous sweep along single clears, a resonance pulse on both lines of a multi-line clear with a flare where they cross, a coloured rim on placement, a light circuit round the board frame for streaks, a ring wash and meeting frame lights for a board clear, and an occasional specular glint at idle.
+- **Jelly Pop:** the Candy Ballet (designed in the VFX Studio). The blocks themselves dance: crouch, canon hop, pirouette and a follow-the-leader exit with ribbon trails. Placement gets greeting hops, multi-line clears get twin troupes led by a prima, streaks paint a ribbon heart, and a board clear becomes a carousel that spins out into a heart. No milestone effect.
+- **Cloud Palace:** pearl cushions in a twilight sky. Pearl of Dawn: each pearl kindles from within, dissolves from its edges inward while gold glints run round its contour, and melts into a point of light. Multi-line clears send pearl-shaped ripples along the cross, streaks gather the lights into one pearl of light that releases halo rings, board clears race two glints round the gilt frame and wash light inward over the cells, placement lights the pearls' gold rims, and idle pearls catch a passing glint.
+- **Cream Soda Pop:** cleared blocks fade as carbonation rises where they were, with bubbles that rise, wobble and pop into droplets, a foam wave, and soda filling the board.
+- **Strawberry Patisserie:** frosting piped by a moving nozzle in scallops, cake crumbling into layered slices and crumbs, rosettes and strawberries.
+
+**Shipped ahead of its batch:**
+- **Neon Arcade:** Power Down. Rows switch off like an old CRT (flicker, colour split, a white-hot bar that collapses to a dot, a phosphor afterglow); columns derez into stepped 8-bit pixel lattices that zig-zag out sideways. Multi-line clears implode the row into the crossing while the column derezzes and end in one horizontal scan flash; streaks roll a bright band down the board; board clears switch the whole board off like a TV and power it back on. Placement scans in over the piece and idle blocks glitch now and then.
+
+**Themes 06–30, line clears:** each theme's single-line and multi-line clears come from the concepts Rui picked in the FX Reel (`studio/fx-reel-picks.md`), with a separate concept for columns where a motif only reads one way. The cleared blocks return as ghost elements of the real material and the effect moves them and draws around them (`src/ui/vfx-reel/reel-fx.js`, adapter `src/ui/vfx-choreo/reel.js`). Board clears (the line clear, then a finale), placement and idle also come from Rui's FX Reel picks (round three); streaks and milestones keep the shared recipe effects for now. Dreamware 2004 was overhauled into a Frutiger Aero media player: the board is the screen of a glossy player window, blocks are clear glass cubes with bubbles inside, and the sky has hills, sparkles, soap bubbles and a goldfish. Its row clears play a seek bar, columns rise as bubbles, and board clears light up an equaliser.
+
+**Settings → Themes → Effect intensity** (25–100%) scales counts and brightness. Switching themes tears down every timer, emitter and idle loop.
+
+**VFX lab:** open the game with `?vfxlab` for replay buttons for every feedback type, at 1×, ½× or ¼× speed, seeded so each replay is identical. It uses a fixture board and leaves your real game untouched.
+
+## VFX Studio
+
+`/studio/` (development only, never loaded by the game) is where theme effects are designed before they ship: side-by-side variants, looping, pause, frame stepping, scrubbing, speed, fixture boards per event, phone widths, per-concept parameters and presets, and storyboard capture. The workflow and lessons learned are in the project skill `.claude/skills/pocket-blocks-vfx/SKILL.md`.
+
 ## Running locally
 
 ES modules and the Web Worker need an HTTP server. Opening the HTML file directly (`file://`) won't work.
