@@ -244,7 +244,8 @@ export class Effects {
     // Choreographed themes stage their own finale; skip the brightness wash that would cover it.
     if (!this.canvasGhosts()) this.board.el.classList.add('celebrate');
     this.later(() => this.board.el.classList.remove('celebrate'), 1400);
-    this.label('Board Clear!', 'allclear', null, 1700);
+    // The text would sit on top of a theme's own finale, so it only shows when canvas effects are off.
+    if (!this.canvasGhosts()) this.label('Board Clear!', 'allclear', null, 1700);
     for (let w = 0; w < 3; w++) this.later(() => this.spawn(cx + R(-60, 60), cy + R(-60, 60), 14, theme.palette), w * 160);
   }
 
