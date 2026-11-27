@@ -110,9 +110,10 @@ export const ENVIRONMENTS = {
       + repeat(8, () => `<span class="e-mote" style="${vars({ x: R(2, 96) + '%', y: R(4, 94) + '%', d: R(4, 7).toFixed(1) + 's', dl: -R(0, 6).toFixed(1) + 's' })}"></span>`),
   },
   aero: {
-    static: () => '<svg class="e-wave w0" viewBox="0 0 800 100" preserveAspectRatio="none"><path d="M0 50 Q100 10 200 50 T400 50 T600 50 T800 50 V100 H0Z"/></svg>',
-    motion: () => '<svg class="e-wave w1" viewBox="0 0 800 100" preserveAspectRatio="none"><path d="M0 50 Q100 10 200 50 T400 50 T600 50 T800 50 V100 H0Z"/></svg>'
-      + repeat(7, () => `<span class="e-orb" style="${vars({ x: R(3, 92) + '%', s: R(14, 40).toFixed(0) + 'px', d: R(12, 22).toFixed(1) + 's', dl: -R(0, 20).toFixed(1) + 's' })}"></span>`),
+    static: () => '',
+    motion: () => repeat(7, () => `<span class="e-orb" style="${vars({ x: R(3, 92) + '%', s: R(14, 40).toFixed(0) + 'px', d: R(12, 22).toFixed(1) + 's', dl: -R(0, 20).toFixed(1) + 's' })}"></span>`)
+      + repeat(6, () => `<span class="e-spark" style="${vars({ x: R(4, 92) + '%', y: R(4, 80) + '%', s: R(12, 22).toFixed(0) + 'px', d: R(2, 3.5).toFixed(1) + 's', dl: -R(0, 3).toFixed(1) + 's' })}"></span>`)
+      + `<span class="e-goldfish" style="${vars({ y: R(70, 84) + '%', d: '26s', dl: -R(0, 20).toFixed(1) + 's' })}"><svg viewBox="0 0 120 70" width="100%" height="100%"><defs><linearGradient id="egf" x1="0" x2="1"><stop offset="0" stop-color="#ffd27a"/><stop offset=".5" stop-color="#ff8a1e"/><stop offset="1" stop-color="#ff6a00"/></linearGradient></defs><path d="M38 35 C50 12 86 10 100 30 C104 36 104 40 100 44 C86 62 50 58 38 35Z" fill="url(#egf)"/><path d="M40 35 L6 12 C14 30 14 40 6 58 Z" fill="#ffd9a8" opacity=".85"/><circle cx="90" cy="31" r="3.6" fill="#1a1a1a"/><circle cx="91" cy="30" r="1.2" fill="#fff"/></svg></span>`,
   },
   parlor: {
     static: () => '<div class="e-lattice"></div><div class="e-lantern l1"></div><div class="e-lantern l2"></div>',

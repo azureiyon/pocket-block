@@ -49,7 +49,9 @@ export class App {
     this.bindGame();
     this.bindUi();
     this.layout();
-    const ro = window.ResizeObserver ? new ResizeObserver(() => this.layout()) : null;
+    // Deferred a frame: a theme's board scale can resize the board area, which would re-trigger the observer in the same frame.
+    let raf = 0; const relayout = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; this.layout(); }); };
+    const ro = window.ResizeObserver ? new ResizeObserver(relayout) : null;
     if (ro) ro.observe($('board-area')); else window.addEventListener('resize', () => this.layout());
     if (window.visualViewport) window.visualViewport.addEventListener('resize', () => this.layout());
     if (this.reduceMQ.addEventListener) this.reduceMQ.addEventListener('change', () => { this.env.build(); this.vfx.setTheme(this.theme); this.syncVfxFlag(); });
@@ -80,14 +82,17 @@ export class App {
     this.audio.setKit(theme.sound);
     if (this.demo) this.demo.setTheme(theme);
     if (this.input) this.input.refreshAim();
+    this.layout();
   }
 
   // ---------- layout ----------
   layout() {
     const area = $('board-area');
     const w = area.clientWidth; const h = area.clientHeight;
-    const size = Math.max(200, Math.floor(Math.min(w, h, 560)));
-    document.documentElement.style.setProperty('--bsize', size + 'px');
+    // A theme can frame its board (Dreamware's media player) and ask for a smaller board to leave room.
+    const scale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--board-scale')) || 1;
+    const size = Math.max(200, Math.floor(Math.min(w * scale, h * scale, 560)));
+    if (size !== this.lastBoardSize) document.documentElement.style.setProperty('--bsize', size + 'px');
     const trayW = this.trayEl.clientWidth || size;
     const boardCell = size / 8.4;
     const tcs = Math.min(boardCell * 0.62, (trayW / 3 - 16) / 5.2);

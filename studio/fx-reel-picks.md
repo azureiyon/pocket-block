@@ -81,3 +81,9 @@ Picks (board finale / placement / idle):
 | Room 201 | C Tape Rewind | Needle Tick | Star Twinkle |
 
 All shipped in src/ui/vfx-reel/reel-fx.js (FINALE). Streaks and milestones still use the shared effects.
+
+## Dreamware 2004 (overhaul)
+
+Theme direction A, Media Player (https://claude.ai/artifact/2iAsibmAM2S1u54pFKhpPZ, round two built from
+Rui's references). Effects designed by Claude without a pick round, at Rui's request, for testing in game:
+rows Seek Bar, columns Bubble Rise, board Now Playing (equaliser), placement Sparkle Click, idle Bubble Drift.

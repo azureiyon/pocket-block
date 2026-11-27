@@ -611,6 +611,32 @@ export const REEL = {
       if (r() < 0.4) line(x0, S.y - S.s * 0.6 + r() * S.s * 1.2, x0 + W, S.y - S.s * 0.6 + r() * S.s * 1.2, '#e4fffb', 1, g * 0.4);
     } },
   },
+  aero: {
+    row: { name: "Seek Bar", dur: 1150, rot: false,
+    draw(S, t) {
+      const x0 = S.b[0].x - S.s * 0.5; const x1 = S.b[7].x + S.s * 0.5; const u = eio(seg(t, 60, 640)); const hx = lerp(x0, x1, u);
+      const fade = 1 - seg(t, 700, 950); const h = S.s * 0.3;
+      S.b.forEach((b) => { const v = seg(hx - b.x, -S.s * 0.35, S.s * 0.15); const pop = seg(hx - b.x, S.s * 0.15, S.s * 0.6); X(b, { s: 1 + 0.12 * env(v, 0, 0.6, 0.9, 1) - 0.3 * pop, o: 1 - pop, f: `brightness(${1 + 0.3 * v})` });
+        const bu = seg(t - (b.x - x0) / (x1 - x0) * 580, 120, 620); if (bu > 0 && bu < 1) { const r = S.s * (0.22 + 0.1 * bu); const y = b.y - S.s * 0.9 * eo(bu); if (bu < 0.85) bubbleAt(b.x + Math.sin(bu * 6 + b.i) * 3, y, r, 1); else ring(b.x, y, r * (1 + (bu - 0.85) * 4), '#ffffff', 1.2, (1 - bu) * 6); } });
+      if (fade > 0 && t > 40) {
+        box(x0, S.y - h / 2, x1 - x0, h, h / 2, 'rgba(255,255,255,.75)', fade, 'rgba(111,183,234,.9)', 1.2);
+        if (hx > x0 + 2) { ctx.save(); ctx.globalAlpha = fade; rr(x0 + 1, S.y - h / 2 + 1, Math.max(h, hx - x0 - 2), h - 2, (h - 2) / 2); const g = ctx.createLinearGradient(0, S.y - h / 2, 0, S.y + h / 2); g.addColorStop(0, '#d8ffc0'); g.addColorStop(0.5, '#62d45a'); g.addColorStop(1, '#3cb84e'); ctx.fillStyle = g; ctx.fill(); ctx.restore(); box(x0 + 3, S.y - h * 0.38, Math.max(0, hx - x0 - 6), h * 0.22, h * 0.1, 'rgba(255,255,255,.65)', fade); }
+        circ(hx, S.y, h * 0.75, '#ffffff', fade); ring(hx, S.y, h * 0.75, '#7fbde6', 1.4, fade);
+      }
+      const sp = env(t, 600, 660, 700, 950); if (sp > 0) sparkle(x1, S.y, S.s * 0.55 * sp, sp);
+    } },
+    col: { name: "Bubble Rise", dur: 1300, rot: false,
+    draw(S, t) {
+      S.b.forEach((b, i) => {
+        const L = t - (7 - i) * 45; const m = eo(seg(L, 0, 180)); const up = seg(L, 120, 1000); const popAt = 0.72 + ((i * 37) % 10) / 50;
+        X(b, { s: 1 - 0.5 * m, br: `${22 + 28 * m}%`, o: 1 - m });
+        if (m <= 0) return;
+        const x = b.x + Math.sin(up * 6 + i) * b.s * 0.2; const y = b.y - b.s * 2.4 * eo(up);
+        if (up < popAt) bubbleAt(x, y, b.s * (0.32 + 0.06 * Math.sin(up * 9)) * m, 1);
+        else { const p = (up - popAt) / (1 - popAt); ring(x, y, b.s * 0.35 * (1 + p), '#ffffff', 1.2, 1 - p); sparkle(x + b.s * 0.2, y - b.s * 0.2, b.s * 0.3 * (1 - p), 1 - p); }
+      });
+    } },
+  },
 };
 
 // Round-three helpers.
@@ -625,6 +651,17 @@ function cellBox(c, color, a, inset = 0.06, stroke = null, sw = 1.4) { const w =
 const ringT = (c, step) => c.ring * step;
 const PAL = (S, i) => S.theme.palette[((i % 7) + 7) % 7];
 function frameRect(S, pad, r, color, w, a, part = 1) { const B = S.board; ctx.save(); ctx.setLineDash(part >= 1 ? [] : [2 * (B.x1 - B.x0 + B.y1 - B.y0 + 4 * pad) * part, 1e5]); box(B.x0 - pad, B.y0 - pad, B.x1 - B.x0 + pad * 2, B.y1 - B.y0 + pad * 2, r, null, a, color, w); ctx.restore(); }
+// ===== 13 Dreamware 2004 (Media Player) =====
+function sparkle(x, y, r, a) { if (a <= 0.01 || r < 0.5) return; glow(x, y, r * 1.4, '#6cc2ff', a * 0.45); star4(x, y, r * 1.15, '#3d9be9', a * 0.9); star4(x, y, r, '#ffffff', a); }
+function bubbleAt(x, y, r, a, tint = '#9fe0ff') {
+  if (a <= 0.01 || r < 0.5) return;
+  ctx.globalAlpha = a * 0.45; ctx.fillStyle = tint; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  ring(x, y, r, '#3d9be9', Math.max(1.4, r * 0.16), a * 0.85);
+  ring(x, y, r * 0.93, '#ffffff', Math.max(1, r * 0.08), a * 0.95);
+  ring(x, y, r * 0.86, '#ffb8f0', Math.max(0.8, r * 0.06), a * 0.35, Math.PI * 1.1, Math.PI * 1.6);
+  ring(x, y, r * 0.86, '#a8fff0', Math.max(0.8, r * 0.06), a * 0.35, Math.PI * 0.1, Math.PI * 0.6);
+  circ(x - r * 0.35, y - r * 0.38, r * 0.2, '#ffffff', a);
+}
 const SF5 = (x, y, r, col, a, rot = 0) => { starN(x, y, r, 5, 0.55, col, a, rot); circ(x, y, r * 0.22, '#fff8e6', a); };
 
 export const FINALE = {
@@ -837,5 +874,18 @@ export const FINALE = {
     draw(S, t) { const u = eio(seg(t, 0, 220)); for (const b of S.p) X(b, { sx: Math.max(0.05, Math.abs(Math.cos((1 - u) * Math.PI / 2 * 1.0))), sy: 1 }); } },
     idle: { name: "Suit Pulse", dur: 900,
     draw(S, t) { const p = env(t, 0, 80, 120, 260) + env(t, 260, 340, 380, 560) * 0.7; X(S.k, { s: 1 + 0.08 * p }); } },
+  },
+  aero: {
+    board: { name: "Now Playing", dur: 1600,
+    draw(S, t) {
+      const B = S.board; const n = 8; const w = S.bw / n; const a = env(t, 0, 150, 950, 1200);
+      for (let k = 0; k < n; k++) { const beat = Math.abs(Math.sin(t / 110 + k * 0.9)) * 0.6 + Math.abs(Math.sin(t / 170 + k * 1.7)) * 0.4; const h = S.bw * 0.75 * beat * seg(t, 0, 300) * (1 - ei(seg(t, 900, 1150))); if (h < 1) continue; const x = B.x0 + k * w + w * 0.15; ctx.save(); ctx.globalAlpha = a; rr(x, B.y1 - h - w * 0.15, w * 0.7, h, w * 0.18); const g = ctx.createLinearGradient(0, B.y1, 0, B.y1 - S.bw * 0.75); g.addColorStop(0, '#2b8cff'); g.addColorStop(0.5, '#22c6d8'); g.addColorStop(1, '#9be15d'); ctx.fillStyle = g; ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(x + w * 0.08, B.y1 - h - w * 0.1, w * 0.15, h - w * 0.1); ctx.restore(); box(x, B.y1 - h - w * 0.15 - w * 0.25, w * 0.7, w * 0.12, w * 0.06, '#ffffff', a * 0.9); }
+      const sp = env(t, 1000, 1080, 1150, 1450); if (sp > 0) { sparkle(S.cx, S.cy, S.s * 1.6 * sp, sp); for (let k = 0; k < 4; k++) { const ang = k * Math.PI / 2 + Math.PI / 4; sparkle(S.cx + Math.cos(ang) * S.s * 2 * sp, S.cy + Math.sin(ang) * S.s * 2 * sp, S.s * 0.4 * sp, sp); } }
+      for (let k = 0; k < 10; k++) { const u = seg(t, 1050 + k * 40, 1550 + k * 40); if (u <= 0 || u >= 1) continue; bubbleAt(B.x0 + ((k * 0.37) % 1) * S.bw, B.y1 - S.bw * u, S.s * (0.18 + (k % 3) * 0.08), 1 - seg(u, 0.75, 1)); }
+    } },
+    place: { name: "Sparkle Click", dur: 480,
+    draw(S, t) { for (const b of S.p) { const u = seg(t, 0, 320); if (u > 0 && u < 1) { ctx.save(); rr(b.x - b.s / 2, b.y - b.s / 2, b.s, b.s, b.s * 0.22); ctx.clip(); const x = lerp(b.x - b.s, b.x + b.s, u); line(x - b.s * 0.5, b.y + b.s * 0.5, x + b.s * 0.5, b.y - b.s * 0.5, '#ffffff', b.s * 0.16, 0.75); ctx.restore(); } } const c = S.p[S.p.length - 1]; const a = env(t, 120, 180, 220, 460); sparkle(c.x + c.s * 0.45, c.y - c.s * 0.45, c.s * 0.35 * a, a); } },
+    idle: { name: "Bubble Drift", dur: 1800,
+    draw(S, t) { const b = S.k; const u = seg(t, 0, 1500); const popAt = 0.85; const x = b.x + b.s * 0.55 + Math.sin(u * 5) * b.s * 0.15; const y = b.y + b.s * 0.4 - u * b.s * 1.8; if (u > 0 && u < popAt) bubbleAt(x, y, b.s * 0.16, Math.min(1, u * 6)); else if (u >= popAt && u < 1) sparkle(x, y, b.s * 0.25 * (1 - (u - popAt) / (1 - popAt)), 1); } },
   },
 };

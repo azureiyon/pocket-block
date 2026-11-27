@@ -88,8 +88,8 @@ import { CHOREO } from '../src/ui/vfx-choreo/index.js';
 import { seedVfx } from '../src/ui/vfx.js';
 import { LAB_MOVES } from '../src/ui/vfx-lab.js';
 
-test('vfx: every theme except Dreamware 2004 has custom line clears', () => {
-  const ids = THEMES.map((t) => t.id).filter((id) => id !== 'aero').sort();
+test('vfx: every theme has custom line clears', () => {
+  const ids = THEMES.map((t) => t.id).sort();
   eq(Object.keys(CHOREO).sort(), ids);
   for (const [id, ch] of Object.entries(CHOREO)) assert(typeof ch.clear === 'function', `${id}.clear`);
   // The fully choreographed themes define every event.

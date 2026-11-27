@@ -159,9 +159,9 @@
 .env-cathedral .e-mote { background: #ffe2a0; box-shadow: 0 0 6px 1px rgba(255,226,160,.5); }
 
 /* 13 Dreamware */
-.env-aero { background: radial-gradient(ellipse at 20% 0, #fff, transparent 50%), linear-gradient(180deg, #8fd6ff 0%, #c4ecff 45%, #e9fff0 100%); }
+.env-aero { background: radial-gradient(ellipse 150% 34% at 30% 104%, #49c23e 0 48%, transparent 49%), radial-gradient(ellipse 110% 26% at 92% 102%, #6fd94a 0 48%, transparent 49%), radial-gradient(ellipse at 72% 8%, #fff 0, transparent 38%), linear-gradient(180deg, #2f97f0 0%, #6cc2ff 45%, #d6f3ff 75%); }
 .e-wave { left: 0; bottom: 0; width: 200%; height: 22vh; }
-.e-wave path { fill: rgba(71,207,95,.25); }
+.e-wave path { fill: rgba(255,255,255,.0); }
 .e-wave.w0 { width: 100%; height: 16vh; }
 .e-wave.w0 path { fill: rgba(47,168,255,.18); }
 .e-wave.w1 { animation: wave 14s linear infinite; }
@@ -451,3 +451,11 @@
 :root.vfx-on .env-patisserie .e-ribbon svg { animation: ribbon-gloss 7s ease-in-out infinite; }
 @keyframes ribbon-gloss { 0%, 80%, 100% { filter: none; } 88% { filter: brightness(1.18) saturate(1.1); } }
 @media (prefers-reduced-motion: reduce) { .e-satin, .e-pair, .e-goldray { animation: none !important; } }
+
+/* Dreamware 2004: big four-point sparkles, soap bubbles and a goldfish drifting past. */
+.e-spark { left: var(--x); top: var(--y); width: var(--s); height: var(--s); background: radial-gradient(circle, #fff 0 12%, transparent 14%), linear-gradient(90deg, transparent 46%, #fff 46% 54%, transparent 54%), linear-gradient(0deg, transparent 46%, #fff 46% 54%, transparent 54%); filter: drop-shadow(0 0 3px #fff); animation: e-twink var(--d) ease-in-out var(--dl) infinite alternate; }
+@keyframes e-twink { from { transform: scale(.4) rotate(0); opacity: .35; } to { transform: scale(1.1) rotate(45deg); opacity: 1; } }
+.env-aero .e-orb { background: radial-gradient(circle at 30% 28%, rgba(255,255,255,.95) 0 12%, rgba(255,255,255,.1) 28%, rgba(200,170,255,.15) 60%, rgba(150,255,240,.25) 100%); box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.9); }
+.e-goldfish { left: 0; top: var(--y); width: 70px; height: 40px; animation: e-goldfish var(--d) linear var(--dl) infinite; }
+@keyframes e-goldfish { from { transform: translateX(110vw) translateY(0); } 50% { transform: translateX(45vw) translateY(-14px); } to { transform: translateX(-120px) translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .e-spark, .e-goldfish { animation: none !important; } }

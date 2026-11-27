@@ -149,15 +149,15 @@ export const THEMES = [
     },
   },
   {
-    id: 'aero', name: 'Dreamware 2004', blurb: 'Glossy aqua glass and floating orbs',
+    id: 'aero', name: 'Dreamware 2004', blurb: 'Bubbly glass in a glossy media player',
     material: 'aero', env: 'aero', particle: 'orb', sound: 'aero', dark: false,
-    palette: ['#2fa8ff', '#47cf5f', '#00bdb4', '#6fd0ff', '#98dd5c', '#5b8cff', '#2fd69c'],
+    palette: ['#2b8cff', '#46d36a', '#22c6d8', '#7fd8ff', '#9be15d', '#5a7dff', '#2fe0b0'],
     vars: {
-      '--bg': '#c4ecff', '--bg2': '#e9fff0', '--ink': '#0d4c6e', '--ink-soft': '#4f88a6',
-      '--panel': 'rgba(255,255,255,.82)', '--panel-edge': '#9ed8f5', '--accent': '#1e9bf0', '--accent-ink': '#ffffff',
-      '--board': 'rgba(255,255,255,.45)', '--board-edge': '#86cdf0', '--cell': 'rgba(255,255,255,.55)', '--cell-edge': 'rgba(120,190,230,.5)',
-      '--ok': '#47cf5f', '--bad': '#ff6060', '--sweep': 'rgba(255,255,255,.95)', '--glow': '#bff3ff',
-      '--font': '"Segoe UI", "Lucida Grande", "Trebuchet MS", system-ui, sans-serif', '--radius': '24%',
+      '--bg': '#6cc2ff', '--bg2': '#d6f3ff', '--ink': '#1d5fae', '--ink-soft': '#4f88b8',
+      '--panel': 'rgba(255,255,255,.88)', '--panel-edge': '#7fbde6', '--accent': '#2b8cff', '--accent-ink': '#ffffff',
+      '--board': 'linear-gradient(180deg, #bfe7ff, #eafbff)', '--board-edge': '#6fb7ea', '--cell': 'rgba(255,255,255,.55)', '--cell-edge': 'rgba(0,90,170,.2)',
+      '--ok': '#46d36a', '--bad': '#ff6060', '--sweep': 'rgba(255,255,255,.95)', '--glow': '#bff3ff',
+      '--font': '"Trebuchet MS", "Segoe UI", "Lucida Grande", system-ui, sans-serif', '--radius': '22%',
     },
   },
   {
